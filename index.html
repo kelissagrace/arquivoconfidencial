@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
 <title>Ilustrações C4</title>
+<!-- PHANTASMA // PARTE I // V2 -->
 <style>
 :root{
   --drive-bg:#f8fafd;
@@ -143,13 +144,42 @@ button{cursor:pointer}
 /* photo surveillance stage */
 #surveillance{position:absolute;inset:0;display:none}
 #surveillance.active{display:block}
-.photo-wrap{position:absolute;inset:0;overflow:hidden;background:#010201}
-.photo-wrap img{
-  width:100%;height:100%;object-fit:cover;opacity:0;transform:scale(1.08);
-  filter:brightness(.52) contrast(1.12) saturate(.68);
-  transition:opacity .38s ease,transform 5.5s linear,filter .45s ease;
+.photo-wrap{position:absolute;inset:0;overflow:hidden;background:#010201;display:grid;place-items:center}
+.photo-bg{
+  position:absolute;inset:-7%;
+  background-position:center;background-size:cover;background-repeat:no-repeat;
+  filter:blur(24px) brightness(.30) saturate(.55);
+  transform:scale(1.12);
+  opacity:0;
+  transition:opacity .45s ease,transform 6.5s linear;
 }
-.photo-wrap img.show{opacity:1;transform:scale(1.16);filter:brightness(.72) contrast(1.14) saturate(.72)}
+.photo-bg.show{opacity:.88;transform:scale(1.18)}
+.photo-wrap img{
+  position:relative;z-index:2;
+  width:100%;height:100%;
+  object-fit:contain;
+  object-position:center center;
+  opacity:0;
+  transform:scale(.985);
+  filter:brightness(.68) contrast(1.08) saturate(.76);
+  transition:opacity .38s ease,transform 6.2s linear,filter .45s ease;
+}
+.photo-wrap img.show{
+  opacity:1;
+  transform:scale(1.035);
+  filter:brightness(.82) contrast(1.10) saturate(.80);
+}
+.photo-shadow{
+  position:absolute;z-index:1;
+  width:min(76vw,900px);height:86%;
+  box-shadow:0 0 70px 20px rgba(0,0,0,.58);
+  pointer-events:none
+}
+@media(max-width:700px){
+  .photo-wrap img{width:100%;height:100%;object-fit:contain}
+  .photo-bg{inset:-12%;filter:blur(20px) brightness(.28) saturate(.55)}
+  .photo-shadow{width:88vw;height:84%}
+}
 .vignette{position:absolute;inset:0;background:radial-gradient(circle at center,transparent 30%,rgba(0,0,0,.36) 70%,rgba(0,0,0,.82) 100%);pointer-events:none}
 .viewfinder{position:absolute;inset:5.5%;border:1px solid rgba(210,255,222,.22);pointer-events:none}
 .viewfinder:before,.viewfinder:after{content:"";position:absolute;background:rgba(180,255,200,.34)}
@@ -279,7 +309,7 @@ button{cursor:pointer}
   </div>
 
   <div id="surveillance">
-    <div class="photo-wrap"><img id="survPhoto" alt=""></div>
+    <div class="photo-wrap"><div id="survBg" class="photo-bg"></div><div class="photo-shadow"></div><img id="survPhoto" alt=""></div>
     <div class="vignette"></div>
     <div class="viewfinder">
       <i class="corner c1"></i><i class="corner c2"></i><i class="corner c3"></i><i class="corner c4"></i>
@@ -329,6 +359,7 @@ button{cursor:pointer}
   const hackProgress = document.getElementById("hackProgress");
   const surveillance = document.getElementById("surveillance");
   const photo = document.getElementById("survPhoto");
+  const survBg = document.getElementById("survBg");
   const subject = document.getElementById("subject");
   const fileMeta = document.getElementById("fileMeta");
   const timeMeta = document.getElementById("timeMeta");
@@ -349,37 +380,37 @@ button{cursor:pointer}
   let audioCtx = null;
 
   const PHOTOS = [
+    {src:"assets/fotos/charlotte-01.jpg", subject:"CHARLOTTE", file:"IMG_0218.JPG", capture:"19:08:14"},
+    {src:"assets/fotos/chuck-01.jpg", subject:"CHUCK", file:"IMG_0294.JPG", capture:"11:42:05"},
+    {src:"assets/fotos/declan-01.jpg", subject:"DECLAN", file:"IMG_0351.JPG", capture:"16:31:48"},
     {src:"assets/fotos/dex-01.jpg", subject:"DEX", file:"IMG_0407.JPG", capture:"22:14:08"},
-    {src:"assets/fotos/olivia-01.jpg", subject:"OLIVIA", file:"IMG_0421.JPG", capture:"23:09:31"},
-    {src:"assets/fotos/declan-01.jpg", subject:"DECLAN", file:"IMG_0528.JPG", capture:"18:42:16"},
-    {src:"assets/fotos/charlotte-01.jpg", subject:"CHARLOTTE", file:"IMG_0540.JPG", capture:"19:02:47"},
-    {src:"assets/fotos/killian-01.jpg", subject:"KILLIAN", file:"IMG_0631.JPG", capture:"08:31:22"},
-    {src:"assets/fotos/melissa-01.jpg", subject:"MELISSA", file:"IMG_0652.JPG", capture:"09:17:04"},
-    {src:"assets/fotos/chuck-01.jpg", subject:"CHUCK", file:"IMG_0719.JPG", capture:"14:53:39"},
-    {src:"assets/fotos/dex-02.jpg", subject:"DEX", file:"IMG_0742.JPG", capture:"16:26:11"},
-    {src:"assets/fotos/charlotte-02.jpg", subject:"CHARLOTTE", file:"IMG_0804.JPG", capture:"20:12:58"},
-    {src:"assets/fotos/killian-02.jpg", subject:"KILLIAN", file:"IMG_0828.JPG", capture:"07:44:10"},
+    {src:"assets/fotos/killian-01.jpg", subject:"KILLIAN", file:"IMG_0483.JPG", capture:"17:03:29"},
+    {src:"assets/fotos/melissa-01.jpg", subject:"MELISSA", file:"IMG_0546.JPG", capture:"20:17:41"},
+    {src:"assets/fotos/olivia-01.jpg", subject:"OLIVIA", file:"IMG_0612.JPG", capture:"13:26:03"},
+    {src:"assets/fotos/chuck-02.jpg", subject:"CHUCK", file:"IMG_0679.JPG", capture:"15:54:36"},
+    {src:"assets/fotos/dex-02.jpg", subject:"DEX", file:"IMG_0718.JPG", capture:"18:12:57"},
+    {src:"assets/fotos/killian-02.jpg", subject:"KILLIAN", file:"IMG_0781.JPG", capture:"21:34:19"},
+    {src:"assets/fotos/melissa-02.jpg", subject:"MELISSA", file:"IMG_0834.JPG", capture:"09:48:11"},
+    {src:"assets/fotos/olivia-02.jpg", subject:"OLIVIA", file:"IMG_0877.JPG", capture:"23:18:52"},
     {src:"assets/fotos/reid-lara-01.jpg", subject:"REID + LARA", file:"IMG_0917.JPG", capture:"02:17:43"},
-    {src:"assets/fotos/reid-lara-02.jpg", subject:"REID + LARA", file:"IMG_0921.JPG", capture:"02:22:06"}
+    {src:"assets/fotos/reid-lara-02.jpg", subject:"REID + LARA", file:"IMG_0921.JPG", capture:"02:22:06"},
+    {src:"assets/fotos/reid-lara-03.jpg", subject:"REID + LARA", file:"IMG_0926.JPG", capture:"02:29:41"}
   ];
 
   /* Cues sincronizados com o áudio V3A (~60.3 s). */
   const CUES = [
-    {t:0.35, p:0, text:"Engraçado..."},
-    {t:2.75, p:1, text:"Vocês realmente acreditam que sabem tudo sobre eles."},
-    {t:5.90, p:2, text:"Os Cisnes."},
-    {t:8.82, p:3, text:"Conhecem as histórias."},
-    {t:11.58,p:4, text:"Conhecem as versões que escolheram contar."},
-    {t:14.48,p:5, text:"Mas segredos..."},
-    {t:19.24,p:6, text:"Segredos nunca desaparecem."},
-    {t:22.95,p:7, text:"Alguns apenas esperam pela pessoa certa para encontrá-los."},
-    {t:28.12,p:8, text:"E parece que... essa pessoa pode ser você."},
-    {t:35.02,p:9, text:"Um arquivo foi disponibilizado."},
-    {t:38.82,p:10,text:"Vamos ver quantos de vocês conseguem chegar até o final."},
-    {t:43.05,p:10,text:""},
-    {t:47.36,p:11,text:"Vamos ver quantos de vocês conseguem chegar até o final."},
-    {t:53.78,p:11,text:"Boa sorte."},
-    {t:57.45,p:11,text:"Eu estarei observando."}
+    {start:0.46, end:1.70,  p:0,  text:"Engraçado..."},
+    {start:2.85, end:7.55,  p:1,  text:"Vocês realmente acreditam que sabem tudo sobre eles. Os Cisnes."},
+    {start:8.91, end:17.70, p:2,  text:"Conhecem as histórias. Conhecem as versões que escolheram contar."},
+    {start:19.36,end:20.80, p:3,  text:"Mas segredos..."},
+    {start:23.07,end:25.65, p:4,  text:"Segredos nunca desaparecem."},
+    {start:28.24,end:32.55, p:5,  text:"Alguns apenas esperam pela pessoa certa para encontrá-los."},
+    {start:35.15,end:37.10, p:6,  text:"E parece que..."},
+    {start:38.94,end:40.25, p:7,  text:"Essa pessoa pode ser você."},
+    {start:43.18,end:45.55, p:8,  text:"Um arquivo foi disponibilizado."},
+    {start:47.49,end:51.45, p:12, text:"Vamos ver quantos de vocês conseguem chegar até o final."},
+    {start:53.92,end:55.00, p:13, text:"Boa sorte."},
+    {start:57.65,end:59.30, p:14, text:"Eu estarei observando."}
   ];
 
   function clearTimers(){ timers.forEach(clearTimeout); timers=[]; }
@@ -408,14 +439,20 @@ button{cursor:pointer}
   function setPhoto(index, doFlash=true){
     const d=PHOTOS[index%PHOTOS.length];
     photo.classList.remove("show");
+    survBg.classList.remove("show");
     setTimeout(()=>{
-      photo.src=d.src; photo.alt="Registro de vigilância";
+      photo.src=d.src;
+      photo.alt="Registro de vigilância";
+      survBg.style.backgroundImage=`url("${d.src}")`;
       subject.textContent="SUJEITO // "+d.subject;
       fileMeta.textContent="FILE // "+d.file;
       timeMeta.textContent="CAPTURE // "+d.capture;
-      requestAnimationFrame(()=>photo.classList.add("show"));
+      requestAnimationFrame(()=>{
+        photo.classList.add("show");
+        survBg.classList.add("show");
+      });
       if(doFlash) triggerFlash();
-    },90);
+    },110);
   }
   function openPreview(file){
     selectedFile=file;
@@ -497,7 +534,9 @@ button{cursor:pointer}
     surveillance.classList.add("active");
     endcard.classList.remove("active");
     cueIndex=-1;
-    setPhoto(0,false);
+    photo.removeAttribute("src");
+    survBg.style.backgroundImage="none";
+    photo.dataset.cuePhoto="";
     caption.textContent="";
     try{ narration.currentTime=0; narration.muted=false; await narration.play(); }catch(e){
       caption.textContent="TOQUE PARA INICIAR A TRANSMISSÃO";
@@ -508,13 +547,31 @@ button{cursor:pointer}
   function syncCues(){
     const t=narration.currentTime;
     let idx=-1;
-    for(let i=0;i<CUES.length;i++){ if(t>=CUES[i].t) idx=i; else break; }
-    if(idx!==cueIndex && idx>=0){
-      cueIndex=idx;
-      const c=CUES[idx];
-      setPhoto(c.p,true);
-      caption.textContent=c.text||"";
+
+    for(let i=0;i<CUES.length;i++){
+      if(t>=CUES[i].start && t<=CUES[i].end){
+        idx=i;
+        break;
+      }
     }
+
+    if(idx!==cueIndex){
+      cueIndex=idx;
+
+      if(idx>=0){
+        const c=CUES[idx];
+        if(photo.dataset.cuePhoto!==String(c.p)){
+          photo.dataset.cuePhoto=String(c.p);
+          setPhoto(c.p,true);
+        }
+        caption.textContent=c.text;
+        caption.style.opacity="1";
+      }else{
+        caption.textContent="";
+        caption.style.opacity="0";
+      }
+    }
+
     requestAnimationFrame(syncCues);
   }
   requestAnimationFrame(syncCues);

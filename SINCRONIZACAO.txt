@@ -1,0 +1,28 @@
+PHANTASMA // PARTE I // V2
+SINCRONIZAÇÃO DA NARRAÇÃO
+
+A V2 não estima mais as legendas pela duração total.
+Ela usa os inícios reais dos blocos de fala detectados no áudio.
+
+00.46  Engraçado...
+02.85  Vocês realmente acreditam que sabem tudo sobre eles. Os Cisnes.
+08.91  Conhecem as histórias. Conhecem as versões que escolheram contar.
+19.36  Mas segredos...
+23.07  Segredos nunca desaparecem.
+28.24  Alguns apenas esperam pela pessoa certa para encontrá-los.
+35.15  E parece que...
+38.94  Essa pessoa pode ser você.
+43.18  Um arquivo foi disponibilizado.
+47.49  Vamos ver quantos de vocês conseguem chegar até o final.
+53.92  Boa sorte.
+57.65  Eu estarei observando.
+
+IMAGENS
+- Agora a foto principal usa object-fit: contain.
+- Nenhum retrato vertical deve ser cortado para preencher a tela.
+- O espaço restante é preenchido por uma cópia ampliada/desfocada da mesma foto.
+- Isso funciona tanto no desktop quanto no mobile.
+
+NOVO ACERVO
+Todos os 18 arquivos novos enviados estão dentro de assets/fotos.
+A sequência principal usa 15 deles.

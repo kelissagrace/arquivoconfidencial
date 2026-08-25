@@ -1,45 +1,34 @@
-PHANTASMA // PARTE I — ABERTURA NARRADA // V1
+PHANTASMA // PARTE I — ABERTURA NARRADA // V2
 
-O QUE ESTA VERSÃO FAZ
-- Simula uma pasta estilo Google Drive em desktop e mobile.
-- A pasta começa normal.
-- Após 2 tentativas de abrir arquivos, ocorre a invasão.
-- O proprietário muda de MIA SALVANI para PHANTASMA.
-- A interface escurece e inicia a narração V3A aprovada.
-- As fotos aparecem sincronizadas como registros de vigilância.
-- Há flash, som de obturador, zoom, metadados e legendas.
-- No fim, a tela aguarda a futura Parte II.
+CORREÇÕES DA V2
+1. IMAGENS FORA DE QUADRO
+   A imagem inteira agora é preservada.
+   O fundo usa a própria imagem ampliada e desfocada.
 
-ONDE SUBIR
-Esta versão foi criada para TESTE DA PARTE I.
-Crie um repo separado ou uma pasta separada e envie TODO o conteúdo desta pasta mantendo:
+2. LEGENDA X ÁUDIO
+   As legendas agora usam os tempos reais dos blocos de fala do áudio.
+   Os tempos estão documentados em SINCRONIZACAO.txt.
 
-index.html
-assets/
-  audio/
-  fotos/
+3. NOVAS FOTOS
+   Esta versão usa o novo acervo enviado.
 
-NÃO envie apenas index.html, porque ele precisa das fotos e do áudio.
+ONDE SUBSTITUIR NO REPOSITÓRIO DE TESTE
+Substitua:
+- index.html
+- a pasta inteira assets/fotos/
 
-AJUSTE MANUAL — NÚMERO DE TENTATIVAS
-Abra index.html e procure:
-
-const ATTEMPTS_BEFORE_HACK = 2;
-
-Troque 2 pelo número desejado.
-
-AJUSTE MANUAL — CONECTAR AO QUIZ NO FUTURO
-Procure:
-
-const NEXT_PAGE = "";
-
-Quando quiz.html existir, troque para:
-
-const NEXT_PAGE = "quiz.html";
-
-ÁUDIO
-Arquivo usado:
+O áudio continua sendo:
 assets/audio/phantasma-abertura.mp3
 
-OBSERVAÇÃO
-O áudio só começa depois da interação do visitante com um arquivo, respeitando a política de autoplay dos navegadores.
+Se o arquivo de áudio já está correto no GitHub, você não precisa substituí-lo.
+
+IMPORTANTE
+Mantenha os nomes das fotos exatamente como estão no ZIP.
+
+NÚMERO DE TENTATIVAS ANTES DA INVASÃO
+No index.html:
+const ATTEMPTS_BEFORE_HACK = 2;
+
+FUTURA PARTE II
+Quando quiz.html existir:
+const NEXT_PAGE = "quiz.html";
