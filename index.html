@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
 <title>Ilustrações C4 - Drive</title>
-<!-- PHANTASMA // PARTE I // V3.9 // GLITCH APOS PROCESSAMENTO + NARRACAO LIMPA -->
+<!-- PHANTASMA // PARTE I // V4.0 // MONTINHO ALEATORIO + CAMERA FINAL + BG EM MOVIMENTO -->
 <style>
 :root{
   --g-bg:#f8fafd;--g-panel:#fff;--g-text:#1f1f1f;--g-muted:#5f6368;
@@ -201,6 +201,147 @@ body.cine-hard #drive{
 .meter{margin:13px 0}.meterrow{display:flex;justify-content:space-between;font-size:11px;color:#91a798;margin-bottom:6px}.bar{height:5px;background:#102117;overflow:hidden}.bar i{display:block;height:100%;width:0;background:#70ff91;box-shadow:0 0 12px #70ff91;transition:width .55s ease}.bar.red i{background:#ff626d;box-shadow:0 0 10px rgba(255,90,100,.5)}
 .log{height:210px;overflow:hidden;font-size:11px;line-height:1.7;color:#74887a}.log b{color:#91ffab}.log .x{color:#ff777f}
 
+
+/* ===== FUNDO PHANTASMA EM MOVIMENTO ===== */
+.take-bg,
+.wall-bg{
+  background-size:112% auto!important;
+  background-position:50% 50%!important;
+  will-change:transform,background-position;
+}
+.take-bg{
+  animation:phantasmaBgTake 18s ease-in-out infinite alternate;
+}
+.wall-bg{
+  animation:phantasmaBgTransmission 24s ease-in-out infinite alternate;
+}
+@keyframes phantasmaBgTake{
+  0%{transform:scale(1.02) translate3d(-1.2%,0,0);background-position:47% 48%!important}
+  50%{transform:scale(1.07) translate3d(1.1%,-.8%,0);background-position:53% 51%!important}
+  100%{transform:scale(1.04) translate3d(-.3%,1%,0);background-position:49% 54%!important}
+}
+@keyframes phantasmaBgTransmission{
+  0%{transform:scale(1.03) translate3d(-1.5%,-.5%,0);background-position:46% 48%!important}
+  50%{transform:scale(1.09) translate3d(1.4%,.7%,0);background-position:55% 52%!important}
+  100%{transform:scale(1.05) translate3d(-.4%,1.2%,0);background-position:50% 55%!important}
+}
+
+/* ===== MONTINHO DE FOTOS ===== */
+#photoPile{
+  position:absolute;inset:0;overflow:hidden;
+  display:grid;place-items:center;
+}
+.photo-card{
+  left:50%!important;
+  top:50%!important;
+  width:max-content;
+  max-width:38vw;
+  max-height:70dvh;
+}
+.photo-card img{
+  max-width:36vw;
+  max-height:calc(70dvh - 42px);
+}
+.photo-card.archived{
+  opacity:.57;
+  filter:grayscale(1) brightness(.54) contrast(1.09);
+  transform:
+    translate(
+      calc(-50% + var(--pile-x,0px)),
+      calc(-50% + var(--pile-y,0px))
+    )
+    rotate(var(--pile-r,0deg))
+    scale(var(--pile-s,.76));
+}
+.photo-card.live{
+  opacity:1;
+  filter:none;
+  transform:
+    translate(
+      calc(-50% + var(--live-x,0px)),
+      calc(-50% + var(--live-y,0px))
+    )
+    rotate(var(--live-r,0deg))
+    scale(1);
+}
+
+/* ===== INTERFACE DE CÂMERA FINAL ===== */
+#cameraFinal{
+  position:absolute;inset:0;z-index:210;
+  opacity:0;visibility:hidden;pointer-events:none;
+  transition:opacity .34s ease;
+  font-family:Arial,Helvetica,sans-serif;
+  color:#f5f5f5;
+  text-shadow:0 1px 5px #000;
+}
+#cameraFinal.show{opacity:1;visibility:visible}
+#cameraFinal .cam-vignette{
+  position:absolute;inset:0;
+  background:
+    radial-gradient(circle at center,transparent 42%,rgba(0,0,0,.10) 69%,rgba(0,0,0,.42) 100%);
+}
+#cameraFinal .cam-corner{
+  position:absolute;width:145px;height:145px;border-color:rgba(245,245,245,.92);border-style:solid;
+}
+#cameraFinal .tl{left:3.2vw;top:3.6vh;border-width:4px 0 0 4px}
+#cameraFinal .tr{right:3.2vw;top:3.6vh;border-width:4px 4px 0 0}
+#cameraFinal .bl{left:3.2vw;bottom:3.6vh;border-width:0 0 4px 4px}
+#cameraFinal .br{right:3.2vw;bottom:3.6vh;border-width:0 4px 4px 0}
+#cameraFinal .focus{
+  position:absolute;left:50%;top:50%;width:190px;height:150px;transform:translate(-50%,-50%);
+}
+#cameraFinal .focus i{
+  position:absolute;width:55px;height:55px;border-color:rgba(245,245,245,.95);border-style:solid;
+}
+#cameraFinal .focus i:nth-child(1){left:0;top:0;border-width:4px 0 0 4px}
+#cameraFinal .focus i:nth-child(2){right:0;top:0;border-width:4px 4px 0 0}
+#cameraFinal .focus i:nth-child(3){left:0;bottom:0;border-width:0 0 4px 4px}
+#cameraFinal .focus i:nth-child(4){right:0;bottom:0;border-width:0 4px 4px 0}
+#cameraFinal .cam-top{
+  position:absolute;left:50%;top:4.3vh;transform:translateX(-50%);
+  font-size:clamp(15px,2vw,27px);letter-spacing:.08em;
+}
+#cameraFinal .cam-left{
+  position:absolute;left:4vw;top:7.5vh;font-size:clamp(11px,1.3vw,17px);letter-spacing:.05em;
+}
+#cameraFinal .cam-rec{
+  position:absolute;right:4vw;top:7.2vh;font-size:clamp(14px,1.5vw,20px);letter-spacing:.07em;
+  display:flex;align-items:center;gap:11px;
+}
+#cameraFinal .cam-rec:before{
+  content:"";width:18px;height:18px;border-radius:50%;background:#f13139;
+  box-shadow:0 0 10px rgba(241,49,57,.35);
+  animation:recPulse 1s steps(1) infinite;
+}
+@keyframes recPulse{50%{opacity:.35}}
+#cameraFinal .cam-hdr{
+  position:absolute;left:4.2vw;bottom:6.5vh;font-size:clamp(12px,1.3vw,17px)
+}
+#cameraFinal .battery{
+  position:absolute;right:4.2vw;bottom:6.1vh;width:57px;height:27px;border:2px solid #eee;
+}
+#cameraFinal .battery:after{content:"";position:absolute;right:-7px;top:7px;width:5px;height:10px;background:#eee}
+#cameraFinal .battery:before{content:"";position:absolute;inset:3px;background:#eee}
+#cameraFinalFlash{
+  position:absolute;inset:0;z-index:240;background:white;opacity:0;pointer-events:none;
+}
+#cameraFinalFlash.go{animation:cameraFinalFlash .72s ease-out}
+@keyframes cameraFinalFlash{
+  0%{opacity:0}
+  10%{opacity:1}
+  31%{opacity:1}
+  62%{opacity:.45}
+  100%{opacity:0}
+}
+
+@media(max-width:900px){
+  .photo-card{max-width:66vw;max-height:64dvh}
+  .photo-card img{max-width:64vw;max-height:calc(64dvh - 42px)}
+  #cameraFinal .cam-corner{width:84px;height:84px}
+  #cameraFinal .focus{width:135px;height:108px}
+  #cameraFinal .focus i{width:40px;height:40px}
+}
+
 /* ===== NARRAÇÃO / PILHA DE FOTOS ===== */
 #transmission{position:absolute;inset:0;display:none;overflow:hidden}
 #transmission.active{display:block}
@@ -353,6 +494,19 @@ body.cine-hard #drive{
     <div class="rec"><b>●</b> ARQUIVO INTERCEPTADO // REC</div>
     <div class="audio-ui"><button id="muteBtn" class="iconbtn">◉</button></div>
     <div id="caption"></div><div id="flash"></div>
+
+    <div id="cameraFinal">
+      <div class="cam-vignette"></div>
+      <i class="cam-corner tl"></i><i class="cam-corner tr"></i>
+      <i class="cam-corner bl"></i><i class="cam-corner br"></i>
+      <div class="focus"><i></i><i></i><i></i><i></i></div>
+      <div class="cam-left">1080p / 60<sup>fps</sup></div>
+      <div id="cameraClock" class="cam-top">00:00 / 00:00</div>
+      <div class="cam-rec">REC</div>
+      <div class="cam-hdr">HDR</div>
+      <div class="battery"></div>
+    </div>
+    <div id="cameraFinalFlash"></div>
   </div>
 
   <div id="endcard">
@@ -400,11 +554,12 @@ body.cine-hard #drive{
   const frameBlack=$("frameBlack"),signalRoll=$("signalRoll"),glitchStage=$("glitchStage");
   const localBar=$("localBar"),remoteBar=$("remoteBar"),localPct=$("localPct"),remotePct=$("remotePct"),revokeLine=$("revokeLine"),phantasmaOwner=$("phantasmaOwner"),sysLog=$("sysLog");
   const pile=$("photoPile"),caption=$("caption"),flash=$("flash"),narration=$("narration"),muteBtn=$("muteBtn"),endcard=$("endcard"),replayBtn=$("replayBtn"),continueBtn=$("continueBtn");
+  const cameraFinal=$("cameraFinal"),cameraClock=$("cameraClock"),cameraFinalFlash=$("cameraFinalFlash");
   const psychActions=$("psychActions"),psychResult=$("psychResult");
   const sfxAmbient=$("sfxAmbient"),sfxKey=$("sfxKey"),sfxGlitch=$("sfxGlitch"),sfxAccess=$("sfxAccess"),sfxClick=$("sfxClick"),sfxError=$("sfxError");
 
   let attempts=0,started=false,captionIndex=-1,photoIndex=-1,audioCtx=null,activeCard=null;
-  let createdCards=[], photoTimers=[];
+  let createdCards=[], photoTimers=[], photoOrder=[], cameraShown=false;
   let machineTimer=null, randomGlitchTimer=null, processorNodes=[], soundscapeStarted=false, soundMuted=false; let narrationPrimed=false, hackSynthTimer=null, noiseNode=null, noiseGain=null;
 
   setTimeout(()=>{boot.classList.add("done");drive.classList.add("ready")},1750);
@@ -763,6 +918,9 @@ body.cine-hard #drive{
     startPhotoStream();
     caption.textContent="";
     caption.style.opacity=0;
+    cameraShown=false;
+    cameraFinal.classList.remove("show");
+    cameraFinalFlash.classList.remove("go");
   }
 
   function openPreview(name){
@@ -960,15 +1118,14 @@ body.cine-hard #drive{
     {src:"assets/fotos/drive-29.jpg",who:"ZURI",file:"CAPTURE_029.JPG"}
   ];
 
-  const layouts=[
-    [-.42,-.34,-10,.50],[-.22,-.36,7,.49],[.02,-.36,-5,.50],[.25,-.34,9,.48],[.43,-.30,-7,.49],
-    [-.43,-.12,6,.50],[-.24,-.14,-8,.51],[-.03,-.15,5,.50],[.20,-.14,-6,.49],[.42,-.10,8,.50],
-    [-.44,.09,-7,.49],[-.24,.08,9,.50],[-.02,.07,-5,.51],[.20,.09,7,.49],[.43,.11,-8,.50],
-    [-.42,.29,8,.49],[-.22,.31,-6,.50],[.01,.30,9,.49],[.24,.30,-7,.50],[.43,.29,5,.48],
-    [-.33,-.24,4,.48],[-.12,-.25,-9,.49],[.12,-.24,7,.48],[.33,-.22,-5,.49],
-    [-.12,.22,6,.48],[.12,.22,-7,.49],
-    [-.36,.20,-4,.46],[.34,.20,6,.46],[.00,.34,-2,.46]
-  ];
+  // Fotos ficam num montinho central. Posição/rotação são sorteadas a cada exibição.
+  const PILE_CONFIG={
+    desktopX:185,
+    desktopY:115,
+    mobileX:78,
+    mobileY:72,
+    rotate:13
+  };
 
   function shutter(){
     try{
@@ -981,22 +1138,49 @@ body.cine-hard #drive{
   function cameraFlash(){flash.classList.remove("flashgo");void flash.offsetWidth;flash.classList.add("flashgo");shutter()}
   function archive(card,index){
     if(!card||card.classList.contains("archived"))return;
-    const L=layouts[index%layouts.length];
+
     const mobile=innerWidth<700;
-    const usableW=innerWidth*(mobile?.82:.92);
-    const usableH=innerHeight*(mobile?.74:.88);
-    card.style.setProperty("--x",(L[0]*usableW)+"px");
-    card.style.setProperty("--y",(L[1]*usableH)+"px");
-    card.style.setProperty("--r",L[2]+"deg");
-    card.style.setProperty("--s",mobile?Math.min(.44,L[3]):L[3]);
+    const maxX=mobile?PILE_CONFIG.mobileX:PILE_CONFIG.desktopX;
+    const maxY=mobile?PILE_CONFIG.mobileY:PILE_CONFIG.desktopY;
+
+    const x=(Math.random()*2-1)*maxX;
+    const y=(Math.random()*2-1)*maxY;
+    const r=(Math.random()*2-1)*PILE_CONFIG.rotate;
+    const s=mobile
+      ? .57+Math.random()*.10
+      : .69+Math.random()*.12;
+
+    card.style.setProperty("--pile-x",x.toFixed(1)+"px");
+    card.style.setProperty("--pile-y",y.toFixed(1)+"px");
+    card.style.setProperty("--pile-r",r.toFixed(2)+"deg");
+    card.style.setProperty("--pile-s",s.toFixed(3));
+
     card.classList.remove("live");
     card.classList.add("archived");
   }
   function showPhoto(index){
     if(activeCard)archive(activeCard,index-1);
-    const p=PHOTOS[index],card=document.createElement("figure");card.className="photo-card";card.style.setProperty("--z",50+index);card.style.setProperty("--liveR",((index%5)-2)*1.4+"deg");card.style.setProperty("--enterR",((index%7)-3)*4+"deg");
+
+    const p=PHOTOS[index];
+    const card=document.createElement("figure");
+    card.className="photo-card";
+    card.style.setProperty("--z",50+createdCards.length);
+
+    const mobile=innerWidth<700;
+    const liveX=(Math.random()*2-1)*(mobile?18:36);
+    const liveY=(Math.random()*2-1)*(mobile?12:24);
+    const liveR=(Math.random()*2-1)*3.2;
+
+    card.style.setProperty("--live-x",liveX.toFixed(1)+"px");
+    card.style.setProperty("--live-y",liveY.toFixed(1)+"px");
+    card.style.setProperty("--live-r",liveR.toFixed(2)+"deg");
+    card.style.setProperty("--enterR",((Math.random()*2-1)*9).toFixed(2)+"deg");
+
     card.innerHTML=`<img src="${p.src}" alt=""><figcaption class="stamp"><span>${p.file}</span><span>${p.who}</span></figcaption>`;
-    pile.appendChild(card);createdCards.push(card);activeCard=card;
+    pile.appendChild(card);
+    createdCards.push(card);
+    activeCard=card;
+
     requestAnimationFrame(()=>card.classList.add("live"));
     cameraFlash();
 
@@ -1019,30 +1203,40 @@ body.cine-hard #drive{
     caption.style.opacity=0;
   }
 
+  function shuffledPhotoOrder(){
+    const order=PHOTOS.map((_,i)=>i);
+    for(let i=order.length-1;i>0;i--){
+      const j=Math.floor(Math.random()*(i+1));
+      [order[i],order[j]]=[order[j],order[i]];
+    }
+    return order;
+  }
+
   function startPhotoStream(){
     clearPhotoTimers();
+    cameraShown=false;
+    cameraFinal.classList.remove("show");
+    cameraFinalFlash.classList.remove("go");
 
-    const durationMs = Number.isFinite(narration.duration) && narration.duration > 10
-      ? narration.duration * 1000
-      : 60000;
+    photoOrder=shuffledPhotoOrder();
 
-    const usableMs = Math.max(
-      10000,
-      durationMs - PHOTO_START_DELAY_MS - PHOTO_END_MARGIN_MS
-    );
+    // Todas as 29 fotos terminam antes da frase final
+    // "Eu estarei observando" (~57.28s).
+    const startMs=500;
+    const lastPhotoMs=52200;
+    const stepMs=(lastPhotoMs-startMs)/(PHOTOS.length-1);
 
-    const stepMs = PHOTOS.length > 1
-      ? usableMs / (PHOTOS.length - 1)
-      : usableMs;
-
-    PHOTOS.forEach((_, index)=>{
-      const delay = PHOTO_START_DELAY_MS + (stepMs * index);
-      const timer = setTimeout(()=>{
-        photoIndex=index;
-        showPhoto(index);
-      }, delay);
+    photoOrder.forEach((photoId,sequenceIndex)=>{
+      const delay=startMs+(stepMs*sequenceIndex);
+      const timer=setTimeout(()=>{
+        photoIndex=photoId;
+        showPhoto(photoId);
+      },delay);
       photoTimers.push(timer);
     });
+
+    // A câmera enquadra o montinho antes da fala final.
+    photoTimers.push(setTimeout(()=>showFinalCamera(),54800));
   }
 
   async function startTransmission(){
@@ -1057,6 +1251,35 @@ body.cine-hard #drive{
     await startNarrationAutomatically();
   }
 
+  function formatClock(sec){
+    sec=Math.max(0,sec||0);
+    const m=Math.floor(sec/60);
+    const s=Math.floor(sec%60);
+    return String(m).padStart(2,"0")+":"+String(s).padStart(2,"0");
+  }
+
+  function showFinalCamera(){
+    if(cameraShown)return;
+    cameraShown=true;
+
+    // A última foto também entra para o montinho.
+    if(activeCard)archive(activeCard,PHOTOS.length-1);
+
+    createdCards.forEach((card,i)=>{
+      card.style.setProperty("--z",30+i);
+      card.classList.add("final");
+    });
+
+    cameraFinal.classList.add("show");
+  }
+
+  function finalCameraFlash(){
+    cameraFinalFlash.classList.remove("go");
+    void cameraFinalFlash.offsetWidth;
+    cameraFinalFlash.classList.add("go");
+    shutter();
+  }
+
   function sync(){
     if(!transmission.classList.contains("active")){
       requestAnimationFrame(sync);
@@ -1064,6 +1287,11 @@ body.cine-hard #drive{
     }
 
     const t=narration.currentTime;
+
+    if(cameraShown){
+      cameraClock.textContent=formatClock(t)+" / "+formatClock(narration.duration||60);
+    }
+
     let ci=-1;
 
     for(let i=0;i<CAPTIONS.length;i++){
@@ -1089,19 +1317,24 @@ body.cine-hard #drive{
 
   narration.addEventListener("ended",()=>{
     clearPhotoTimers();
-    if(activeCard)archive(activeCard,PHOTOS.length-1);
-    createdCards.forEach(c=>c.classList.add("final"));
+
+    if(!cameraShown)showFinalCamera();
+
+    finalCameraFlash();
+
     setTimeout(()=>{
       transmission.classList.remove("active");
+      cameraFinal.classList.remove("show");
       endcard.classList.add("active");
       setSoundPhase("end");
       stopHackSynth();
       clearTimeout(randomGlitchTimer);
+
       psychResult.classList.remove("show");
       psychResult.textContent="";
       psychActions.style.display="flex";
       continueBtn.classList.remove("show");
-    },1150);
+    },560);
   });
   document.querySelectorAll(".psych-btn").forEach(btn=>{
     btn.addEventListener("click",()=>{
