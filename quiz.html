@@ -1,0 +1,966 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#050706">
+<title>Consulta // PHANTASMA</title>
+<style>
+  :root{
+    --bg:#050706;
+    --panel:rgba(7,10,8,.78);
+    --panel2:rgba(10,14,11,.9);
+    --line:rgba(183,208,191,.16);
+    --line2:rgba(183,208,191,.32);
+    --text:#e6ede8;
+    --muted:#87958c;
+    --soft:#b5c1ba;
+    --red:#ff5f68;
+    --red2:#ff8a90;
+    --ok:#c9d8ce;
+    --shadow:0 30px 90px rgba(0,0,0,.58);
+  }
+
+  *{box-sizing:border-box}
+  html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text)}
+  body{
+    min-height:100dvh;
+    overflow-x:hidden;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+  }
+
+  button,input{font:inherit}
+
+  .bg{
+    position:fixed;
+    inset:-5%;
+    z-index:-4;
+    background:
+      linear-gradient(rgba(3,5,4,.58),rgba(3,5,4,.84)),
+      url("assets/phantasma-bg.jpg") center/cover no-repeat;
+    animation:bgDrift 22s ease-in-out infinite alternate;
+    transform:scale(1.08);
+  }
+  @keyframes bgDrift{
+    0%{transform:scale(1.08) translate3d(-1.2%,-.6%,0)}
+    100%{transform:scale(1.13) translate3d(1.5%,1%,0)}
+  }
+
+  .noise{
+    position:fixed;
+    inset:0;
+    z-index:-2;
+    pointer-events:none;
+    opacity:.075;
+    background-image:
+      repeating-linear-gradient(0deg,transparent 0 2px,rgba(255,255,255,.025) 3px);
+    mix-blend-mode:screen;
+  }
+
+  .vignette{
+    position:fixed;
+    inset:0;
+    z-index:-1;
+    pointer-events:none;
+    background:radial-gradient(circle at 50% 44%,transparent 0 25%,rgba(0,0,0,.25) 62%,rgba(0,0,0,.72) 100%);
+  }
+
+  #glitchFlash{
+    position:fixed;
+    inset:0;
+    z-index:50;
+    pointer-events:none;
+    opacity:0;
+    background:
+      linear-gradient(90deg,rgba(255,0,60,.12),transparent 22%,rgba(96,255,211,.10) 71%,transparent),
+      rgba(255,255,255,.04);
+  }
+  #glitchFlash.hit{animation:glitchHit .28s steps(2,end)}
+  @keyframes glitchHit{
+    0%{opacity:0}
+    18%{opacity:.9;transform:translateX(-5px)}
+    42%{opacity:.28;transform:translateX(7px)}
+    68%{opacity:.62;transform:translateX(-2px)}
+    100%{opacity:0;transform:none}
+  }
+
+  #shell{
+    min-height:100dvh;
+    display:flex;
+    flex-direction:column;
+    padding:
+      max(18px,env(safe-area-inset-top))
+      clamp(16px,4vw,48px)
+      max(20px,env(safe-area-inset-bottom));
+  }
+
+  .topbar{
+    width:min(1180px,100%);
+    margin:0 auto;
+    min-height:62px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+    border-bottom:1px solid var(--line);
+  }
+
+  .brand{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    letter-spacing:.15em;
+    font-size:12px;
+    color:var(--soft);
+  }
+  .brand-mark{
+    width:8px;height:8px;border-radius:50%;
+    background:var(--red);
+    box-shadow:0 0 14px rgba(255,95,104,.66);
+    animation:pulse 1.8s ease-in-out infinite;
+  }
+  @keyframes pulse{50%{opacity:.38;box-shadow:0 0 5px rgba(255,95,104,.32)}}
+
+  .status{
+    display:flex;
+    align-items:center;
+    gap:9px;
+    color:var(--muted);
+    font-size:11px;
+    letter-spacing:.12em;
+    white-space:nowrap;
+  }
+  .status-dot{width:6px;height:6px;border-radius:50%;background:#aab9b0}
+
+  main{
+    width:min(900px,100%);
+    margin:auto;
+    padding:52px 0 64px;
+  }
+
+  .eyebrow{
+    color:var(--muted);
+    letter-spacing:.24em;
+    text-transform:uppercase;
+    font-size:11px;
+    margin-bottom:18px;
+  }
+
+  .card{
+    position:relative;
+    background:linear-gradient(145deg,rgba(9,13,10,.88),rgba(5,8,6,.78));
+    border:1px solid var(--line);
+    box-shadow:var(--shadow);
+    backdrop-filter:blur(11px);
+    padding:clamp(26px,5vw,58px);
+    overflow:hidden;
+  }
+  .card:before{
+    content:"";
+    position:absolute;
+    top:0;left:0;width:95px;height:1px;
+    background:rgba(255,95,104,.72);
+  }
+
+  #consultLabel{
+    color:var(--red2);
+    font-size:11px;
+    letter-spacing:.23em;
+    margin-bottom:30px;
+  }
+
+  #question{
+    margin:0;
+    max-width:760px;
+    font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    font-size:clamp(24px,4vw,42px);
+    line-height:1.16;
+    font-weight:650;
+    letter-spacing:-.025em;
+  }
+
+  .answer-wrap{
+    margin-top:42px;
+    display:flex;
+    gap:11px;
+  }
+
+  #answer{
+    flex:1;
+    min-width:0;
+    height:54px;
+    padding:0 17px;
+    border:1px solid var(--line2);
+    outline:none;
+    background:rgba(0,0,0,.32);
+    color:var(--text);
+    caret-color:var(--red);
+    transition:border-color .2s,box-shadow .2s,background .2s;
+  }
+  #answer::placeholder{color:#657069}
+  #answer:focus{
+    border-color:rgba(215,229,220,.52);
+    box-shadow:0 0 0 3px rgba(193,213,200,.055);
+    background:rgba(0,0,0,.45);
+  }
+  #answer:disabled{opacity:.52}
+
+  #submit{
+    min-width:132px;
+    height:54px;
+    padding:0 20px;
+    border:1px solid rgba(220,233,224,.27);
+    background:#d7dfda;
+    color:#101512;
+    cursor:pointer;
+    letter-spacing:.1em;
+    font-size:11px;
+    font-weight:800;
+    transition:transform .15s,filter .15s,opacity .15s;
+  }
+  #submit:hover{filter:brightness(1.08)}
+  #submit:active{transform:translateY(1px)}
+  #submit:disabled{opacity:.35;cursor:default}
+
+  #reaction{
+    min-height:112px;
+    margin-top:34px;
+    border-top:1px solid var(--line);
+    padding-top:23px;
+    color:var(--soft);
+    font-size:14px;
+    line-height:1.75;
+    white-space:pre-line;
+  }
+  #reaction:empty:before{
+    content:"Aguardando resposta.";
+    color:#59645e;
+  }
+  #reaction.bad{color:#f0b1b5}
+  #reaction.good{color:#ced9d2}
+
+  .meta{
+    margin-top:25px;
+    display:flex;
+    justify-content:space-between;
+    gap:15px;
+    color:#5e6962;
+    font-size:10px;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+  }
+
+  .shake{animation:shake .27s linear}
+  @keyframes shake{
+    20%{transform:translateX(-5px)}
+    42%{transform:translateX(4px)}
+    63%{transform:translateX(-2px)}
+    82%{transform:translateX(2px)}
+  }
+
+  #final{
+    display:none;
+    width:min(900px,100%);
+    margin:auto;
+    padding:55px 0 75px;
+  }
+  #final.show{display:block}
+  #quizView.hidden{display:none}
+
+  .final-card{
+    background:rgba(6,9,7,.83);
+    border:1px solid var(--line);
+    box-shadow:var(--shadow);
+    padding:clamp(28px,5vw,60px);
+  }
+  .final-title{
+    margin:0 0 24px;
+    color:var(--red2);
+    font-size:11px;
+    letter-spacing:.23em;
+  }
+  #finalText{
+    font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    font-size:clamp(24px,3.8vw,40px);
+    line-height:1.28;
+    white-space:pre-line;
+    font-weight:560;
+  }
+  .final-stats{
+    margin-top:35px;
+    padding-top:20px;
+    border-top:1px solid var(--line);
+    color:#6f7b74;
+    font-size:11px;
+    line-height:1.9;
+    letter-spacing:.08em;
+  }
+  #nextBtn{
+    margin-top:30px;
+    min-height:50px;
+    padding:0 22px;
+    background:transparent;
+    border:1px solid rgba(224,235,228,.31);
+    color:#d6dfd9;
+    cursor:pointer;
+    letter-spacing:.12em;
+    font-size:11px;
+  }
+  #nextMessage{
+    margin-top:17px;
+    color:#718078;
+    font-size:11px;
+    letter-spacing:.08em;
+  }
+
+  #absence{
+    position:fixed;
+    left:18px;
+    bottom:max(16px,env(safe-area-inset-bottom));
+    z-index:20;
+    max-width:min(420px,calc(100vw - 36px));
+    padding:10px 12px;
+    border-left:2px solid rgba(255,95,104,.5);
+    background:rgba(4,6,5,.82);
+    color:#87938c;
+    font-size:10px;
+    letter-spacing:.08em;
+    opacity:0;
+    transform:translateY(8px);
+    pointer-events:none;
+    transition:.25s;
+  }
+  #absence.show{opacity:1;transform:none}
+
+  @media(max-width:620px){
+    #shell{padding-left:16px;padding-right:16px}
+    .topbar{min-height:54px}
+    .status span:last-child{display:none}
+    main{padding:34px 0 50px}
+    .card{padding:25px 18px 24px}
+    #consultLabel{margin-bottom:23px}
+    #question{font-size:clamp(23px,7.2vw,32px)}
+    .answer-wrap{margin-top:32px;display:block}
+    #answer,#submit{width:100%}
+    #submit{margin-top:10px}
+    #reaction{min-height:128px;font-size:13px}
+    .meta{display:block;line-height:1.8}
+  }
+</style>
+</head>
+<body>
+<div class="bg"></div>
+<div class="noise"></div>
+<div class="vignette"></div>
+<div id="glitchFlash"></div>
+
+<div id="shell">
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark"></span>
+      <span>PHANTASMA // TESTE DE CONHECIMENTO</span>
+    </div>
+    <div class="status">
+      <span class="status-dot"></span>
+      <span>SESSÃO ATIVA</span>
+    </div>
+  </header>
+
+  <main id="quizView">
+    <div class="eyebrow">ACESSO CONCEDIDO // CONSULTA NÃO AUTORIZADA</div>
+
+    <section id="card" class="card">
+      <div id="consultLabel">CONSULTA // 01</div>
+      <h1 id="question"></h1>
+
+      <form id="form" class="answer-wrap" autocomplete="off">
+        <input id="answer" type="text" inputmode="text" autocapitalize="off" spellcheck="false"
+               placeholder="DIGITE SUA RESPOSTA" aria-label="Digite sua resposta">
+        <button id="submit" type="submit">ENVIAR</button>
+      </form>
+
+      <div id="reaction" aria-live="polite"></div>
+
+      <div class="meta">
+        <span>RESPOSTA LIVRE // VALIDAÇÃO LOCAL</span>
+        <span id="watchState">OBSERVAÇÃO // ATIVA</span>
+      </div>
+    </section>
+  </main>
+
+  <section id="final">
+    <div class="final-card">
+      <div class="final-title">TESTE // CONCLUÍDO</div>
+      <div id="finalText"></div>
+      <div id="finalStats" class="final-stats"></div>
+      <button id="nextBtn">PRÓXIMO TESTE</button>
+      <div id="nextMessage"></div>
+    </div>
+  </section>
+</div>
+
+<div id="absence">SESSÃO // AUSÊNCIA REGISTRADA</div>
+
+<audio id="sfxClick" preload="auto" src="assets/sfx/click.wav"></audio>
+<audio id="sfxError" preload="auto" src="assets/sfx/erro.wav"></audio>
+<audio id="sfxAccess" preload="auto" src="assets/sfx/acesso.wav"></audio>
+
+<script>
+(() => {
+  "use strict";
+
+  /* ==========================================================
+     PARTE II // QUIZ
+     Para conectar a PARTE III futuramente:
+     const NEXT_PAGE = "pistas.html";
+     ========================================================== */
+  const NEXT_PAGE = "";
+
+  /* ==========================================================
+     BANCO DE PERGUNTAS
+
+     O sistema embaralha este banco e escolhe 3 por sessão.
+     Quando você tiver novas perguntas, basta ADICIONAR novos
+     objetos aqui. Não precisa alterar o restante do código.
+
+     accepted = respostas aceitas após normalização.
+     type:"money200k" = valida as variações especiais da pergunta
+     do colar.
+     ========================================================== */
+  const QUESTIONS = [
+    {
+      id:"westbridge-shooter",
+      question:"Qual é o nome do atirador de Westbrigde?",
+      accepted:["luke","luke hancey"],
+      type:"text"
+    },
+    {
+      id:"charlotte-necklace",
+      question:"Qual o valor do colar que o Killian compra no leilão da Charlotte?",
+      accepted:[],
+      type:"money200k"
+    },
+    {
+      id:"ivy-capsule",
+      question:"Qual era o desenho dentro da cápsula da Ivy?",
+      accepted:["medusa"],
+      type:"text"
+    }
+  ];
+
+  const TAUNTS = {
+    correctFirst:[
+      "Hm.\nEntão você prestou atenção.\nNão se empolgue.",
+      "Certo.\nEra o mínimo, mas certo.",
+      "Uma resposta correta.\nTente não transformar isso em um evento.",
+      "Muito bem.\nAinda não estou impressionado."
+    ],
+    correctSecond:[
+      "De novo?\nEstou começando a achar isso inconveniente.",
+      "Duas respostas certas.\nQue desagradável.",
+      "Olha só.\nTalvez os livros não tenham sido apenas decoração.",
+      "Você está tornando isso menos divertido para mim."
+    ],
+    correctThird:[
+      "Que irritante.",
+      "Três respostas.\nNenhum tropeço.",
+      "Parece que subestimei você.",
+      "Três de três. Limpo.\nQue inconveniente."
+    ],
+
+    firstWrongQ1:[
+      "Ah.\nIsso foi rápido.",
+      "Nem deu tempo de eu criar expectativas.",
+      "Primeira pergunta.\nImpressionante.",
+      "Começamos muito bem.\nPara mim, pelo menos.",
+      "Você conseguiu tropeçar antes da caminhada começar."
+    ],
+    firstWrongQ2:[
+      "Estava indo tão bem.",
+      "Por alguns segundos eu quase acreditei em você.",
+      "Ah.\nA sequência perfeita durou pouco.",
+      "Uma certa, uma errada.\nVoltamos a uma realidade mais confortável."
+    ],
+    firstWrongQ3:[
+      "Sério?\nVocê chegou até aqui para errar agora?",
+      "Você chegou até aqui para errar agora?\nQue timing impecável.",
+      "Duas perfeitas e você escolhe justamente agora para desmoronar.",
+      "Tão perto.\nDeve ser irritante."
+    ],
+
+    secondWrong:[
+      "Quer que eu espere você reler os quatro livros?",
+      "Vai com calma.\nTemos todo o tempo do mundo. Aparentemente você precisa.",
+      "Segunda tentativa.\nMesmo resultado intelectual.",
+      "Talvez ler a pergunta novamente seja um começo."
+    ],
+    thirdWrong:[
+      "Posso procurar um resumo para você também.\nTalvez um com figuras.",
+      "Estamos oficialmente transformando isso numa investigação.",
+      "Você sabe que chutar repetidamente não transforma uma resposta em correta, certo?",
+      "Estou começando a achar que você leu outros quatro livros."
+    ],
+    fourthPlus:[
+      "A essa altura eu já não sei se você está tentando responder ou me entreter.",
+      "Continue.\nIsso começou como teste e virou estudo de caso.",
+      "Eu poderia diminuir a dificuldade.\nMas aí teríamos que fingir que isso ainda é um teste.",
+      "Vocês discutem esses livros com tanta convicção na internet.\nFascinante.",
+      "Quatro livros.\nQuatro.\nE ainda estamos aqui.",
+      "Não tenha pressa.\nOs segredos provavelmente conseguem esperar mais alguns minutos."
+    ],
+
+    clay:[
+      "Quer que eu chame o detetive Clay para te ajudar?",
+      "Detetive Clay teria orgulho de você.\nNão interprete isso como elogio.",
+      "Você e o detetive Clay a 500 km de distância disputando o título de mais incompetente.",
+      "A diferença entre você e o detetive Clay é que você já leu quatro livros e sabe de tudo.\nEle não.",
+      "Clay pelo menos tem a desculpa de não ter lido os quatro livros.\nQual é a sua?",
+      "Em algum lugar, o detetive Clay acabou de se sentir estranhamente competente.",
+      "Você conseguiu fazer o detetive Clay parecer eficiente.\nIsso é quase um talento.",
+      "Se continuar assim, vou chamar Clay.\nTalvez dois investigadores ruins formem um bom."
+    ],
+
+    afterFewErrors:[
+      "Aí está.\nEventualmente.",
+      "Viu?\nNão precisava tornar isso tão dramático.",
+      "Correto.\nNa segunda tentativa, mas não sejamos exigentes.",
+      "Chegou lá.\nPelo caminho turístico."
+    ],
+    afterManyErrors:[
+      "Conseguiu.\nEventualmente.",
+      "Demorou tanto que eu quase esqueci a pergunta.",
+      "Correto.\nDepois de algumas tentativas demais para eu chamar isso de conhecimento.",
+      "Persistência: excelente.\nMemória: discutível.",
+      "Tecnicamente certo.\nVamos evitar falar sobre o caminho até aqui.",
+      "Parabéns.\nVocê venceu a pergunta por exaustão.",
+      "Viu?\nNem precisei esperar você reler os quatro livros.\nSó quase."
+    ],
+
+    awayShort:[
+      "Foi dar uma volta?",
+      "Eu percebi.",
+      "Precisou pensar longe de mim?",
+      "Voltou.\nQue bom."
+    ],
+    awayLong:[
+      "Demorou.",
+      "Precisou de um tempo para… refletir?",
+      "Interessante.\nA pergunta ficou mais fácil enquanto você estava fora?",
+      "Você sabe que eu percebo quando você vai embora, certo?"
+    ],
+    awayWrong:[
+      "Você saiu, voltou e essa ainda é sua resposta?",
+      "Eu realmente esperava algum progresso depois daquela pequena excursão.",
+      "Todo aquele tempo fora para chegar exatamente no lugar errado.",
+      "Isso tornou a saída ainda mais constrangedora.",
+      "Você saiu, investigou e voltou com isso?\nDetetive Clay teria orgulho de você."
+    ],
+    awayCorrect:[
+      "Ah.\nInteressante como a resposta apareceu depois daquela pequena ausência.",
+      "Precisava apenas de alguns segundos de inspiração, imagino.",
+      "Que conveniente.",
+      "Uma pequena investigação paralela?\nClay teria orgulho.\nBem… talvez não. Ele provavelmente reclamaria primeiro."
+    ],
+    awayRepeated:[
+      "Continue entrando e saindo.\nTenho certeza de que a resposta vai aparecer magicamente.",
+      "Você pretende responder ou transformar isso em trabalho de campo?",
+      "Mais uma viagem?",
+      "Estou começando a contabilizar suas fugas.",
+      "Vai.\nEu espero.\nClaramente isso está funcionando muito bem.",
+      "Nesse ritmo, você e o detetive Clay podem abrir uma agência juntos."
+    ],
+
+    finalPerfect:[
+      "Três de três. Limpo.\nQue inconveniente.\n\nVamos ver se continua tão confiante quando conhecimento deixar de ser suficiente.",
+      "Três respostas.\nNenhum erro.\nInteressante.\n\nTalvez você realmente saiba alguma coisa sobre eles.\nNão fique confortável."
+    ],
+    finalFew:[
+      "Terminou.\nCom alguns tropeços, mas terminou.\n\nVou considerar aceitável.\nNão confunda aceitável com impressionante.",
+      "Três respostas certas.\nAlguns arranhões no caminho.\n\nPassável."
+    ],
+    finalMany:[
+      "Três respostas corretas.\nEventualmente.\n\nForam necessárias tentativas demais para eu chamar isso de conhecimento.\nMas parabéns pela persistência. Imagino.",
+      "Conseguiu.\n\nEu não diria que passou no teste.\nDiria que o teste desistiu de você.",
+      "Três respostas certas.\nDepois de transformar cada pergunta numa investigação criminal.\n\nClay teria orgulho.\nIsso não é um elogio."
+    ],
+    finalManyAway:[
+      "Finalmente.\n\nTrês respostas certas, várias tentativas e algumas pequenas excursões.\nVocê não passou por conhecimento.\nPassou por insistência.",
+      "Terminou.\n\nQuase precisei colocar Clay no caso."
+    ],
+    confidenceMilk:[
+      "Confiante, lembra?\nEnvelheceu igual leite.",
+      "Toda aquela confiança para isso?\nEnvelheceu igual leite."
+    ],
+    finalConfidenceMilk:[
+      "Lembra da confiança?\nEu lembro.\n\nEnvelheceu igual leite.\n\nMas você conseguiu.\nEventualmente."
+    ]
+  };
+
+  const $ = id => document.getElementById(id);
+  const quizView = $("quizView");
+  const finalView = $("final");
+  const card = $("card");
+  const consultLabel = $("consultLabel");
+  const questionEl = $("question");
+  const form = $("form");
+  const answer = $("answer");
+  const submit = $("submit");
+  const reaction = $("reaction");
+  const watchState = $("watchState");
+  const finalText = $("finalText");
+  const finalStats = $("finalStats");
+  const nextBtn = $("nextBtn");
+  const nextMessage = $("nextMessage");
+  const absence = $("absence");
+  const glitchFlash = $("glitchFlash");
+
+  const sfxClick = $("sfxClick");
+  const sfxError = $("sfxError");
+  const sfxAccess = $("sfxAccess");
+
+  const confidence = sessionStorage.getItem("phantasma_confianca") || "nao";
+
+  const state = {
+    current:0,
+    totalErrors:0,
+    errorsThisQuestion:0,
+    firstErrorQuestion:null,
+    totalAwayMs:0,
+    awayCount:0,
+    awayStartedAt:null,
+    awayOnCurrentQuestion:0,
+    awayMsCurrentQuestion:0,
+    returnedSinceLastAnswer:false,
+    lastReturnDuration:0,
+    busy:false,
+    used:new Set()
+  };
+
+  function shuffle(arr){
+    const a=[...arr];
+    for(let i=a.length-1;i>0;i--){
+      const j=Math.floor(Math.random()*(i+1));
+      [a[i],a[j]]=[a[j],a[i]];
+    }
+    return a;
+  }
+
+  /* Hoje existem 3 perguntas, então as três aparecem.
+     Quando o banco crescer, serão sorteadas 3 diferentes por sessão. */
+  const sessionQuestions = shuffle(QUESTIONS).slice(0,Math.min(3,QUESTIONS.length));
+
+  function normalizeText(value){
+    return value
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g,"")
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g," ");
+  }
+
+  function validateMoney200k(raw){
+    let v = normalizeText(raw)
+      .replace(/\breais?\b/g,"")
+      .replace(/r\$/g,"")
+      .replace(/\s+/g,"");
+
+    if(v === "200mil" || v === "200k") return true;
+
+    // 200000 | 200.000 | 200000,00 | 200.000,00
+    return /^200(?:\.?000)(?:,00)?$/.test(v);
+  }
+
+  function isCorrect(q,raw){
+    if(q.type === "money200k") return validateMoney200k(raw);
+    const n=normalizeText(raw);
+    return q.accepted.some(x=>normalizeText(x)===n);
+  }
+
+  function safePlay(audio,volume=.13){
+    try{
+      audio.pause();
+      audio.currentTime=0;
+      audio.volume=volume;
+      audio.play().catch(()=>{});
+    }catch(_){}
+  }
+
+  function glitch(){
+    glitchFlash.classList.remove("hit");
+    void glitchFlash.offsetWidth;
+    glitchFlash.classList.add("hit");
+  }
+
+  function pick(pool){
+    if(!pool || !pool.length) return "";
+    let candidates=pool.filter(x=>!state.used.has(x));
+    if(!candidates.length)candidates=pool;
+    const text=candidates[Math.floor(Math.random()*candidates.length)];
+    state.used.add(text);
+    return text;
+  }
+
+  function maybeClay(basePool,chance){
+    if(Math.random()<chance) return pick(TAUNTS.clay);
+    return pick(basePool);
+  }
+
+  function renderQuestion(){
+    state.errorsThisQuestion=0;
+    state.awayOnCurrentQuestion=0;
+    state.awayMsCurrentQuestion=0;
+    state.returnedSinceLastAnswer=false;
+    state.lastReturnDuration=0;
+    state.busy=false;
+
+    const q=sessionQuestions[state.current];
+    consultLabel.textContent=`CONSULTA // ${String(state.current+1).padStart(2,"0")}`;
+    questionEl.textContent=q.question;
+    reaction.textContent="";
+    reaction.className="";
+    answer.value="";
+    answer.disabled=false;
+    submit.disabled=false;
+    answer.focus();
+    watchState.textContent="OBSERVAÇÃO // ATIVA";
+  }
+
+  function wrongReaction(){
+    const position=state.current+1;
+    const justReturned=state.returnedSinceLastAnswer;
+    const awayLong=state.lastReturnDuration>=6000;
+
+    state.errorsThisQuestion++;
+    state.totalErrors++;
+
+    if(state.firstErrorQuestion===null){
+      state.firstErrorQuestion=position;
+    }
+
+    // Se acabou de voltar após tempo suficiente fora, Phantasma percebe no próximo erro.
+    if(justReturned && awayLong){
+      state.returnedSinceLastAnswer=false;
+      return pick(TAUNTS.awayWrong);
+    }
+
+    // Primeiríssimo erro da sessão.
+    if(state.totalErrors===1){
+      if(confidence==="sim"){
+        return pick(TAUNTS.confidenceMilk);
+      }
+      if(position===1)return pick(TAUNTS.firstWrongQ1);
+      if(position===2)return pick(TAUNTS.firstWrongQ2);
+      return pick(TAUNTS.firstWrongQ3);
+    }
+
+    if(state.errorsThisQuestion===1){
+      if(position===1)return pick(TAUNTS.firstWrongQ1);
+      if(position===2)return pick(TAUNTS.firstWrongQ2);
+      return pick(TAUNTS.firstWrongQ3);
+    }
+
+    if(state.errorsThisQuestion===2){
+      return maybeClay(TAUNTS.secondWrong,.20);
+    }
+
+    if(state.errorsThisQuestion===3){
+      return maybeClay(TAUNTS.thirdWrong,.32);
+    }
+
+    return maybeClay(TAUNTS.fourthPlus,.46);
+  }
+
+  function correctReaction(){
+    const position=state.current+1;
+    const justReturned=state.returnedSinceLastAnswer;
+    const awayLong=state.lastReturnDuration>=6000;
+
+    if(justReturned && awayLong){
+      state.returnedSinceLastAnswer=false;
+      return pick(TAUNTS.awayCorrect);
+    }
+
+    if(state.errorsThisQuestion===0){
+      if(position===1)return pick(TAUNTS.correctFirst);
+      if(position===2)return pick(TAUNTS.correctSecond);
+      return pick(TAUNTS.correctThird);
+    }
+
+    if(state.errorsThisQuestion>=3){
+      return maybeClay(TAUNTS.afterManyErrors,.28);
+    }
+
+    return pick(TAUNTS.afterFewErrors);
+  }
+
+  function showReaction(text,type){
+    reaction.className=type;
+    reaction.textContent=text;
+  }
+
+  function finish(){
+    quizView.classList.add("hidden");
+    finalView.classList.add("show");
+
+    let closing;
+
+    if(state.totalErrors===0){
+      closing=pick(TAUNTS.finalPerfect);
+    }else if(state.totalErrors<=2){
+      closing=pick(TAUNTS.finalFew);
+    }else if((state.awayCount>=2 || state.totalAwayMs>=12000) && Math.random()<.72){
+      closing=pick(TAUNTS.finalManyAway);
+    }else if(confidence==="sim" && state.totalErrors>=4 && Math.random()<.42){
+      closing=pick(TAUNTS.finalConfidenceMilk);
+    }else{
+      closing=pick(TAUNTS.finalMany);
+    }
+
+    finalText.textContent=closing;
+
+    const awaySeconds=Math.round(state.totalAwayMs/1000);
+    finalStats.innerHTML =
+      `ERROS REGISTRADOS // ${state.totalErrors}<br>`+
+      `AUSÊNCIAS REGISTRADAS // ${state.awayCount}`+
+      (state.awayCount ? `<br>TEMPO FORA DE FOCO // ~${awaySeconds}s` : "");
+
+    sessionStorage.setItem("phantasma_quiz_concluido","sim");
+    sessionStorage.setItem("phantasma_quiz_erros",String(state.totalErrors));
+    sessionStorage.setItem("phantasma_quiz_ausencias",String(state.awayCount));
+    sessionStorage.setItem("phantasma_quiz_tempo_fora_ms",String(state.totalAwayMs));
+
+    safePlay(sfxAccess,.11);
+    glitch();
+  }
+
+  function advance(){
+    state.current++;
+    if(state.current>=sessionQuestions.length){
+      finish();
+      return;
+    }
+    renderQuestion();
+  }
+
+  form.addEventListener("submit",e=>{
+    e.preventDefault();
+    if(state.busy)return;
+
+    const raw=answer.value.trim();
+    if(!raw){
+      showReaction("Você pretende responder ou só encarar a caixa de texto?","bad");
+      glitch();
+      return;
+    }
+
+    safePlay(sfxClick,.07);
+
+    const q=sessionQuestions[state.current];
+
+    if(isCorrect(q,raw)){
+      state.busy=true;
+      answer.disabled=true;
+      submit.disabled=true;
+      const text=correctReaction();
+      showReaction(text,"good");
+      safePlay(sfxAccess,.08);
+
+      // Phantasma controla o ritmo: próxima consulta entra sozinha.
+      setTimeout(advance,2800);
+    }else{
+      const text=wrongReaction();
+      showReaction(text,"bad");
+      safePlay(sfxError,.075);
+      glitch();
+
+      card.classList.remove("shake");
+      void card.offsetWidth;
+      card.classList.add("shake");
+
+      answer.value="";
+      answer.focus();
+    }
+
+    state.returnedSinceLastAnswer=false;
+  });
+
+  // Detecta apenas que a página ficou oculta/desfocada.
+  // NÃO sabe qual site/aba foi aberto e NÃO tenta descobrir isso.
+  document.addEventListener("visibilitychange",()=>{
+    if(document.hidden){
+      if(state.awayStartedAt===null){
+        state.awayStartedAt=Date.now();
+      }
+      watchState.textContent="OBSERVAÇÃO // SINAL PERDIDO";
+      return;
+    }
+
+    if(state.awayStartedAt!==null){
+      const duration=Math.max(0,Date.now()-state.awayStartedAt);
+      state.awayStartedAt=null;
+      state.awayCount++;
+      state.awayOnCurrentQuestion++;
+      state.awayMsCurrentQuestion+=duration;
+      state.totalAwayMs+=duration;
+      state.returnedSinceLastAnswer=true;
+      state.lastReturnDuration=duration;
+
+      watchState.textContent="OBSERVAÇÃO // REESTABELECIDA";
+
+      absence.classList.add("show");
+      clearTimeout(absence._timer);
+      absence._timer=setTimeout(()=>absence.classList.remove("show"),1500);
+
+      // Se a pessoa ficar entrando e saindo várias vezes antes de responder,
+      // Phantasma pode comentar sem afirmar para onde ela foi.
+      if(state.awayOnCurrentQuestion>=2 && !state.busy){
+        setTimeout(()=>{
+          if(!state.busy){
+            showReaction(pick(TAUNTS.awayRepeated),"bad");
+          }
+        },450);
+      }
+    }
+  });
+
+  window.addEventListener("blur",()=>{
+    // visibilitychange é a fonte principal. blur serve somente como fallback
+    // em navegadores que não ocultam a aba imediatamente.
+    if(!document.hidden && state.awayStartedAt===null){
+      state.awayStartedAt=Date.now();
+    }
+  });
+
+  window.addEventListener("focus",()=>{
+    if(!document.hidden && state.awayStartedAt!==null){
+      const duration=Math.max(0,Date.now()-state.awayStartedAt);
+      state.awayStartedAt=null;
+
+      // Evita registrar microtrocas acidentais menores que 350 ms.
+      if(duration>=350){
+        state.awayCount++;
+        state.awayOnCurrentQuestion++;
+        state.awayMsCurrentQuestion+=duration;
+        state.totalAwayMs+=duration;
+        state.returnedSinceLastAnswer=true;
+        state.lastReturnDuration=duration;
+      }
+    }
+  });
+
+  nextBtn.addEventListener("click",()=>{
+    safePlay(sfxClick,.07);
+    if(NEXT_PAGE){
+      location.href=NEXT_PAGE;
+    }else{
+      nextMessage.textContent="PARTE III // AINDA NÃO CONECTADA";
+    }
+  });
+
+  // Impede revelar no layout quantas perguntas existem.
+  // O número da consulta cresce, mas não existe “1/3”.
+  renderQuestion();
+})();
+</script>
+</body>
+</html>
