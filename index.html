@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
 <title>Ilustrações C4 - Drive</title>
-<!-- PHANTASMA // PARTE I // V3.8 // AUDIO AUTOMATICO APOS PRIMEIRO CLIQUE -->
+<!-- PHANTASMA // PARTE I // V3.9 // GLITCH APOS PROCESSAMENTO + NARRACAO LIMPA -->
 <style>
 :root{
   --g-bg:#f8fafd;--g-panel:#fff;--g-text:#1f1f1f;--g-muted:#5f6368;
@@ -721,18 +721,30 @@ body.cine-hard #drive{
       if(audioCtx.state==="suspended")await audioCtx.resume();
     }catch(e){}
 
+    // Só autoriza a mídia. O falso Drive permanece silencioso e intacto.
     await primeNarration();
-    startNoiseBed();
-    startProcessorBed();
-    startHackSynth("drive");
 
     try{
-      sfxAmbient.volume=.055;
-      await sfxAmbient.play();
+      sfxAmbient.pause();
+      sfxAmbient.currentTime=0;
     }catch(e){}
   }
 
   async function startNarrationAutomatically(){
+    // Remove toda a camada agressiva antes da voz.
+    stopHackSynth();
+    clearTimeout(machineTimer);
+    stopProcessorBed();
+
+    try{
+      sfxAmbient.pause();
+      sfxAmbient.currentTime=0;
+    }catch(e){}
+
+    // Durante a narração fica apenas uma estática discreta.
+    startNoiseBed();
+    if(noiseGain)noiseGain.gain.value=.0045;
+
     narration.pause();
     narration.currentTime=0;
     narration.volume=1;
@@ -748,8 +760,6 @@ body.cine-hard #drive{
       }
     }
 
-    setSoundPhase("narration");
-    startHackSynth("narration");
     startPhotoStream();
     caption.textContent="";
     caption.style.opacity=0;
@@ -787,52 +797,88 @@ body.cine-hard #drive{
     if(started)return;
     started=true;
     modal.classList.add("hidden");
-    setSoundPhase("hack");
-    startNoiseBed();
-    startHackSynth("hack");
 
-    document.body.classList.add("hacking");
-    showToast("Atividade incomum detectada.",1050);
-    logHUD([{t:"> conexão externa detectada"},{t:"> origem: não identificada",dim:true}]);
-    cinematicGlitchBurst(drive,.48);
+    // 1) PRIMEIRO O PROCESSAMENTO.
+    // O Drive ainda não recebe glitch visual neste instante.
+    logHUD([
+      {t:"> PROCESSO EXTERNO DETECTADO"},
+      {t:"> verificando sessão compartilhada...",dim:true},
+      {t:"> analisando permissões...",dim:true}
+    ]);
+    showToast("Processando solicitação...",900);
+
+    // O som de máquina começa aqui, não no primeiro clique do Drive.
+    startNoiseBed();
+    if(noiseGain)noiseGain.gain.value=.007;
+    startProcessorBed();
+    startHackSynth("hack");
+    try{
+      sfxAmbient.volume=.065;
+      sfxAmbient.play().catch(()=>{});
+    }catch(e){}
+
+    // 2) SÓ DEPOIS o primeiro impacto visual.
+    setTimeout(()=>{
+      document.body.classList.add("hacking");
+      cinematicGlitchBurst(drive,.44);
+      logHUD([
+        {t:"> PROCESSO EXTERNO DETECTADO"},
+        {t:"> sessão local interceptada"},
+        {t:"> origem: não identificada",dim:true}
+      ]);
+    },650);
 
     setTimeout(()=>{
-      cinematicGlitchBurst(drive,.72);
+      cinematicGlitchBurst(drive,.66);
       searchBox.classList.add("hacked");
       document.querySelectorAll(".filename").forEach((n,i)=>n.textContent=scrambleNames[i%scrambleNames.length]);
-      logHUD([{t:"> conexão externa detectada"},{t:"> sessão local interceptada"},{t:"> tentando bloquear origem...",bad:true}]);
-    },620);
+      logHUD([
+        {t:"> sessão local interceptada"},
+        {t:"> bloqueando origem...",bad:true},
+        {t:"> resposta do sistema: INSUFICIENTE",bad:true}
+      ]);
+    },1220);
 
     setTimeout(()=>{
-      playSfx(sfxError,.18,.92);
+      playSfx(sfxError,.07,.95);
       owners.forEach(o=>o.textContent="—");
-      cinematicGlitchBurst(drive,.88);
-      showToast("Este conteúdo foi modificado por outro usuário.",1300);
-      logHUD([{t:"> sessão local interceptada"},{t:"> bloqueio de segurança: FALHOU",bad:true},{t:"> alterando permissões..."}]);
-    },1320);
+      cinematicGlitchBurst(drive,.80);
+      showToast("Permissões alteradas por outro processo.",1050);
+      logHUD([
+        {t:"> proteção local comprometida",bad:true},
+        {t:"> alterando permissões..."},
+        {t:"> proprietário: removendo...",bad:true}
+      ]);
+    },1800);
 
     setTimeout(()=>{
       owners.forEach(o=>o.textContent="PHANTASMA");
-      drive.style.filter="brightness(.58) contrast(1.45) saturate(.35)";
-      cinematicGlitchBurst(drive,1.20);
-      logHUD([{t:"> proprietário original removido",bad:true},{t:"> novo processo: PHANTASMA"},{t:"> aquisição de controle em andamento..."}]);
-    },2070);
+      drive.style.filter="brightness(.64) contrast(1.34) saturate(.46)";
+      cinematicGlitchBurst(drive,1.00);
+      logHUD([
+        {t:"> proprietário original removido",bad:true},
+        {t:"> novo processo: PHANTASMA"},
+        {t:"> aquisição de controle em andamento..."}
+      ]);
+    },2380);
 
     setTimeout(()=>{
-      playSfx(sfxAccess,.34,.84);
-      cinematicGlitchBurst(drive,1.45);
-      frameBlack.classList.remove("hit");void frameBlack.offsetWidth;frameBlack.classList.add("hit");
-    },2700);
+      playSfx(sfxAccess,.12,.88);
+      cinematicGlitchBurst(drive,1.14);
+      frameBlack.classList.remove("hit");
+      void frameBlack.offsetWidth;
+      frameBlack.classList.add("hit");
+    },2900);
 
     setTimeout(()=>{
       document.body.classList.remove("hacking");
       hackHUD.classList.remove("show");
       takeover.classList.add("active");
       setSoundPhase("takeover");
-      takeoverGlitch(1);
+      takeoverGlitch(.76);
       scheduleRandomTakeoverGlitches();
       startSystemTakeover();
-    },3100);
+    },3260);
   }
 
   function addLog(text,bad=false){
@@ -929,7 +975,7 @@ body.cine-hard #drive{
       audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)();
       const now=audioCtx.currentTime,b=audioCtx.createBuffer(1,audioCtx.sampleRate*.05,audioCtx.sampleRate),d=b.getChannelData(0);
       for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*(1-i/d.length);
-      const s=audioCtx.createBufferSource(),g=audioCtx.createGain(),hp=audioCtx.createBiquadFilter();s.buffer=b;hp.type="highpass";hp.frequency.value=1000;g.gain.setValueAtTime(.13,now);g.gain.exponentialRampToValueAtTime(.001,now+.055);s.connect(hp).connect(g).connect(audioCtx.destination);s.start(now);
+      const s=audioCtx.createBufferSource(),g=audioCtx.createGain(),hp=audioCtx.createBiquadFilter();s.buffer=b;hp.type="highpass";hp.frequency.value=1000;g.gain.setValueAtTime(.075,now);g.gain.exponentialRampToValueAtTime(.001,now+.055);s.connect(hp).connect(g).connect(audioCtx.destination);s.start(now);
     }catch(e){}
   }
   function cameraFlash(){flash.classList.remove("flashgo");void flash.offsetWidth;flash.classList.add("flashgo");shutter()}
@@ -954,16 +1000,7 @@ body.cine-hard #drive{
     requestAnimationFrame(()=>card.classList.add("live"));
     cameraFlash();
 
-    // Glitch pontual, não constante: mais cinematográfico e menos "filtro barato".
-    if(index>0 && index%5===0){
-      setTimeout(()=>{
-        card.classList.remove("signal-hit");
-        void card.offsetWidth;
-        card.classList.add("signal-hit");
-        playSfx(sfxGlitch,.045,.95+Math.random()*.16);
-        setTimeout(()=>card.classList.remove("signal-hit"),280);
-      },120);
-    }
+    // Na narração: somente flash + obturador.
   }
 
   function clearPhotoTimers(){
@@ -1010,6 +1047,7 @@ body.cine-hard #drive{
 
   async function startTransmission(){
     systemStage.style.display="none";
+    clearTimeout(randomGlitchTimer);
     transmission.classList.add("active");
     endcard.classList.remove("active");
     resetPile();
@@ -1104,11 +1142,20 @@ body.cine-hard #drive{
       stopProcessorBed();
       stopNoiseBed();
     }else{
-      sfxAmbient.play().catch(()=>{});
       startNoiseBed();
-      startProcessorBed();
-      startHackSynth(transmission.classList.contains("active")?"narration":"hack");
-      setSoundPhase(transmission.classList.contains("active")?"narration":"takeover");
+
+      if(transmission.classList.contains("active")){
+        if(noiseGain)noiseGain.gain.value=.0045;
+        narration.muted=false;
+      }else{
+        try{
+          sfxAmbient.volume=.065;
+          sfxAmbient.play().catch(()=>{});
+        }catch(e){}
+        startProcessorBed();
+        startHackSynth("hack");
+        setSoundPhase("takeover");
+      }
     }
   });
   replayBtn.addEventListener("click",()=>{endcard.classList.remove("active");transmission.classList.add("active");resetPile();narration.currentTime=0;narration.play()});
