@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
 <title>Ilustrações C4 - Drive</title>
-<!-- PHANTASMA // PARTE I // V3.1 // LOGO CORRIGIDO -->
+<!-- PHANTASMA // PARTE I // V3.2 // SINCRONIZAÇÃO CORRIGIDA -->
 <style>
 :root{
   --g-bg:#f8fafd;--g-panel:#fff;--g-text:#1f1f1f;--g-muted:#5f6368;
@@ -338,21 +338,24 @@ body.hacking .file:nth-child(odd){animation:cardHack .27s steps(2) infinite}
   }drawMatrix();
 
   const CAPTIONS=[
-    {s:.46,e:1.60,t:"Engraçado..."},
-    {s:2.86,e:5.76,t:"Vocês realmente acreditam que sabem tudo sobre eles."},
-    {s:5.92,e:7.42,t:"Os Cisnes."},
-    {s:8.86,e:10.05,t:"Conhecem as histórias."},
-    {s:11.60,e:13.28,t:"Conhecem as versões que escolheram contar."},
-    {s:14.52,e:17.65,t:"Mas segredos..."},
-    {s:19.28,e:20.62,t:"Segredos nunca desaparecem."},
-    {s:22.98,e:25.52,t:"Alguns apenas esperam pela pessoa certa para encontrá-los."},
-    {s:28.12,e:32.42,t:"E parece que..."},
-    {s:35.02,e:37.05,t:"Essa pessoa pode ser você."},
-    {s:38.82,e:40.18,t:"Um arquivo foi disponibilizado."},
-    {s:43.06,e:45.50,t:"Vamos ver quantos de vocês conseguem chegar até o final."},
-    {s:47.38,e:51.35,t:"Vamos ver quantos de vocês conseguem chegar até o final."},
-    {s:53.76,e:54.90,t:"Boa sorte."},
-    {s:57.46,e:59.24,t:"Eu estarei observando."}
+    // Tempos corrigidos a partir dos blocos reais de fala do áudio V3A.
+    {s:.47,e:1.55,t:"Engraçado..."},
+    {s:2.86,e:5.67,t:"Vocês realmente acreditam que sabem tudo sobre eles."},
+    {s:5.98,e:7.32,t:"Os Cisnes."},
+    {s:8.92,e:9.93,t:"Conhecem as histórias."},
+
+    // Esta frase tem uma pausa interna longa no próprio áudio.
+    {s:11.69,e:17.46,t:"Conhecem as versões que escolheram contar."},
+
+    {s:19.36,e:20.49,t:"Mas segredos..."},
+    {s:23.07,e:25.36,t:"Segredos nunca desaparecem."},
+    {s:28.24,e:32.26,t:"Alguns apenas esperam pela pessoa certa para encontrá-los."},
+    {s:35.15,e:36.90,t:"E parece que..."},
+    {s:38.93,e:40.00,t:"Essa pessoa pode ser você."},
+    {s:43.19,e:45.27,t:"Um arquivo foi disponibilizado."},
+    {s:47.49,e:51.11,t:"Vamos ver quantos de vocês conseguem chegar até o final."},
+    {s:53.91,e:54.72,t:"Boa sorte."},
+    {s:57.58,e:59.06,t:"Eu estarei observando."}
   ];
 
   const PHOTOS=[

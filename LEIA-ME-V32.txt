@@ -1,0 +1,28 @@
+PHANTASMA // PARTE I // V3.2
+
+CORREÇÃO DE SINCRONIZAÇÃO
+
+O problema não era um simples atraso geral.
+O áudio possui 15 blocos de voz, embora o roteiro tenha 14 frases.
+A frase:
+
+"Conhecem as versões que escolheram contar."
+
+possui uma pausa interna longa no arquivo de áudio.
+
+Na versão anterior essa segunda parte estava sendo interpretada como o início de:
+"Mas segredos..."
+
+Isso deslocava praticamente todas as legendas seguintes.
+
+A V3.2 corrige o mapeamento e também remove a duplicação de:
+"Vamos ver quantos de vocês conseguem chegar até o final."
+
+ONDE SUBSTITUIR:
+Somente index.html.
+
+Não precisa substituir:
+- assets/fotos/
+- assets/audio/
+- assets/drive-logo.png
+- assets/phantasma-bg.jpg
