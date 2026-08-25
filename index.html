@@ -596,6 +596,110 @@ body.cine-hard #drive{
   }
 }
 
+
+  /* V47 // fundo binário em movimento */
+  #binaryRainStage{
+    position:fixed;
+    inset:0;
+    z-index:1;
+    pointer-events:none;
+    opacity:.18;
+    mix-blend-mode:screen;
+    filter:blur(.15px);
+  }
+
+  /* V47 // transição para o quiz */
+  #unlockTransition{
+    position:fixed;
+    inset:0;
+    z-index:9999;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+    background:
+      radial-gradient(circle at 50% 40%, rgba(20,35,28,.26), transparent 38%),
+      rgba(2,6,4,.96);
+    opacity:0;
+    visibility:hidden;
+    pointer-events:none;
+    transition:opacity .35s ease, visibility .35s ease;
+    backdrop-filter:blur(8px);
+  }
+  #unlockTransition.show{
+    opacity:1;
+    visibility:visible;
+    pointer-events:auto;
+  }
+  .unlock-panel{
+    width:min(620px, calc(100vw - 32px));
+    border:1px solid rgba(142, 255, 198, .16);
+    background:linear-gradient(180deg, rgba(5,10,8,.92), rgba(3,7,5,.86));
+    box-shadow:0 22px 80px rgba(0,0,0,.52), inset 0 0 0 1px rgba(255,255,255,.02);
+    padding:28px 24px 24px;
+    position:relative;
+    overflow:hidden;
+  }
+  .unlock-panel::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:
+      linear-gradient(transparent 0 96%, rgba(255,255,255,.025) 96% 100%);
+    background-size:100% 4px;
+    opacity:.18;
+    pointer-events:none;
+  }
+  .unlock-kicker{
+    font-size:11px;
+    letter-spacing:.26em;
+    text-transform:uppercase;
+    color:rgba(213,230,220,.54);
+    margin-bottom:14px;
+  }
+  .unlock-title{
+    margin:0 0 10px 0;
+    font-size:clamp(28px, 5vw, 52px);
+    line-height:1;
+    letter-spacing:.06em;
+    font-weight:800;
+    color:#ecf6ef;
+    text-transform:uppercase;
+    text-shadow:0 0 24px rgba(117,255,181,.08);
+  }
+  .unlock-sub{
+    margin:0 0 22px 0;
+    color:rgba(213,230,220,.62);
+    font-size:13px;
+    letter-spacing:.08em;
+    line-height:1.6;
+  }
+  .unlock-bar{
+    width:100%;
+    height:10px;
+    border:1px solid rgba(213,230,220,.12);
+    background:rgba(255,255,255,.04);
+    overflow:hidden;
+    position:relative;
+  }
+  .unlock-fill{
+    width:0%;
+    height:100%;
+    background:linear-gradient(90deg, #d9e7dd 0%, #95ffc1 55%, #d9e7dd 100%);
+    box-shadow:0 0 24px rgba(149,255,193,.22);
+    transition:width 1.85s cubic-bezier(.2,.8,.2,1);
+  }
+  .unlock-meta{
+    margin-top:12px;
+    display:flex;
+    justify-content:space-between;
+    gap:12px;
+    font-size:11px;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    color:rgba(213,230,220,.44);
+  }
+
 </style>
 </head>
 <body>
@@ -1612,6 +1716,90 @@ body.cine-hard #drive{
   });
   replayBtn.addEventListener("click",()=>{endcard.classList.remove("active");transmission.classList.add("active");resetPile();narration.currentTime=0;narration.play()});
 })();
+
+  /* =========================
+     V47 // fundo binário
+     ========================= */
+  const binaryCanvas = document.getElementById('binaryRainStage');
+  const binaryCtx = binaryCanvas ? binaryCanvas.getContext('2d') : null;
+  let binaryCols = [];
+  function sizeBinaryCanvas(){
+    if(!binaryCanvas || !binaryCtx) return;
+    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+    binaryCanvas.width = Math.floor(window.innerWidth * dpr);
+    binaryCanvas.height = Math.floor(window.innerHeight * dpr);
+    binaryCanvas.style.width = window.innerWidth + 'px';
+    binaryCanvas.style.height = window.innerHeight + 'px';
+    binaryCtx.setTransform(dpr,0,0,dpr,0,0);
+    const fontSize = Math.max(12, Math.min(18, window.innerWidth / 95));
+    const columns = Math.floor(window.innerWidth / fontSize);
+    binaryCols = Array.from({length: columns}, () => ({
+      y: Math.random() * window.innerHeight,
+      speed: 0.8 + Math.random() * 2.1,
+      char: Math.random() > 0.5 ? '1' : '0',
+      alpha: 0.08 + Math.random() * 0.18,
+      size: fontSize * (0.85 + Math.random() * 0.3)
+    }));
+  }
+  function drawBinaryRain(){
+    if(!binaryCanvas || !binaryCtx) return;
+    binaryCtx.clearRect(0,0,window.innerWidth,window.innerHeight);
+    binaryCtx.fillStyle = 'rgba(4,10,7,0.14)';
+    binaryCtx.fillRect(0,0,window.innerWidth,window.innerHeight);
+
+    binaryCols.forEach((col, i) => {
+      binaryCtx.font = `${col.size}px monospace`;
+      binaryCtx.fillStyle = `rgba(154,255,201,${col.alpha})`;
+      const x = i * Math.max(12, Math.min(18, window.innerWidth / 95));
+      binaryCtx.fillText(Math.random() > 0.5 ? '1' : '0', x, col.y);
+      col.y += col.speed;
+      if (col.y > window.innerHeight + 20) {
+        col.y = -20;
+        col.speed = 0.8 + Math.random() * 2.1;
+        col.alpha = 0.08 + Math.random() * 0.18;
+      }
+    });
+    requestAnimationFrame(drawBinaryRain);
+  }
+  sizeBinaryCanvas();
+  drawBinaryRain();
+  window.addEventListener('resize', sizeBinaryCanvas);
+
+  /* =========================
+     V47 // transição para o quiz
+     ========================= */
+  let __phantasmaUnlocking = false;
+  function startQuizUnlockTransition(){
+    if(__phantasmaUnlocking) return;
+    __phantasmaUnlocking = true;
+    const overlay = document.getElementById('unlockTransition');
+    const fill = document.getElementById('unlockFill');
+    const percent = document.getElementById('unlockPercent');
+    if(!overlay){
+      startQuizUnlockTransition();
+      return;
+    }
+    overlay.classList.add('show');
+
+    let p = 0;
+    const tick = setInterval(() => {
+      p += (p < 60 ? 7 : p < 85 ? 4 : 2);
+      if(p > 100) p = 100;
+      if(fill) fill.style.width = p + '%';
+      if(percent) percent.textContent = p + '%';
+      if(p >= 100) clearInterval(tick);
+    }, 90);
+
+    setTimeout(() => {
+      if(fill) fill.style.width = '100%';
+      if(percent) percent.textContent = '100%';
+    }, 80);
+
+    setTimeout(() => {
+      startQuizUnlockTransition();
+    }, 2100);
+  }
+
 </script>
 </body>
 </html>
