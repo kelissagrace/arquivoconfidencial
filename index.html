@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
 <title>Ilustrações C4 - Drive</title>
+<!-- PHANTASMA // PARTE I // V3.1 // LOGO CORRIGIDO -->
 <style>
 :root{
   --g-bg:#f8fafd;--g-panel:#fff;--g-text:#1f1f1f;--g-muted:#5f6368;
@@ -21,11 +22,8 @@ button,input{font:inherit}button{cursor:pointer}.hidden{display:none!important}
 }
 #boot.done{opacity:0;visibility:hidden}
 .bootbox{text-align:center;color:#5f6368}
-.bootlogo{width:58px;height:52px;margin:0 auto 19px;position:relative}
-.bootlogo:before,.bootlogo:after,.bootlogo i{content:"";position:absolute;border-radius:5px;transform:skew(-28deg)}
-.bootlogo:before{width:18px;height:48px;left:5px;top:0;background:#0f9d58}
-.bootlogo:after{width:18px;height:48px;left:31px;top:0;background:#4285f4}
-.bootlogo i{width:45px;height:17px;left:4px;top:31px;background:#fbbc04;transform:skew(28deg)}
+.bootlogo{width:64px;height:58px;margin:0 auto 19px;display:grid;place-items:center}
+.bootlogo img{width:56px;height:54px;object-fit:contain;display:block}
 .boottitle{font-size:18px;color:#3c4043;margin-bottom:7px}
 .bootsub{font-size:13px}
 .bootdots{height:4px;width:160px;background:#e7eaee;border-radius:5px;overflow:hidden;margin:19px auto 0}
@@ -37,8 +35,8 @@ button,input{font:inherit}button{cursor:pointer}.hidden{display:none!important}
 #drive.ready{opacity:1}
 .drive-top{display:grid;grid-template-columns:220px minmax(260px,720px) 1fr;gap:18px;align-items:center;padding:10px 18px;background:#fff;border-bottom:1px solid #eef1f4}
 .brand{display:flex;align-items:center;gap:10px;font-size:22px;color:#4b4f52}
-.mark{width:34px;height:30px;position:relative}.mark:before,.mark:after,.mark i{content:"";position:absolute;border-radius:3px;transform:skew(-28deg)}
-.mark:before{width:11px;height:28px;left:4px;top:1px;background:#0f9d58}.mark:after{width:11px;height:28px;left:18px;top:1px;background:#4285f4}.mark i{width:27px;height:10px;left:3px;top:18px;background:#fbbc04;transform:skew(28deg)}
+.mark{width:38px;height:34px;display:grid;place-items:center}
+.mark img{width:34px;height:32px;object-fit:contain;display:block}
 .search{height:48px;border-radius:24px;background:#edf2fa;display:flex;align-items:center;padding:0 18px;color:#5f6368;gap:12px;position:relative;overflow:hidden}
 .search input{border:0;outline:0;background:transparent;width:100%;font-size:16px;color:#303134}
 .top-icons{display:flex;justify-content:flex-end;gap:12px;align-items:center;color:#5f6368;font-size:20px}.avatar{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#6f42c1;color:white;font-size:13px;font-weight:700}
@@ -145,7 +143,7 @@ body.hacking .file:nth-child(odd){animation:cardHack .27s steps(2) infinite}
 
 <div id="boot">
   <div class="bootbox">
-    <div class="bootlogo"><i></i></div>
+    <div class="bootlogo"><img src="assets/drive-logo.png" alt=""></div>
     <div class="boottitle">Abrindo “Ilustrações C4”</div>
     <div class="bootsub">Preparando visualização compartilhada...</div>
     <div class="bootdots"></div>
@@ -159,7 +157,7 @@ body.hacking .file:nth-child(odd){animation:cardHack .27s steps(2) infinite}
 
 <main id="drive">
   <header class="drive-top">
-    <div class="brand"><div class="mark"><i></i></div><span>Drive</span></div>
+    <div class="brand"><div class="mark"><img src="assets/drive-logo.png" alt=""></div><span>Drive</span></div>
     <label id="searchBox" class="search">⌕ <input id="searchInput" aria-label="Pesquisar" placeholder="Pesquisar no Drive"></label>
     <div class="top-icons"><span class="hide-mobile">?</span><span class="hide-mobile">⚙</span><span class="avatar">M</span></div>
   </header>
