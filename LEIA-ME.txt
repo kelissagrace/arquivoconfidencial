@@ -1,34 +1,30 @@
-PHANTASMA // PARTE I — ABERTURA NARRADA // V2
+PHANTASMA // PARTE I — V3
 
-CORREÇÕES DA V2
-1. IMAGENS FORA DE QUADRO
-   A imagem inteira agora é preservada.
-   O fundo usa a própria imagem ampliada e desfocada.
+MUDANÇAS
+- Tela de carregamento falsa antes do Drive aparecer.
+- Invasão muito mais visível: ruído, cortes horizontais, tremida, nomes corrompidos, HUD e perda de permissões.
+- Tomada do sistema usa o antigo phantasma-bg.jpg + Matrix + glitch.
+- Fotos não ocupam mais a tela inteira.
+- Cada foto entra no tamanho/proporção original dentro de um card.
+- Ao ser descartada, fica em preto e branco e permanece acumulada na tela.
+- As fotos seguintes vão se empilhando por cima.
+- Narração V3A mantida.
 
-2. LEGENDA X ÁUDIO
-   As legendas agora usam os tempos reais dos blocos de fala do áudio.
-   Os tempos estão documentados em SINCRONIZACAO.txt.
+ONDE SUBSTITUIR
+No repositório de teste, substitua:
+1. index.html
+2. assets/fotos/ (pasta inteira)
+3. adicione assets/phantasma-bg.jpg
 
-3. NOVAS FOTOS
-   Esta versão usa o novo acervo enviado.
-
-ONDE SUBSTITUIR NO REPOSITÓRIO DE TESTE
-Substitua:
-- index.html
-- a pasta inteira assets/fotos/
-
-O áudio continua sendo:
+O áudio continua:
 assets/audio/phantasma-abertura.mp3
 
-Se o arquivo de áudio já está correto no GitHub, você não precisa substituí-lo.
+Se ele já existe e está correto, não precisa substituir.
 
-IMPORTANTE
-Mantenha os nomes das fotos exatamente como estão no ZIP.
-
-NÚMERO DE TENTATIVAS ANTES DA INVASÃO
-No index.html:
+CLICKS ANTES DA INVASÃO
+Procure no index.html:
 const ATTEMPTS_BEFORE_HACK = 2;
 
-FUTURA PARTE II
-Quando quiz.html existir:
-const NEXT_PAGE = "quiz.html";
+DOMÍNIO
+O código pode camuflar o visual, título e carregamento, mas não pode fazer a barra do navegador mostrar drive.google.com.
+Quando quiser esconder o endereço github.io, use um domínio próprio ou um link curto do projeto.

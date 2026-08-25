@@ -1,0 +1,8 @@
+PHANTASMA // V3 // LEGENDA E FOTO
+
+A legenda é controlada diretamente por narration.currentTime.
+As fotos usam uma linha do tempo separada, também baseada no mesmo áudio.
+Isso evita que animações atrasem a legenda.
+
+Se depois quiser ajustar uma frase, procure const CAPTIONS.
+Se quiser ajustar a entrada de uma foto, procure const PHOTOS e altere o valor t:.
