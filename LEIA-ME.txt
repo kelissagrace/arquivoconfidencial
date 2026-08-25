@@ -1,0 +1,45 @@
+PHANTASMA // PARTE I — ABERTURA NARRADA // V1
+
+O QUE ESTA VERSÃO FAZ
+- Simula uma pasta estilo Google Drive em desktop e mobile.
+- A pasta começa normal.
+- Após 2 tentativas de abrir arquivos, ocorre a invasão.
+- O proprietário muda de MIA SALVANI para PHANTASMA.
+- A interface escurece e inicia a narração V3A aprovada.
+- As fotos aparecem sincronizadas como registros de vigilância.
+- Há flash, som de obturador, zoom, metadados e legendas.
+- No fim, a tela aguarda a futura Parte II.
+
+ONDE SUBIR
+Esta versão foi criada para TESTE DA PARTE I.
+Crie um repo separado ou uma pasta separada e envie TODO o conteúdo desta pasta mantendo:
+
+index.html
+assets/
+  audio/
+  fotos/
+
+NÃO envie apenas index.html, porque ele precisa das fotos e do áudio.
+
+AJUSTE MANUAL — NÚMERO DE TENTATIVAS
+Abra index.html e procure:
+
+const ATTEMPTS_BEFORE_HACK = 2;
+
+Troque 2 pelo número desejado.
+
+AJUSTE MANUAL — CONECTAR AO QUIZ NO FUTURO
+Procure:
+
+const NEXT_PAGE = "";
+
+Quando quiz.html existir, troque para:
+
+const NEXT_PAGE = "quiz.html";
+
+ÁUDIO
+Arquivo usado:
+assets/audio/phantasma-abertura.mp3
+
+OBSERVAÇÃO
+O áudio só começa depois da interação do visitante com um arquivo, respeitando a política de autoplay dos navegadores.
