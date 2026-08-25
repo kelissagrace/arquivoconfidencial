@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
 <title>Ilustrações C4 - Drive</title>
-<!-- PHANTASMA // PARTE I // V4.2 // MOBILE CENTRALIZADO -->
+<!-- PHANTASMA // PARTE I // V4.4 // INVASAO MAIS LENTA -->
 <style>
 :root{
   --g-bg:#f8fafd;--g-panel:#fff;--g-text:#1f1f1f;--g-muted:#5f6368;
@@ -285,12 +285,13 @@ body.cine-hard #drive{
     width:100%;
     height:100%;
     overflow:hidden;
+    transform:none;
   }
   .photo-card{
     left:50%!important;
     top:50%!important;
-    max-width:58vw;
-    max-height:58dvh;
+    max-width:54vw;
+    max-height:56dvh;
     padding:6px 6px 25px;
     transform-origin:center center;
   }
@@ -1018,78 +1019,77 @@ body.cine-hard #drive{
     started=true;
     modal.classList.add("hidden");
 
-    // 1) PRIMEIRO O PROCESSAMENTO.
-    // O Drive ainda não recebe glitch visual neste instante.
+    // FASE 1 — processamento externo visível por mais tempo.
     logHUD([
       {t:"> PROCESSO EXTERNO DETECTADO"},
       {t:"> verificando sessão compartilhada...",dim:true},
       {t:"> analisando permissões...",dim:true}
     ]);
-    showToast("Processando solicitação...",900);
+    showToast("Processando solicitação...",1400);
 
-    // O som de máquina começa aqui, não no primeiro clique do Drive.
     startNoiseBed();
     if(noiseGain)noiseGain.gain.value=.007;
     startProcessorBed();
     startHackSynth("hack");
-    try{
-      sfxAmbient.volume=.065;
-      sfxAmbient.play().catch(()=>{});
-    }catch(e){}
 
-    // 2) SÓ DEPOIS o primeiro impacto visual.
+    // FASE 2 — primeiro sinal de interferência.
     setTimeout(()=>{
       document.body.classList.add("hacking");
-      cinematicGlitchBurst(drive,.44);
+      cinematicGlitchBurst(drive,.42);
       logHUD([
         {t:"> PROCESSO EXTERNO DETECTADO"},
         {t:"> sessão local interceptada"},
         {t:"> origem: não identificada",dim:true}
       ]);
-    },650);
+    },1400);
 
+    // FASE 3 — tentativa de bloqueio.
     setTimeout(()=>{
-      cinematicGlitchBurst(drive,.66);
+      cinematicGlitchBurst(drive,.62);
       searchBox.classList.add("hacked");
       document.querySelectorAll(".filename").forEach((n,i)=>n.textContent=scrambleNames[i%scrambleNames.length]);
       logHUD([
         {t:"> sessão local interceptada"},
-        {t:"> bloqueando origem...",bad:true},
+        {t:"> tentando bloquear origem...",bad:true},
         {t:"> resposta do sistema: INSUFICIENTE",bad:true}
       ]);
-    },1220);
+    },2700);
 
+    // FASE 4 — permissões comprometidas.
     setTimeout(()=>{
       playSfx(sfxError,.07,.95);
       owners.forEach(o=>o.textContent="—");
-      cinematicGlitchBurst(drive,.80);
-      showToast("Permissões alteradas por outro processo.",1050);
+      cinematicGlitchBurst(drive,.78);
+      showToast("Permissões alteradas por outro processo.",1400);
       logHUD([
         {t:"> proteção local comprometida",bad:true},
         {t:"> alterando permissões..."},
         {t:"> proprietário: removendo...",bad:true}
       ]);
-    },1800);
+    },4100);
 
+    // FASE 5 — Phantasma aparece como proprietário.
     setTimeout(()=>{
       owners.forEach(o=>o.textContent="PHANTASMA");
       drive.style.filter="brightness(.64) contrast(1.34) saturate(.46)";
-      cinematicGlitchBurst(drive,1.00);
+      cinematicGlitchBurst(drive,.98);
       logHUD([
         {t:"> proprietário original removido",bad:true},
         {t:"> novo processo: PHANTASMA"},
         {t:"> aquisição de controle em andamento..."}
       ]);
-    },2380);
+    },5600);
 
+    // FASE 6 — impacto final antes da tomada completa.
     setTimeout(()=>{
       playSfx(sfxAccess,.12,.88);
-      cinematicGlitchBurst(drive,1.14);
+      cinematicGlitchBurst(drive,1.12);
       frameBlack.classList.remove("hit");
       void frameBlack.offsetWidth;
       frameBlack.classList.add("hit");
-    },2900);
+    },6900);
 
+    // FASE 7 — transição para o painel de controle tomado.
     setTimeout(()=>{
       document.body.classList.remove("hacking");
       hackHUD.classList.remove("show");
@@ -1098,7 +1098,7 @@ body.cine-hard #drive{
       takeoverGlitch(.76);
       scheduleRandomTakeoverGlitches();
       startSystemTakeover();
-    },3260);
+    },7600);
   }
 
   function addLog(text,bad=false){
@@ -1180,14 +1180,23 @@ body.cine-hard #drive{
     {src:"assets/fotos/drive-29.jpg",who:"ZURI",file:"CAPTURE_029.JPG"}
   ];
 
-  // Polaroids sobrepostas: espalhadas o bastante para formar um monte,
-  // mas ainda com bastante interseção entre as fotos.
+  // Estrutura do monte:
+  // 2 fotos em cima, 3 logo abaixo, 4 no meio e 2/3 na base.
+  // As 29 fotos reutilizam essas posições com pequenas variações,
+  // criando camadas sobrepostas em vez de uma nuvem aleatória.
+  const PILE_SLOTS=[
+    [-.24,-.28],[ .22,-.28],
+    [-.34,-.12],[-.05,-.14],[ .27,-.12],
+    [-.40, .08],[-.16, .07],[ .10, .08],[ .36, .09],
+    [-.20, .26],[ .08, .25],[ .30, .24]
+  ];
+
   const PILE_CONFIG={
-    desktopX:390,
-    desktopY:205,
-    mobileX:118,
-    mobileY:135,
-    rotate:14
+    desktopX:760,
+    desktopY:430,
+    mobileX:310,
+    mobileY:430,
+    rotate:12
   };
 
   function shutter(){
@@ -1203,20 +1212,30 @@ body.cine-hard #drive{
     if(!card||card.classList.contains("archived"))return;
 
     const mobile=innerWidth<700;
-    const maxX=mobile?Math.min(PILE_CONFIG.mobileX,innerWidth*.16):PILE_CONFIG.desktopX;
-    const maxY=mobile?Math.min(PILE_CONFIG.mobileY,innerHeight*.11):PILE_CONFIG.desktopY;
+    const slot=PILE_SLOTS[index%PILE_SLOTS.length];
+    const layer=Math.floor(index/PILE_SLOTS.length);
 
-    // Distribuição em "nuvem" para lembrar fotos jogadas sobre uma mesa:
-    // muita sobreposição no meio, algumas escapando pelas bordas.
-    const angle=Math.random()*Math.PI*2;
-    const radius=Math.pow(Math.random(),.62);
-    const x=Math.cos(angle)*maxX*radius;
-    const y=Math.sin(angle)*maxY*radius*.82;
+    const spreadX=mobile
+      ? Math.min(PILE_CONFIG.mobileX,innerWidth*.76)
+      : Math.min(PILE_CONFIG.desktopX,innerWidth*.82);
 
+    const spreadY=mobile
+      ? Math.min(PILE_CONFIG.mobileY,innerHeight*.62)
+      : Math.min(PILE_CONFIG.desktopY,innerHeight*.70);
+
+    // Pequena variação por camada para que não pareça uma grade perfeita.
+    const jitterX=(Math.random()*2-1)*(mobile?12:26);
+    const jitterY=(Math.random()*2-1)*(mobile?10:18);
+    const layerOffsetX=((layer%3)-1)*(mobile?7:14);
+    const layerOffsetY=(layer%2 ? 1 : -1)*(mobile?5:9);
+
+    const x=(slot[0]*spreadX)+jitterX+layerOffsetX;
+    const y=(slot[1]*spreadY)+jitterY+layerOffsetY;
     const r=(Math.random()*2-1)*PILE_CONFIG.rotate;
+
     const s=mobile
-      ? .50+Math.random()*.12
-      : .58+Math.random()*.16;
+      ? .46+Math.random()*.08
+      : .54+Math.random()*.10;
 
     card.style.setProperty("--pile-x",x.toFixed(1)+"px");
     card.style.setProperty("--pile-y",y.toFixed(1)+"px");
@@ -1227,26 +1246,26 @@ body.cine-hard #drive{
     card.classList.add("archived");
   }
   function showPhoto(index){
-    if(activeCard)archive(activeCard,index-1);
+    if(activeCard)archive(activeCard,createdCards.length-1);
 
     const p=PHOTOS[index];
     const card=document.createElement("figure");
     card.className="photo-card";
-    card.style.setProperty("--z",50+createdCards.length);
+    card.style.setProperty("--z",70+createdCards.length);
 
     const mobile=innerWidth<700;
-    const liveX=(Math.random()*2-1)*(mobile?14:88);
-    const liveY=(Math.random()*2-1)*(mobile?12:54);
-    const liveR=(Math.random()*2-1)*4.8;
+    const liveX=(Math.random()*2-1)*(mobile?8:26);
+    const liveY=(Math.random()*2-1)*(mobile?7:18);
+    const liveR=(Math.random()*2-1)*3.6;
     const liveS=mobile
-      ? .87+Math.random()*.08
-      : .90+Math.random()*.10;
+      ? .86+Math.random()*.06
+      : .91+Math.random()*.06;
 
     card.style.setProperty("--live-x",liveX.toFixed(1)+"px");
     card.style.setProperty("--live-y",liveY.toFixed(1)+"px");
     card.style.setProperty("--live-r",liveR.toFixed(2)+"deg");
     card.style.setProperty("--live-s",liveS.toFixed(3));
-    card.style.setProperty("--enterR",((Math.random()*2-1)*10).toFixed(2)+"deg");
+    card.style.setProperty("--enterR",((Math.random()*2-1)*8).toFixed(2)+"deg");
 
     card.innerHTML=`<img src="${p.src}" alt=""><figcaption class="stamp"><span>${p.file}</span><span>${p.who}</span></figcaption>`;
     pile.appendChild(card);
