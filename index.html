@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
 <title>Ilustrações C4 - Drive</title>
-<!-- PHANTASMA // PARTE I // V3.3 // TIMECODES EXATOS DO SRT -->
+<!-- PHANTASMA // PARTE I // V3.8 // AUDIO AUTOMATICO APOS PRIMEIRO CLIQUE -->
 <style>
 :root{
   --g-bg:#f8fafd;--g-panel:#fff;--g-text:#1f1f1f;--g-muted:#5f6368;
@@ -79,6 +79,113 @@ body.hacking .file:nth-child(odd){animation:cardHack .27s steps(2) infinite}
 #hackHUD.show{opacity:1;transform:translateY(0)}#hackHUD .bad{color:#ff7078}#hackHUD .dim{color:#728479}
 .toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(18px);background:#303134;color:#fff;border-radius:5px;padding:13px 18px;font-size:13px;z-index:59;opacity:0;transition:.25s;box-shadow:0 4px 18px rgba(0,0,0,.28)}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
+
+/* ===== GLITCH CINEMATOGRÁFICO ===== */
+#frameBlack{
+  position:fixed;inset:0;z-index:74;background:#000;opacity:0;
+  pointer-events:none;transition:opacity .04s linear
+}
+#frameBlack.hit{animation:blackFrame .20s steps(1)}
+@keyframes blackFrame{
+  0%{opacity:.98}24%{opacity:.98}25%{opacity:0}
+  55%{opacity:.55}56%{opacity:0}100%{opacity:0}
+}
+
+#glitchStage{
+  position:fixed;inset:0;z-index:73;pointer-events:none;overflow:hidden;
+  opacity:1
+}
+.glitch-slice{
+  position:absolute;inset:0;overflow:hidden;
+  pointer-events:none;will-change:transform,opacity,clip-path;
+}
+.glitch-slice .glitch-clone{
+  position:fixed!important;inset:0!important;width:100vw!important;height:100dvh!important;
+  margin:0!important;max-width:none!important;max-height:none!important;
+  pointer-events:none!important;
+  transform-origin:center!important
+}
+.glitch-slice.red{mix-blend-mode:screen;filter:saturate(1.9) hue-rotate(300deg) contrast(1.22)}
+.glitch-slice.green{mix-blend-mode:screen;filter:saturate(1.7) hue-rotate(70deg) contrast(1.30)}
+.glitch-slice.white{mix-blend-mode:hard-light;filter:grayscale(1) contrast(1.65) brightness(1.15)}
+
+#signalRoll{
+  position:fixed;left:0;right:0;top:-18%;height:18%;z-index:72;pointer-events:none;
+  opacity:0;
+  background:
+    linear-gradient(180deg,transparent 0,rgba(136,255,163,.04) 42%,
+    rgba(220,255,228,.28) 50%,rgba(89,255,126,.06) 58%,transparent 100%);
+  filter:blur(.4px)
+}
+#signalRoll.go{animation:signalRoll .72s cubic-bezier(.2,.7,.2,1)}
+@keyframes signalRoll{
+  0%{opacity:0;transform:translateY(0)}
+  12%{opacity:.9}
+  100%{opacity:0;transform:translateY(760%)}
+}
+
+body.cine-hard:before{
+  content:"";position:fixed;inset:0;z-index:71;pointer-events:none;
+  background:
+    linear-gradient(90deg,rgba(255,0,52,.05),transparent 24%,rgba(0,255,110,.05) 77%,transparent),
+    repeating-linear-gradient(180deg,transparent 0 3px,rgba(255,255,255,.018) 3px 4px);
+  animation:hardNoise .12s steps(2) infinite
+}
+@keyframes hardNoise{
+  0%{transform:translate(0);filter:contrast(1)}
+  50%{transform:translate(-3px,2px);filter:contrast(1.6)}
+}
+
+body.cine-hard #drive{
+  animation:cinemaShake .075s steps(2) infinite!important;
+  filter:contrast(1.38) saturate(.45) brightness(.83)!important
+}
+@keyframes cinemaShake{
+  0%{transform:translate(0,0) skewX(0deg)}
+  25%{transform:translate(-5px,1px) skewX(.15deg)}
+  50%{transform:translate(4px,-2px) skewX(-.12deg)}
+  75%{transform:translate(-2px,2px) skewX(.08deg)}
+}
+
+#takeover.glitch-hit .take-bg{
+  animation:takeBgHit .34s steps(3)
+}
+#takeover.glitch-hit .system{
+  animation:panelHit .27s steps(3)
+}
+#takeover.glitch-hit .glitchGhost{
+  opacity:.22;animation:ghostHard .30s steps(3)
+}
+@keyframes takeBgHit{
+  0%{transform:translate(0) scale(1);filter:contrast(1.18) saturate(.68)}
+  25%{transform:translate(12px,-3px) scale(1.015);filter:contrast(1.8) saturate(.2) hue-rotate(45deg)}
+  55%{transform:translate(-9px,2px) scale(1.01);filter:contrast(2) saturate(.3) hue-rotate(-35deg)}
+  100%{transform:translate(0) scale(1);filter:contrast(1.18) saturate(.68)}
+}
+@keyframes panelHit{
+  0%{transform:translate(0)}
+  35%{transform:translate(-8px,1px)}
+  55%{transform:translate(10px,-2px)}
+  100%{transform:translate(0)}
+}
+@keyframes ghostHard{
+  0%{clip-path:inset(0 0 72% 0);transform:translateX(-14px)}
+  35%{clip-path:inset(32% 0 42% 0);transform:translateX(17px)}
+  68%{clip-path:inset(69% 0 8% 0);transform:translateX(-11px)}
+  100%{clip-path:inset(0);transform:translateX(0)}
+}
+
+/* um "estouro" de sinal na fotografia atual */
+.photo-card.signal-hit{
+  animation:photoSignalHit .24s steps(3)
+}
+@keyframes photoSignalHit{
+  0%{filter:none}
+  34%{filter:contrast(1.8) saturate(.15);transform:translate(calc(-50% - 8px),-50%) rotate(var(--liveR,0deg)) scale(1.018)}
+  67%{filter:contrast(2) hue-rotate(55deg);transform:translate(calc(-50% + 7px),calc(-50% + 2px)) rotate(var(--liveR,0deg)) scale(.99)}
+  100%{filter:none}
+}
+
 /* ===== TOMADA DO SISTEMA ===== */
 #takeover{position:fixed;inset:0;z-index:80;background:#010302;color:#e7efe9;opacity:0;visibility:hidden;transition:opacity .5s;overflow:hidden;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
 #takeover.active{opacity:1;visibility:visible}
@@ -102,23 +209,30 @@ body.hacking .file:nth-child(odd){animation:cardHack .27s steps(2) infinite}
 #photoPile{position:absolute;inset:0;overflow:hidden}
 .photo-card{
   position:absolute;left:50%;top:48%;
-  width:min(var(--w,320px),44vw);
+  width:max-content;
+  max-width:42vw;
   max-height:72dvh;
   background:#e9e9e5;
   padding:7px 7px 28px;
   box-shadow:0 18px 50px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.25);
-  transform:translate(-50%,-50%) rotate(var(--enterR,0deg)) scale(1.20);
+  transform:translate(-50%,-50%) rotate(var(--enterR,0deg)) scale(1.16);
   opacity:0;z-index:var(--z,10);
-  transition:transform .42s cubic-bezier(.2,.9,.25,1.1),opacity .22s ease,filter .55s ease,box-shadow .45s ease;
+  transition:transform .30s cubic-bezier(.2,.9,.25,1.1),opacity .16s ease,filter .36s ease,box-shadow .30s ease;
   transform-origin:center;
 }
-.photo-card img{display:block;width:100%;height:auto;max-height:calc(72dvh - 42px);object-fit:contain;background:#111}
+.photo-card img{
+  display:block;
+  width:auto;height:auto;
+  max-width:40vw;
+  max-height:calc(72dvh - 42px);
+  object-fit:contain;background:#111
+}
 .photo-card .stamp{position:absolute;left:9px;right:9px;bottom:7px;color:#252525;font:9px/1.2 ui-monospace,monospace;display:flex;justify-content:space-between;gap:8px}
 .photo-card.live{opacity:1;transform:translate(-50%,-50%) rotate(var(--liveR,0deg)) scale(1);filter:none}
 .photo-card.archived{
-  opacity:.58;filter:grayscale(1) brightness(.54) contrast(1.08);
-  transform:translate(calc(-50% + var(--x,0px)),calc(-50% + var(--y,0px))) rotate(var(--r,0deg)) scale(var(--s,.74));
-  box-shadow:0 8px 25px rgba(0,0,0,.55)
+  opacity:.50;filter:grayscale(1) brightness(.50) contrast(1.10);
+  transform:translate(calc(-50% + var(--x,0px)),calc(-50% + var(--y,0px))) rotate(var(--r,0deg)) scale(var(--s,.52));
+  box-shadow:0 7px 20px rgba(0,0,0,.58)
 }
 .photo-card.final{opacity:.72}
 #flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:180}.flashgo{animation:flash .22s ease-out}@keyframes flash{0%{opacity:.96}30%{opacity:.48}100%{opacity:0}}
@@ -128,13 +242,27 @@ body.hacking .file:nth-child(odd){animation:cardHack .27s steps(2) infinite}
 
 /* final */
 #endcard{position:absolute;inset:0;display:none;place-items:center;background:radial-gradient(circle at 50% 40%,rgba(9,28,14,.92),#010302 65%);padding:22px}
-#endcard.active{display:grid}.endbox{width:min(650px,92vw);text-align:center}.kicker{font-size:11px;color:#799385;letter-spacing:.2em}.endbox h1{font-size:clamp(28px,7vw,58px);letter-spacing:.08em;margin:14px 0 9px}.endbox p{font-size:13px;color:#8da095;line-height:1.6}.continue{margin-top:20px;min-width:220px;border:1px solid #4f7960;background:#07100a;color:#bdffcb;border-radius:5px;padding:13px 18px;font:inherit;letter-spacing:.08em}.continue:disabled{opacity:.42}.replay{margin-top:10px;border:0;background:transparent;color:#72877a;font:11px ui-monospace,monospace;text-decoration:underline}
+#endcard.active{display:grid}
+.endbox{width:min(720px,92vw);text-align:center}
+.kicker{font-size:11px;color:#799385;letter-spacing:.2em}
+.endbox h1{font-size:clamp(27px,6vw,52px);letter-spacing:.07em;margin:14px 0 10px}
+.endbox p{font-size:13px;color:#94a59b;line-height:1.75;margin:8px auto;max-width:620px}
+.psych-question{margin-top:26px;font-size:clamp(15px,2vw,19px);color:#dce8df;letter-spacing:.04em}
+.psych-actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:16px}
+.psych-btn,.continue{min-width:190px;border:1px solid #4f7960;background:#07100a;color:#bdffcb;border-radius:5px;padding:12px 17px;font:12px ui-monospace,monospace;letter-spacing:.08em}
+.psych-btn:hover,.continue:hover{background:#0c1a10}
+.psych-result{min-height:58px;margin-top:19px;color:#aaffbb;font:13px/1.65 ui-monospace,monospace;opacity:0;transform:translateY(7px);transition:.32s}
+.psych-result.show{opacity:1;transform:translateY(0)}
+.continue{display:none;margin:16px auto 0}
+.continue.show{display:block}
+.continue:disabled{opacity:.42}
+.replay{margin-top:12px;border:0;background:transparent;color:#72877a;font:11px ui-monospace,monospace;text-decoration:underline}
 
 @media(max-width:900px){
   .drive-top{grid-template-columns:46px 1fr auto;padding:8px 11px;gap:8px}.brand span:last-child{display:none}.mark{transform:scale(.82)}.search{height:44px}.top-icons .hide-mobile{display:none}
   .drive-body{grid-template-columns:1fr;padding:0}.sidebar{display:none}.content{border-radius:0;min-height:calc(100dvh - 60px);padding:18px 14px 30px}.file-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}.file-preview{height:132px}.breadcrumb{font-size:19px}
   .system{grid-template-columns:1fr}.system .logcard{display:none}
-  .photo-card{width:min(var(--w,300px),68vw);max-height:68dvh}.photo-card img{max-height:calc(68dvh - 42px)}
+  .photo-card{max-width:74vw;max-height:68dvh}.photo-card img{max-width:72vw;max-height:calc(68dvh - 42px)}
 }
 @media(max-width:420px){.file-preview{height:112px}.filename{font-size:12px}.photo-card{width:min(var(--w,280px),74vw)}}
 </style>
@@ -152,6 +280,9 @@ body.hacking .file:nth-child(odd){animation:cardHack .27s steps(2) infinite}
 
 <div id="hackNoise"></div>
 <div id="tear"><i class="tearband"></i><i class="tearband"></i><i class="tearband"></i></div>
+<div id="frameBlack"></div>
+<div id="signalRoll"></div>
+<div id="glitchStage"></div>
 <div id="hackHUD"></div>
 <div id="toast" class="toast"></div>
 
@@ -226,41 +357,412 @@ body.hacking .file:nth-child(odd){animation:cardHack .27s steps(2) infinite}
 
   <div id="endcard">
     <div class="endbox">
-      <div class="kicker">TRANSMISSÃO // CONCLUÍDA</div>
-      <h1>ARQUIVO DISPONIBILIZADO.</h1>
-      <p>O próximo protocolo será conectado aqui quando a Parte II estiver pronta.</p>
-      <button id="continueBtn" class="continue" disabled>PARTE II // QUIZ</button><br>
+      <div class="kicker">TRANSMISSÃO // ENCERRADA</div>
+      <h1>VOCÊ FICOU ATÉ O FIM.</h1>
+      <p>Isso não significa que prestou atenção.</p>
+      <p>Vocês passam tanto tempo falando sobre os Cisnes que começaram a acreditar que realmente os conhecem.</p>
+
+      <div class="psych-question">Então me diga: você está confiante?</div>
+      <div id="psychActions" class="psych-actions">
+        <button class="psych-btn" data-answer="sim">SIM.</button>
+        <button class="psych-btn" data-answer="nao">NÃO TENHO CERTEZA.</button>
+      </div>
+
+      <div id="psychResult" class="psych-result"></div>
+
+      <button id="continueBtn" class="continue">ACEITAR O TESTE</button>
       <button id="replayBtn" class="replay">rever transmissão</button>
     </div>
   </div>
 </section>
 
 <audio id="narration" preload="auto" src="assets/audio/phantasma-abertura.mp3"></audio>
+<audio id="sfxAmbient" preload="auto" loop src="assets/sfx/ambiente.wav"></audio>
+<audio id="sfxKey" preload="auto" src="assets/sfx/tecla.wav"></audio>
+<audio id="sfxGlitch" preload="auto" src="assets/sfx/glitch.wav"></audio>
+<audio id="sfxAccess" preload="auto" src="assets/sfx/acesso.wav"></audio>
+<audio id="sfxClick" preload="auto" src="assets/sfx/click.wav"></audio>
+<audio id="sfxError" preload="auto" src="assets/sfx/erro.wav"></audio>
 
 <script>
 (() => {
   const ATTEMPTS_BEFORE_HACK = 2;
   const NEXT_PAGE = "";
 
+  // FOTOS: independentes das frases, mas distribuídas por TODA a narração.
+  const PHOTO_START_DELAY_MS = 450;
+  const PHOTO_END_MARGIN_MS = 1400;
+
   const $=id=>document.getElementById(id);
   const boot=$("boot"),drive=$("drive"),files=[...document.querySelectorAll(".file")],owners=[...document.querySelectorAll(".owner")];
   const modal=$("previewModal"),previewName=$("previewName"),loadingState=$("loadingState"),errorState=$("errorState"),closePreview=$("closePreview"),retryBtn=$("retryBtn");
   const toast=$("toast"),hackHUD=$("hackHUD"),searchBox=$("searchBox"),searchInput=$("searchInput"),takeover=$("takeover"),systemStage=$("systemStage"),transmission=$("transmission");
+  const frameBlack=$("frameBlack"),signalRoll=$("signalRoll"),glitchStage=$("glitchStage");
   const localBar=$("localBar"),remoteBar=$("remoteBar"),localPct=$("localPct"),remotePct=$("remotePct"),revokeLine=$("revokeLine"),phantasmaOwner=$("phantasmaOwner"),sysLog=$("sysLog");
   const pile=$("photoPile"),caption=$("caption"),flash=$("flash"),narration=$("narration"),muteBtn=$("muteBtn"),endcard=$("endcard"),replayBtn=$("replayBtn"),continueBtn=$("continueBtn");
+  const psychActions=$("psychActions"),psychResult=$("psychResult");
+  const sfxAmbient=$("sfxAmbient"),sfxKey=$("sfxKey"),sfxGlitch=$("sfxGlitch"),sfxAccess=$("sfxAccess"),sfxClick=$("sfxClick"),sfxError=$("sfxError");
 
   let attempts=0,started=false,captionIndex=-1,photoIndex=-1,audioCtx=null,activeCard=null;
-  let createdCards=[];
+  let createdCards=[], photoTimers=[];
+  let machineTimer=null, randomGlitchTimer=null, processorNodes=[], soundscapeStarted=false, soundMuted=false; let narrationPrimed=false, hackSynthTimer=null, noiseNode=null, noiseGain=null;
 
   setTimeout(()=>{boot.classList.add("done");drive.classList.add("ready")},1750);
 
   function showToast(msg,ms=1500){toast.textContent=msg;toast.classList.add("show");setTimeout(()=>toast.classList.remove("show"),ms)}
+
+  function playSfx(baseAudio,volume=.15,rate=1){
+    if(soundMuted||!baseAudio)return;
+    try{
+      const a=baseAudio.cloneNode(true);
+      a.volume=Math.max(0,Math.min(1,volume));
+      a.playbackRate=rate;
+      a.play().catch(()=>{});
+    }catch(e){}
+  }
+
+  function startProcessorBed(){
+    if(processorNodes.length||soundMuted)return;
+    try{
+      audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)();
+      if(audioCtx.state==="suspended")audioCtx.resume();
+
+      const master=audioCtx.createGain();
+      master.gain.value=.020;
+      master.connect(audioCtx.destination);
+
+      const low=audioCtx.createOscillator();
+      low.type="sine";low.frequency.value=49;
+      const lowGain=audioCtx.createGain();lowGain.gain.value=.62;
+      low.connect(lowGain).connect(master);low.start();
+
+      const mid=audioCtx.createOscillator();
+      mid.type="triangle";mid.frequency.value=97.5;
+      const midGain=audioCtx.createGain();midGain.gain.value=.14;
+      mid.connect(midGain).connect(master);mid.start();
+
+      const wobble=audioCtx.createOscillator();
+      wobble.type="sine";wobble.frequency.value=.32;
+      const wobbleGain=audioCtx.createGain();wobbleGain.gain.value=.006;
+      wobble.connect(wobbleGain).connect(master.gain);wobble.start();
+
+      processorNodes=[master,low,mid,wobble];
+    }catch(e){}
+  }
+
+  function stopProcessorBed(){
+    processorNodes.forEach(n=>{
+      try{
+        if(typeof n.stop==="function")n.stop();
+        if(typeof n.disconnect==="function")n.disconnect();
+      }catch(e){}
+    });
+    processorNodes=[];
+  }
+
+  function scheduleMachineKeys(level="hack"){
+    clearTimeout(machineTimer);
+    if(soundMuted)return;
+
+    const run=()=>{
+      if(soundMuted)return;
+      const inNarration=transmission.classList.contains("active");
+      const count=Math.random()<.34?2:1;
+
+      for(let i=0;i<count;i++){
+        setTimeout(()=>{
+          const vol=inNarration?.035:(level==="hack"?.12:.07);
+          playSfx(sfxKey,vol,.84+Math.random()*.42);
+        },i*(35+Math.random()*70));
+      }
+
+      // pequenos pulsos digitais intercalados com teclas
+      if(Math.random()<.23)processorTick(inNarration?.018:.05);
+
+      const next=inNarration
+        ? 950+Math.random()*2100
+        : 240+Math.random()*780;
+      machineTimer=setTimeout(run,next);
+    };
+
+    machineTimer=setTimeout(run,220);
+  }
+
+  function processorTick(volume=.04){
+    if(soundMuted)return;
+    try{
+      audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)();
+      if(audioCtx.state==="suspended")audioCtx.resume();
+
+      const o=audioCtx.createOscillator();
+      const g=audioCtx.createGain();
+      const bp=audioCtx.createBiquadFilter();
+
+      o.type=Math.random()>.5?"square":"sine";
+      o.frequency.setValueAtTime(480+Math.random()*1100,audioCtx.currentTime);
+      o.frequency.exponentialRampToValueAtTime(150+Math.random()*260,audioCtx.currentTime+.045);
+      bp.type="bandpass";bp.frequency.value=900;bp.Q.value=1.4;
+
+      g.gain.setValueAtTime(volume,audioCtx.currentTime);
+      g.gain.exponentialRampToValueAtTime(.0001,audioCtx.currentTime+.055);
+
+      o.connect(bp).connect(g).connect(audioCtx.destination);
+      o.start();o.stop(audioCtx.currentTime+.06);
+    }catch(e){}
+  }
+
+  async function unlockSoundscape(){
+    if(soundscapeStarted)return;
+    soundscapeStarted=true;
+
+    try{
+      audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)();
+      if(audioCtx.state==="suspended")await audioCtx.resume();
+    }catch(e){}
+
+    sfxAmbient.volume=.065;
+    sfxAmbient.play().catch(()=>{});
+    startProcessorBed();
+    scheduleMachineKeys("drive");
+  }
+
+  function setSoundPhase(phase){
+    if(soundMuted)return;
+    if(phase==="drive"){
+      sfxAmbient.volume=.055;
+    }else if(phase==="hack"){
+      sfxAmbient.volume=.12;
+      scheduleMachineKeys("hack");
+    }else if(phase==="takeover"){
+      sfxAmbient.volume=.10;
+      scheduleMachineKeys("hack");
+    }else if(phase==="narration"){
+      sfxAmbient.volume=.045;
+      scheduleMachineKeys("narration");
+    }else if(phase==="end"){
+      sfxAmbient.volume=.025;
+      clearTimeout(machineTimer);
+    }
+  }
+
+  function stripIds(root){
+    if(root.removeAttribute)root.removeAttribute("id");
+    root.querySelectorAll&&root.querySelectorAll("[id]").forEach(el=>el.removeAttribute("id"));
+  }
+
+  function cinematicGlitchBurst(sourceEl=drive,strength=1){
+    if(!sourceEl)return;
+
+    document.body.classList.add("cine-hard");
+    frameBlack.classList.remove("hit");
+    signalRoll.classList.remove("go");
+    void frameBlack.offsetWidth;
+    frameBlack.classList.add("hit");
+    signalRoll.classList.add("go");
+
+    playSfx(sfxGlitch,.18+(.22*strength),.78+Math.random()*.42);
+    processorTick(.04+.04*strength);
+
+    const slices=5+Math.round(strength*5);
+
+    for(let i=0;i<slices;i++){
+      const top=Math.floor(Math.random()*88);
+      const height=2+Math.floor(Math.random()*(4+strength*8));
+      const slice=document.createElement("div");
+      slice.className="glitch-slice "+(["red","green","white"][i%3]);
+
+      const clone=sourceEl.cloneNode(true);
+      stripIds(clone);
+      clone.classList.add("glitch-clone");
+
+      const shift=(Math.random()>.5?1:-1)*(8+Math.random()*34*strength);
+      const yshift=(Math.random()>.5?1:-1)*(Math.random()*6);
+      const scale=1+(Math.random()*.008*strength);
+
+      slice.style.clipPath=`inset(${top}% 0 ${Math.max(0,100-top-height)}% 0)`;
+      slice.style.opacity=String(.26+Math.random()*.48);
+      slice.style.transform=`translate(${shift}px,${yshift}px) scale(${scale})`;
+      slice.appendChild(clone);
+      glitchStage.appendChild(slice);
+
+      const life=90+Math.random()*220;
+      setTimeout(()=>slice.remove(),life);
+    }
+
+    setTimeout(()=>document.body.classList.remove("cine-hard"),120+strength*90);
+  }
+
+  function takeoverGlitch(strength=.65){
+    takeover.classList.remove("glitch-hit");
+    void takeover.offsetWidth;
+    takeover.classList.add("glitch-hit");
+    playSfx(sfxGlitch,.10+.16*strength,.86+Math.random()*.32);
+    processorTick(.035+.03*strength);
+    setTimeout(()=>takeover.classList.remove("glitch-hit"),380);
+  }
+
+  function scheduleRandomTakeoverGlitches(){
+    clearTimeout(randomGlitchTimer);
+    const run=()=>{
+      if(!takeover.classList.contains("active")||endcard.classList.contains("active"))return;
+      takeoverGlitch(.35+Math.random()*.55);
+      randomGlitchTimer=setTimeout(run,1600+Math.random()*2700);
+    };
+    randomGlitchTimer=setTimeout(run,1250+Math.random()*1200);
+  }
+
+
+  async function primeNarration(){
+    if(narrationPrimed)return;
+    narrationPrimed=true;
+    try{
+      narration.muted=true;
+      narration.volume=0;
+      narration.currentTime=0;
+      await narration.play();
+      await new Promise(r=>setTimeout(r,40));
+      narration.pause();
+      narration.currentTime=0;
+      narration.volume=1;
+      narration.muted=soundMuted;
+    }catch(e){
+      try{narration.pause();narration.currentTime=0;narration.volume=1;narration.muted=soundMuted}catch(_){}
+    }
+  }
+
+  function startNoiseBed(){
+    if(soundMuted||noiseNode)return;
+    try{
+      audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)();
+      if(audioCtx.state==="suspended")audioCtx.resume();
+
+      const len=audioCtx.sampleRate*2;
+      const b=audioCtx.createBuffer(1,len,audioCtx.sampleRate);
+      const d=b.getChannelData(0);
+      let last=0;
+      for(let i=0;i<len;i++){
+        const white=Math.random()*2-1;
+        last=(last*.965)+(white*.035);
+        d[i]=last*.7;
+      }
+
+      noiseNode=audioCtx.createBufferSource(); noiseNode.buffer=b; noiseNode.loop=true;
+      const hp=audioCtx.createBiquadFilter(); hp.type="highpass"; hp.frequency.value=160;
+      const lp=audioCtx.createBiquadFilter(); lp.type="lowpass"; lp.frequency.value=4200;
+      noiseGain=audioCtx.createGain(); noiseGain.gain.value=.012;
+      noiseNode.connect(hp).connect(lp).connect(noiseGain).connect(audioCtx.destination);
+      noiseNode.start();
+    }catch(e){}
+  }
+
+  function stopNoiseBed(){
+    try{noiseNode&&noiseNode.stop()}catch(e){}
+    try{noiseNode&&noiseNode.disconnect()}catch(e){}
+    try{noiseGain&&noiseGain.disconnect()}catch(e){}
+    noiseNode=null; noiseGain=null;
+  }
+
+  function synthKey(volume=.05){
+    if(soundMuted)return;
+    try{
+      audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)();
+      const now=audioCtx.currentTime;
+      const b=audioCtx.createBuffer(1,Math.floor(audioCtx.sampleRate*.025),audioCtx.sampleRate);
+      const d=b.getChannelData(0);
+      for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*(1-i/d.length);
+      const src=audioCtx.createBufferSource(); src.buffer=b;
+      const bp=audioCtx.createBiquadFilter(); bp.type="bandpass"; bp.frequency.value=1200+Math.random()*1600; bp.Q.value=1.2;
+      const g=audioCtx.createGain(); g.gain.setValueAtTime(volume,now); g.gain.exponentialRampToValueAtTime(.0001,now+.028);
+      src.connect(bp).connect(g).connect(audioCtx.destination); src.start(now);
+    }catch(e){}
+  }
+
+  function synthDataBurst(volume=.035){
+    if(soundMuted)return;
+    try{
+      audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)();
+      const now=audioCtx.currentTime;
+      const o=audioCtx.createOscillator(), g=audioCtx.createGain(), f=audioCtx.createBiquadFilter();
+      o.type=Math.random()>.5?"square":"sawtooth";
+      o.frequency.setValueAtTime(650+Math.random()*1300,now);
+      o.frequency.exponentialRampToValueAtTime(130+Math.random()*320,now+.06);
+      f.type="bandpass"; f.frequency.value=1000+Math.random()*800; f.Q.value=2;
+      g.gain.setValueAtTime(volume,now); g.gain.exponentialRampToValueAtTime(.0001,now+.07);
+      o.connect(f).connect(g).connect(audioCtx.destination); o.start(now); o.stop(now+.075);
+    }catch(e){}
+  }
+
+  function startHackSynth(mode="hack"){
+    clearTimeout(hackSynthTimer);
+    const run=()=>{
+      if(soundMuted)return;
+      const narrationOn=transmission.classList.contains("active");
+      const keyVol=narrationOn?.017:(mode==="hack"?.075:.04);
+      const burstVol=narrationOn?.011:(mode==="hack"?.055:.027);
+
+      synthKey(keyVol);
+      if(Math.random()<.52)synthDataBurst(burstVol);
+      if(Math.random()<.25)setTimeout(()=>synthKey(keyVol*.75),30+Math.random()*60);
+      if(Math.random()<.14)setTimeout(()=>synthDataBurst(burstVol*.8),70+Math.random()*100);
+
+      hackSynthTimer=setTimeout(run,narrationOn?700+Math.random()*1300:120+Math.random()*420);
+    };
+    hackSynthTimer=setTimeout(run,80);
+  }
+
+  function stopHackSynth(){clearTimeout(hackSynthTimer);hackSynthTimer=null}
+
+  async function unlockAllAudio(){
+    if(soundscapeStarted)return;
+    soundscapeStarted=true;
+
+    try{
+      audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)();
+      if(audioCtx.state==="suspended")await audioCtx.resume();
+    }catch(e){}
+
+    await primeNarration();
+    startNoiseBed();
+    startProcessorBed();
+    startHackSynth("drive");
+
+    try{
+      sfxAmbient.volume=.055;
+      await sfxAmbient.play();
+    }catch(e){}
+  }
+
+  async function startNarrationAutomatically(){
+    narration.pause();
+    narration.currentTime=0;
+    narration.volume=1;
+    narration.muted=soundMuted;
+
+    let ok=false;
+    for(let i=0;i<7&&!ok;i++){
+      try{
+        await narration.play();
+        ok=true;
+      }catch(e){
+        await new Promise(r=>setTimeout(r,180));
+      }
+    }
+
+    setSoundPhase("narration");
+    startHackSynth("narration");
+    startPhotoStream();
+    caption.textContent="";
+    caption.style.opacity=0;
+  }
+
   function openPreview(name){
     previewName.textContent=name;loadingState.classList.remove("hidden");errorState.classList.add("hidden");modal.classList.remove("hidden");
     setTimeout(()=>{loadingState.classList.add("hidden");errorState.classList.remove("hidden")},1100);
   }
 
-  files.forEach(f=>f.addEventListener("click",()=>{
+  files.forEach(f=>f.addEventListener("click",async()=>{
+    await unlockAllAudio();
+    playSfx(sfxClick,.10,1);
     if(started)return;
     attempts++;
     if(attempts>=ATTEMPTS_BEFORE_HACK){
@@ -268,7 +770,11 @@ body.hacking .file:nth-child(odd){animation:cardHack .27s steps(2) infinite}
       setTimeout(startHack,850);
     }else openPreview(f.dataset.file);
   }));
-  retryBtn.addEventListener("click",()=>{attempts++;loadingState.classList.remove("hidden");errorState.classList.add("hidden");setTimeout(()=>attempts>=ATTEMPTS_BEFORE_HACK?startHack():(loadingState.classList.add("hidden"),errorState.classList.remove("hidden")),850)});
+  retryBtn.addEventListener("click",async()=>{
+    await unlockAllAudio();
+    playSfx(sfxClick,.11,.96);
+    attempts++;loadingState.classList.remove("hidden");errorState.classList.add("hidden");setTimeout(()=>attempts>=ATTEMPTS_BEFORE_HACK?startHack():(loadingState.classList.add("hidden"),errorState.classList.remove("hidden")),850);
+  });
   closePreview.addEventListener("click",()=>modal.classList.add("hidden"));
 
   const scrambleNames=["REID_███.DAT","LARA_0x7F.tmp","C4_ACCESS_DENIED","OWNER_OVERRIDE.sys"];
@@ -278,34 +784,55 @@ body.hacking .file:nth-child(odd){animation:cardHack .27s steps(2) infinite}
   }
 
   async function startHack(){
-    if(started)return;started=true;modal.classList.add("hidden");
+    if(started)return;
+    started=true;
+    modal.classList.add("hidden");
+    setSoundPhase("hack");
+    startNoiseBed();
+    startHackSynth("hack");
+
     document.body.classList.add("hacking");
-    showToast("Atividade incomum detectada.",1200);
+    showToast("Atividade incomum detectada.",1050);
     logHUD([{t:"> conexão externa detectada"},{t:"> origem: não identificada",dim:true}]);
+    cinematicGlitchBurst(drive,.48);
 
     setTimeout(()=>{
+      cinematicGlitchBurst(drive,.72);
       searchBox.classList.add("hacked");
       document.querySelectorAll(".filename").forEach((n,i)=>n.textContent=scrambleNames[i%scrambleNames.length]);
       logHUD([{t:"> conexão externa detectada"},{t:"> sessão local interceptada"},{t:"> tentando bloquear origem...",bad:true}]);
-    },750);
+    },620);
 
     setTimeout(()=>{
+      playSfx(sfxError,.18,.92);
       owners.forEach(o=>o.textContent="—");
-      showToast("Este conteúdo foi modificado por outro usuário.",1450);
+      cinematicGlitchBurst(drive,.88);
+      showToast("Este conteúdo foi modificado por outro usuário.",1300);
       logHUD([{t:"> sessão local interceptada"},{t:"> bloqueio de segurança: FALHOU",bad:true},{t:"> alterando permissões..."}]);
-    },1550);
+    },1320);
 
     setTimeout(()=>{
       owners.forEach(o=>o.textContent="PHANTASMA");
-      drive.style.filter="brightness(.72) contrast(1.18)";
+      drive.style.filter="brightness(.58) contrast(1.45) saturate(.35)";
+      cinematicGlitchBurst(drive,1.20);
       logHUD([{t:"> proprietário original removido",bad:true},{t:"> novo processo: PHANTASMA"},{t:"> aquisição de controle em andamento..."}]);
-    },2450);
+    },2070);
 
     setTimeout(()=>{
-      document.body.classList.remove("hacking");hackHUD.classList.remove("show");
+      playSfx(sfxAccess,.34,.84);
+      cinematicGlitchBurst(drive,1.45);
+      frameBlack.classList.remove("hit");void frameBlack.offsetWidth;frameBlack.classList.add("hit");
+    },2700);
+
+    setTimeout(()=>{
+      document.body.classList.remove("hacking");
+      hackHUD.classList.remove("show");
       takeover.classList.add("active");
+      setSoundPhase("takeover");
+      takeoverGlitch(1);
+      scheduleRandomTakeoverGlitches();
       startSystemTakeover();
-    },3350);
+    },3100);
   }
 
   function addLog(text,bad=false){
@@ -317,13 +844,13 @@ body.hacking .file:nth-child(odd){animation:cardHack .27s steps(2) infinite}
   }
   function startSystemTakeover(){
     addLog("[SISTEMA] sessão compartilhada validada.");
-    setTimeout(()=>{addLog("[AVISO] processo externo detectado.");setControl(18)},600);
-    setTimeout(()=>{addLog("[SISTEMA] rastreando origem...");setControl(34)},1250);
-    setTimeout(()=>{addLog("[FALHA] origem não encontrada.",true);setControl(51)},1900);
-    setTimeout(()=>{addLog("[AVISO] tentativa de aquisição remota de controle.");setControl(69)},2550);
-    setTimeout(()=>{addLog("[FALHA] proteção da sessão removida.",true);revokeLine.classList.remove("hidden");setControl(84)},3200);
-    setTimeout(()=>{addLog("<b>[REMOTO] privilégios assumidos.</b>");phantasmaOwner.classList.remove("hidden");setControl(100)},3900);
-    setTimeout(()=>startTransmission(),5000);
+    setTimeout(()=>{addLog("[AVISO] processo externo detectado.");setControl(18);processorTick(.05)},520);
+    setTimeout(()=>{addLog("[SISTEMA] rastreando origem...");setControl(34);takeoverGlitch(.40)},1100);
+    setTimeout(()=>{addLog("[FALHA] origem não encontrada.",true);setControl(51);playSfx(sfxError,.12,1.04)},1680);
+    setTimeout(()=>{addLog("[AVISO] tentativa de aquisição remota de controle.");setControl(69);takeoverGlitch(.62)},2280);
+    setTimeout(()=>{addLog("[FALHA] proteção da sessão removida.",true);revokeLine.classList.remove("hidden");setControl(84);takeoverGlitch(.82)},2880);
+    setTimeout(()=>{addLog("<b>[REMOTO] privilégios assumidos.</b>");phantasmaOwner.classList.remove("hidden");setControl(100);playSfx(sfxAccess,.26,.76);takeoverGlitch(1.1)},3500);
+    setTimeout(()=>startTransmission(),4520);
   }
 
   // matrix
@@ -356,27 +883,45 @@ body.hacking .file:nth-child(odd){animation:cardHack .27s steps(2) infinite}
   ];
 
   const PHOTOS=[
-    {t:.60,src:"assets/fotos/charlotte-01.jpg",who:"CHARLOTTE",file:"IMG_0218.JPG"},
-    {t:3.05,src:"assets/fotos/chuck-01.jpg",who:"CHUCK",file:"IMG_0294.JPG"},
-    {t:6.10,src:"assets/fotos/declan-01.jpg",who:"DECLAN",file:"IMG_0351.JPG"},
-    {t:9.00,src:"assets/fotos/dex-01.jpg",who:"DEX",file:"IMG_0407.JPG"},
-    {t:11.85,src:"assets/fotos/killian-01.jpg",who:"KILLIAN",file:"IMG_0483.JPG"},
-    {t:14.75,src:"assets/fotos/melissa-01.jpg",who:"MELISSA",file:"IMG_0546.JPG"},
-    {t:19.50,src:"assets/fotos/olivia-01.jpg",who:"OLIVIA",file:"IMG_0612.JPG"},
-    {t:23.30,src:"assets/fotos/chuck-02.jpg",who:"CHUCK",file:"IMG_0679.JPG"},
-    {t:28.45,src:"assets/fotos/dex-02.jpg",who:"DEX",file:"IMG_0718.JPG"},
-    {t:32.00,src:"assets/fotos/declan-02.jpg",who:"DECLAN",file:"IMG_0744.JPG"},
-    {t:35.30,src:"assets/fotos/killian-02.jpg",who:"KILLIAN",file:"IMG_0781.JPG"},
-    {t:39.05,src:"assets/fotos/melissa-02.jpg",who:"MELISSA",file:"IMG_0834.JPG"},
-    {t:43.25,src:"assets/fotos/olivia-02.jpg",who:"OLIVIA",file:"IMG_0877.JPG"},
-    {t:47.65,src:"assets/fotos/reid-lara-01.jpg",who:"REID + LARA",file:"IMG_0917.JPG"},
-    {t:51.05,src:"assets/fotos/reid-lara-02.jpg",who:"REID + LARA",file:"IMG_0921.JPG"},
-    {t:54.00,src:"assets/fotos/reid-lara-03.jpg",who:"REID + LARA",file:"IMG_0926.JPG"}
+    {src:"assets/fotos/drive-01.jpg",who:"CHUCK",file:"CAPTURE_001.JPG"},
+    {src:"assets/fotos/drive-02.jpg",who:"DECLAN",file:"CAPTURE_002.JPG"},
+    {src:"assets/fotos/drive-03.jpg",who:"DECLAN",file:"CAPTURE_003.JPG"},
+    {src:"assets/fotos/drive-04.jpg",who:"DECLAN",file:"CAPTURE_004.JPG"},
+    {src:"assets/fotos/drive-05.jpg",who:"REID + LARA",file:"CAPTURE_005.JPG"},
+    {src:"assets/fotos/drive-06.jpg",who:"REID + LARA",file:"CAPTURE_006.JPG"},
+    {src:"assets/fotos/drive-07.jpg",who:"REID + LARA",file:"CAPTURE_007.JPG"},
+    {src:"assets/fotos/drive-08.jpg",who:"REID + LARA",file:"CAPTURE_008.JPG"},
+    {src:"assets/fotos/drive-09.jpg",who:"KILLIAN",file:"CAPTURE_009.JPG"},
+    {src:"assets/fotos/drive-10.jpg",who:"KILLIAN",file:"CAPTURE_010.JPG"},
+    {src:"assets/fotos/drive-11.jpg",who:"KILLIAN",file:"CAPTURE_011.JPG"},
+    {src:"assets/fotos/drive-12.jpg",who:"CHUCK",file:"CAPTURE_012.JPG"},
+    {src:"assets/fotos/drive-13.jpg",who:"CHUCK",file:"CAPTURE_013.JPG"},
+    {src:"assets/fotos/drive-14.jpg",who:"CHUCK",file:"CAPTURE_014.JPG"},
+    {src:"assets/fotos/drive-15.jpg",who:"MELISSA",file:"CAPTURE_015.JPG"},
+    {src:"assets/fotos/drive-16.jpg",who:"MELISSA",file:"CAPTURE_016.JPG"},
+    {src:"assets/fotos/drive-17.jpg",who:"MELISSA",file:"CAPTURE_017.JPG"},
+    {src:"assets/fotos/drive-18.jpg",who:"CHARLOTTE",file:"CAPTURE_018.JPG"},
+    {src:"assets/fotos/drive-19.jpg",who:"CHARLOTTE",file:"CAPTURE_019.JPG"},
+    {src:"assets/fotos/drive-20.jpg",who:"CHARLOTTE",file:"CAPTURE_020.JPG"},
+    {src:"assets/fotos/drive-21.jpg",who:"DEX",file:"CAPTURE_021.JPG"},
+    {src:"assets/fotos/drive-22.jpg",who:"DEX",file:"CAPTURE_022.JPG"},
+    {src:"assets/fotos/drive-23.jpg",who:"DEX",file:"CAPTURE_023.JPG"},
+    {src:"assets/fotos/drive-24.jpg",who:"OLIVIA",file:"CAPTURE_024.JPG"},
+    {src:"assets/fotos/drive-25.jpg",who:"OLIVIA",file:"CAPTURE_025.JPG"},
+    {src:"assets/fotos/drive-26.jpg",who:"OLIVIA",file:"CAPTURE_026.JPG"},
+    {src:"assets/fotos/drive-27.jpg",who:"CHUCK + ZURI",file:"CAPTURE_027.JPG"},
+    {src:"assets/fotos/drive-28.jpg",who:"ZURI",file:"CAPTURE_028.JPG"},
+    {src:"assets/fotos/drive-29.jpg",who:"ZURI",file:"CAPTURE_029.JPG"}
   ];
 
   const layouts=[
-    [-390,-220,-9,.74],[-110,-260,7,.72],[230,-235,-5,.73],[400,-85,9,.71],[-390,35,6,.75],[-145,10,-8,.76],[170,20,5,.74],[390,115,-7,.72],
-    [-350,235,8,.72],[-70,235,-6,.75],[210,235,9,.73],[410,255,-4,.70],[-245,-95,4,.77],[40,-80,-7,.78],[270,-35,8,.76],[0,120,-3,.80]
+    [-.42,-.34,-10,.50],[-.22,-.36,7,.49],[.02,-.36,-5,.50],[.25,-.34,9,.48],[.43,-.30,-7,.49],
+    [-.43,-.12,6,.50],[-.24,-.14,-8,.51],[-.03,-.15,5,.50],[.20,-.14,-6,.49],[.42,-.10,8,.50],
+    [-.44,.09,-7,.49],[-.24,.08,9,.50],[-.02,.07,-5,.51],[.20,.09,7,.49],[.43,.11,-8,.50],
+    [-.42,.29,8,.49],[-.22,.31,-6,.50],[.01,.30,9,.49],[.24,.30,-7,.50],[.43,.29,5,.48],
+    [-.33,-.24,4,.48],[-.12,-.25,-9,.49],[.12,-.24,7,.48],[.33,-.22,-5,.49],
+    [-.12,.22,6,.48],[.12,.22,-7,.49],
+    [-.36,.20,-4,.46],[.34,.20,6,.46],[.00,.34,-2,.46]
   ];
 
   function shutter(){
@@ -391,47 +936,181 @@ body.hacking .file:nth-child(odd){animation:cardHack .27s steps(2) infinite}
   function archive(card,index){
     if(!card||card.classList.contains("archived"))return;
     const L=layouts[index%layouts.length];
-    const mobile=innerWidth<700,fac=mobile?.46:1;
-    card.style.setProperty("--x",(L[0]*fac)+"px");card.style.setProperty("--y",(L[1]*fac)+"px");card.style.setProperty("--r",L[2]+"deg");card.style.setProperty("--s",mobile?Math.min(.63,L[3]):L[3]);
-    card.classList.remove("live");card.classList.add("archived");
+    const mobile=innerWidth<700;
+    const usableW=innerWidth*(mobile?.82:.92);
+    const usableH=innerHeight*(mobile?.74:.88);
+    card.style.setProperty("--x",(L[0]*usableW)+"px");
+    card.style.setProperty("--y",(L[1]*usableH)+"px");
+    card.style.setProperty("--r",L[2]+"deg");
+    card.style.setProperty("--s",mobile?Math.min(.44,L[3]):L[3]);
+    card.classList.remove("live");
+    card.classList.add("archived");
   }
   function showPhoto(index){
     if(activeCard)archive(activeCard,index-1);
     const p=PHOTOS[index],card=document.createElement("figure");card.className="photo-card";card.style.setProperty("--z",50+index);card.style.setProperty("--liveR",((index%5)-2)*1.4+"deg");card.style.setProperty("--enterR",((index%7)-3)*4+"deg");
     card.innerHTML=`<img src="${p.src}" alt=""><figcaption class="stamp"><span>${p.file}</span><span>${p.who}</span></figcaption>`;
     pile.appendChild(card);createdCards.push(card);activeCard=card;
-    requestAnimationFrame(()=>card.classList.add("live"));cameraFlash();
-  }
+    requestAnimationFrame(()=>card.classList.add("live"));
+    cameraFlash();
 
-  function resetPile(){createdCards.forEach(c=>c.remove());createdCards=[];activeCard=null;captionIndex=-1;photoIndex=-1;caption.textContent="";caption.style.opacity=0}
-
-  async function startTransmission(){
-    systemStage.style.display="none";transmission.classList.add("active");endcard.classList.remove("active");resetPile();
-    try{narration.currentTime=0;narration.muted=false;await narration.play()}catch(e){
-      caption.textContent="TOQUE PARA INICIAR A TRANSMISSÃO";caption.style.opacity=1;
-      transmission.addEventListener("pointerdown",()=>narration.play(),{once:true})
+    // Glitch pontual, não constante: mais cinematográfico e menos "filtro barato".
+    if(index>0 && index%5===0){
+      setTimeout(()=>{
+        card.classList.remove("signal-hit");
+        void card.offsetWidth;
+        card.classList.add("signal-hit");
+        playSfx(sfxGlitch,.045,.95+Math.random()*.16);
+        setTimeout(()=>card.classList.remove("signal-hit"),280);
+      },120);
     }
   }
 
+  function clearPhotoTimers(){
+    photoTimers.forEach(clearTimeout);
+    photoTimers=[];
+  }
+
+  function resetPile(){
+    clearPhotoTimers();
+    createdCards.forEach(c=>c.remove());
+    createdCards=[];
+    activeCard=null;
+    captionIndex=-1;
+    photoIndex=-1;
+    caption.textContent="";
+    caption.style.opacity=0;
+  }
+
+  function startPhotoStream(){
+    clearPhotoTimers();
+
+    const durationMs = Number.isFinite(narration.duration) && narration.duration > 10
+      ? narration.duration * 1000
+      : 60000;
+
+    const usableMs = Math.max(
+      10000,
+      durationMs - PHOTO_START_DELAY_MS - PHOTO_END_MARGIN_MS
+    );
+
+    const stepMs = PHOTOS.length > 1
+      ? usableMs / (PHOTOS.length - 1)
+      : usableMs;
+
+    PHOTOS.forEach((_, index)=>{
+      const delay = PHOTO_START_DELAY_MS + (stepMs * index);
+      const timer = setTimeout(()=>{
+        photoIndex=index;
+        showPhoto(index);
+      }, delay);
+      photoTimers.push(timer);
+    });
+  }
+
+  async function startTransmission(){
+    systemStage.style.display="none";
+    transmission.classList.add("active");
+    endcard.classList.remove("active");
+    resetPile();
+
+    // O primeiro clique no falso Drive já autorizou a mídia.
+    // Não há segundo pedido de toque.
+    await startNarrationAutomatically();
+  }
+
   function sync(){
-    if(!transmission.classList.contains("active")){requestAnimationFrame(sync);return}
+    if(!transmission.classList.contains("active")){
+      requestAnimationFrame(sync);
+      return;
+    }
+
     const t=narration.currentTime;
     let ci=-1;
-    for(let i=0;i<CAPTIONS.length;i++){if(t>=CAPTIONS[i].s&&t<=CAPTIONS[i].e){ci=i;break}}
-    if(ci!==captionIndex){captionIndex=ci;if(ci>=0){caption.textContent=CAPTIONS[ci].t;caption.style.opacity=1}else caption.style.opacity=0}
-    let pi=-1;
-    for(let i=0;i<PHOTOS.length;i++){if(t>=PHOTOS[i].t)pi=i;else break}
-    if(pi!==photoIndex&&pi>=0){photoIndex=pi;showPhoto(pi)}
-    requestAnimationFrame(sync)
-  }requestAnimationFrame(sync);
+
+    for(let i=0;i<CAPTIONS.length;i++){
+      if(t>=CAPTIONS[i].s&&t<=CAPTIONS[i].e){
+        ci=i;
+        break;
+      }
+    }
+
+    if(ci!==captionIndex){
+      captionIndex=ci;
+      if(ci>=0){
+        caption.textContent=CAPTIONS[ci].t;
+        caption.style.opacity=1;
+      }else{
+        caption.style.opacity=0;
+      }
+    }
+
+    requestAnimationFrame(sync);
+  }
+  requestAnimationFrame(sync);
 
   narration.addEventListener("ended",()=>{
+    clearPhotoTimers();
     if(activeCard)archive(activeCard,PHOTOS.length-1);
     createdCards.forEach(c=>c.classList.add("final"));
-    setTimeout(()=>{transmission.classList.remove("active");endcard.classList.add("active")},1150);
-    if(NEXT_PAGE){continueBtn.disabled=false;continueBtn.onclick=()=>location.href=NEXT_PAGE}
+    setTimeout(()=>{
+      transmission.classList.remove("active");
+      endcard.classList.add("active");
+      setSoundPhase("end");
+      stopHackSynth();
+      clearTimeout(randomGlitchTimer);
+      psychResult.classList.remove("show");
+      psychResult.textContent="";
+      psychActions.style.display="flex";
+      continueBtn.classList.remove("show");
+    },1150);
   });
-  muteBtn.addEventListener("click",()=>{narration.muted=!narration.muted;muteBtn.textContent=narration.muted?"○":"◉"});
+  document.querySelectorAll(".psych-btn").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      const answer=btn.dataset.answer;
+      sessionStorage.setItem("phantasma_confianca",answer);
+
+      psychActions.style.display="none";
+
+      if(answer==="sim"){
+        psychResult.innerHTML='Ótimo.<br>Eu gosto de confiança.<br><span style="color:#ff737b">Torna o erro muito mais interessante.</span>';
+      }else{
+        psychResult.innerHTML='Finalmente uma resposta sensata.<br><span style="color:#ff737b">Pena que ela não vai ajudar.</span>';
+      }
+
+      psychResult.classList.add("show");
+      continueBtn.classList.add("show");
+    });
+  });
+
+  continueBtn.addEventListener("click",()=>{
+    if(NEXT_PAGE){
+      location.href=NEXT_PAGE;
+    }else{
+      psychResult.innerHTML='O teste ainda não foi conectado.<br><span style="color:#72877a">PARTE II // BLOQUEADA</span>';
+      psychResult.classList.add("show");
+    }
+  });
+
+  muteBtn.addEventListener("click",()=>{
+    soundMuted=!soundMuted;
+    narration.muted=soundMuted;
+    sfxAmbient.muted=soundMuted;
+    muteBtn.textContent=soundMuted?"○":"◉";
+
+    if(soundMuted){
+      clearTimeout(machineTimer);
+      stopHackSynth();
+      stopProcessorBed();
+      stopNoiseBed();
+    }else{
+      sfxAmbient.play().catch(()=>{});
+      startNoiseBed();
+      startProcessorBed();
+      startHackSynth(transmission.classList.contains("active")?"narration":"hack");
+      setSoundPhase(transmission.classList.contains("active")?"narration":"takeover");
+    }
+  });
   replayBtn.addEventListener("click",()=>{endcard.classList.remove("active");transmission.classList.add("active");resetPile();narration.currentTime=0;narration.play()});
 })();
 </script>
