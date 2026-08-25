@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
 <title>Ilustrações C4 - Drive</title>
-<!-- PHANTASMA // PARTE I // V4.4 // INVASAO MAIS LENTA -->
+<!-- PHANTASMA // PARTE I // V4.5 // MONTE DE FOTOS CORRIGIDO -->
 <style>
 :root{
   --g-bg:#f8fafd;--g-panel:#fff;--g-text:#1f1f1f;--g-muted:#5f6368;
@@ -469,6 +469,133 @@ body.cine-hard #drive{
   .photo-card{max-width:74vw;max-height:68dvh}.photo-card img{max-width:72vw;max-height:calc(68dvh - 42px)}
 }
 @media(max-width:420px){.file-preview{height:112px}.filename{font-size:12px}.photo-card{width:min(var(--w,280px),74vw)}}
+
+/* ==========================================================
+   V4.5 // CORREÇÃO FINAL DO MONTE
+   Este bloco DEVE ficar no final do CSS.
+   ========================================================== */
+#transmission #photoPile{
+  position:absolute !important;
+  inset:4.5% 5.5% 8% !important;
+  overflow:visible !important;
+  pointer-events:none;
+  transform-origin:50% 50%;
+  transition:transform .65s cubic-bezier(.2,.8,.2,1);
+}
+
+#transmission .photo-card{
+  position:absolute !important;
+  left:50% !important;
+  top:49% !important;
+  width:max-content !important;
+  max-width:30vw !important;
+  max-height:59dvh !important;
+  padding:7px 7px 29px !important;
+  background:#efefeb !important;
+  border-radius:1px;
+  box-shadow:
+    0 14px 34px rgba(0,0,0,.48),
+    0 3px 9px rgba(0,0,0,.28),
+    0 0 0 1px rgba(255,255,255,.20) !important;
+  transform-origin:center center !important;
+  z-index:var(--z,10) !important;
+}
+
+#transmission .photo-card img{
+  display:block !important;
+  width:auto !important;
+  height:auto !important;
+  max-width:28vw !important;
+  max-height:calc(59dvh - 43px) !important;
+  object-fit:contain !important;
+  background:#111;
+}
+
+/* FOTO NOVA: destaque central/colorido */
+#transmission .photo-card.live{
+  opacity:1 !important;
+  filter:none !important;
+  transform:
+    translate(
+      calc(-50% + var(--live-x,0px)),
+      calc(-50% + var(--live-y,0px))
+    )
+    rotate(var(--live-r,0deg))
+    scale(var(--live-s,.94)) !important;
+}
+
+/* FOTO DESCARTADA: permanece VISÍVEL no monte */
+#transmission .photo-card.archived{
+  opacity:.68 !important;
+  filter:grayscale(1) brightness(.61) contrast(1.08) !important;
+  transform:
+    translate(
+      calc(-50% + var(--pile-x,0px)),
+      calc(-50% + var(--pile-y,0px))
+    )
+    rotate(var(--pile-r,0deg))
+    scale(var(--pile-s,.60)) !important;
+}
+
+/* quando a câmera final entrar, recua levemente o monte inteiro */
+#transmission #photoPile.camera-pile{
+  transform:scale(.90) !important;
+}
+
+/* garante que o overlay da câmera fique POR CIMA, sem esconder as fotos */
+#cameraFinal{
+  background:transparent !important;
+}
+#cameraFinal .cam-vignette{
+  pointer-events:none;
+}
+
+@media(max-width:900px){
+  #transmission #photoPile{
+    inset:0 !important;
+    width:100% !important;
+    height:100% !important;
+    overflow:hidden !important;
+  }
+
+  #transmission .photo-card{
+    left:50% !important;
+    top:50% !important;
+    max-width:52vw !important;
+    max-height:54dvh !important;
+    padding:5px 5px 23px !important;
+  }
+
+  #transmission .photo-card img{
+    max-width:50vw !important;
+    max-height:calc(54dvh - 34px) !important;
+  }
+
+  #transmission .photo-card.archived{
+    opacity:.70 !important;
+  }
+
+  #transmission #photoPile.camera-pile{
+    transform:scale(.82) !important;
+  }
+}
+
+@media(max-width:520px){
+  #transmission .photo-card{
+    max-width:56vw !important;
+    max-height:51dvh !important;
+  }
+
+  #transmission .photo-card img{
+    max-width:54vw !important;
+    max-height:calc(51dvh - 34px) !important;
+  }
+
+  #transmission #photoPile.camera-pile{
+    transform:scale(.76) !important;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -1290,6 +1417,7 @@ body.cine-hard #drive{
     photoIndex=-1;
     caption.textContent="";
     caption.style.opacity=0;
+    pile.classList.remove("camera-pile");
   }
 
   function shuffledPhotoOrder(){
@@ -1359,6 +1487,7 @@ body.cine-hard #drive{
       card.classList.add("final");
     });
 
+    pile.classList.add("camera-pile");
     cameraFinal.classList.add("show");
   }
 
@@ -1414,6 +1543,7 @@ body.cine-hard #drive{
     setTimeout(()=>{
       transmission.classList.remove("active");
       cameraFinal.classList.remove("show");
+      pile.classList.remove("camera-pile");
       endcard.classList.add("active");
       setSoundPhase("end");
       stopHackSynth();
