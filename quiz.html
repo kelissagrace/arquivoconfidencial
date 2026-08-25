@@ -263,6 +263,13 @@ main{
   #submit{grid-column:1/-1;width:100%;height:48px;margin-top:8px}
   #reaction{padding-left:18px;min-height:132px;font-size:13px}
 }
+
+#binaryWipe{position:fixed;inset:0;z-index:9999;pointer-events:none;opacity:0;visibility:hidden;background:#020503}
+#binaryWipe.show{opacity:1;visibility:visible}
+#binaryWipe canvas{position:absolute;inset:0;width:100%;height:100%}
+#binaryWipe .wipe-status{position:absolute;left:50%;bottom:max(28px,env(safe-area-inset-bottom));transform:translateX(-50%);color:rgba(181,255,211,.68);font-size:10px;letter-spacing:.22em;text-transform:uppercase;white-space:nowrap;opacity:0}
+#binaryWipe.show .wipe-status{animation:wipeStatus .35s ease .95s forwards}
+@keyframes wipeStatus{to{opacity:1}}
 </style>
 
 </head>
@@ -321,6 +328,10 @@ main{
 </div>
 
 <div id="absence">SESSÃO // AUSÊNCIA REGISTRADA</div>
+<div id="binaryWipe" aria-hidden="true">
+  <canvas id="binaryWipeCanvas"></canvas>
+  <div class="wipe-status">limpando sessão // carregando próximo protocolo</div>
+</div>
 
 <audio id="sfxClick" preload="auto" src="assets/sfx/click.wav"></audio>
 <audio id="sfxError" preload="auto" src="assets/sfx/erro.wav"></audio>
@@ -329,7 +340,7 @@ main{
 <script>
 (() => {
   "use strict";
-  const NEXT_PAGE = "";
+  const NEXT_PAGE = "pistas.html";
 
   const QUESTIONS = [
     { id:"westbridge-shooter", question:"Qual é o nome do atirador de Westbrigde?", accepted:["luke","luke hancey"], type:"text" },
@@ -818,12 +829,71 @@ main{
     }
   });
 
+  function runBinaryWipe(nextUrl){
+    const overlay=document.getElementById("binaryWipe");
+    const canvas=document.getElementById("binaryWipeCanvas");
+    if(!overlay||!canvas){location.href=nextUrl;return;}
+    overlay.classList.add("show");
+    const ctx=canvas.getContext("2d");
+    const dpr=Math.min(devicePixelRatio||1,1.5);
+    canvas.width=Math.floor(innerWidth*dpr);
+    canvas.height=Math.floor(innerHeight*dpr);
+    canvas.style.width=innerWidth+"px";
+    canvas.style.height=innerHeight+"px";
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+
+    const fs=Math.max(13,Math.min(20,innerWidth/75));
+    const streams=Array.from({length:Math.ceil(innerWidth/fs)},(_,i)=>({
+      x:i*fs,y:-Math.random()*innerHeight*.95,speed:14+Math.random()*20,
+      len:7+Math.floor(Math.random()*13),alpha:.34+Math.random()*.45
+    }));
+    let coverY=-innerHeight*.45,last=performance.now();
+    sessionStorage.setItem("phantasma_binary_transition","1");
+
+    function frame(now){
+      const dt=Math.min(34,now-last)/16.67; last=now;
+      ctx.fillStyle="rgba(2,5,3,.22)";
+      ctx.fillRect(0,0,innerWidth,innerHeight);
+      ctx.font=fs+"px monospace";
+      ctx.textAlign="center";
+
+      streams.forEach(s=>{
+        for(let j=0;j<s.len;j++){
+          const yy=s.y-j*fs;
+          if(yy<-fs||yy>innerHeight+fs)continue;
+          const fade=1-(j/s.len);
+          ctx.fillStyle=`rgba(126,255,181,${s.alpha*fade})`;
+          ctx.fillText(Math.random()>.5?"1":"0",s.x,yy);
+        }
+        s.y+=s.speed*dt;
+      });
+
+      coverY+=29*dt;
+      const g=ctx.createLinearGradient(0,coverY-120,0,coverY+40);
+      g.addColorStop(0,"rgba(2,5,3,0)");
+      g.addColorStop(.55,"rgba(2,5,3,.82)");
+      g.addColorStop(1,"rgba(2,5,3,1)");
+      ctx.fillStyle=g;
+      ctx.fillRect(0,0,innerWidth,Math.max(0,coverY+40));
+
+      if(coverY<innerHeight+150){
+        requestAnimationFrame(frame);
+      }else{
+        ctx.fillStyle="#020503";
+        ctx.fillRect(0,0,innerWidth,innerHeight);
+        setTimeout(()=>location.href=nextUrl,180);
+      }
+    }
+    requestAnimationFrame(frame);
+  }
+
   nextBtn.addEventListener("click", () => {
     safePlay(sfxClick,.07);
     if(NEXT_PAGE){
-      location.href = NEXT_PAGE;
+      nextBtn.disabled=true;
+      runBinaryWipe(NEXT_PAGE);
     }else{
-      nextMessage.textContent = "PARTE III // AINDA NÃO CONECTADA";
+      nextMessage.textContent = "PRÓXIMO PROTOCOLO // AINDA NÃO CONECTADO";
     }
   });
 
