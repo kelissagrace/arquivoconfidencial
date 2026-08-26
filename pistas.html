@@ -299,6 +299,86 @@ main{width:min(1180px,100%);margin:auto;padding:42px 0 60px}
   .penalty-actions{flex-direction:column}
   .penalty-actions button{width:100%}
 }
+
+/* =========================================================
+   V55 // oferta de pista sutil
+   ========================================================= */
+#penaltyModal{
+  display:flex !important;
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+  background:rgba(1,4,2,.42);
+  backdrop-filter:blur(2px);
+  transition:opacity .18s ease, visibility .18s ease;
+}
+#penaltyModal.show{
+  opacity:1;
+  visibility:visible;
+  pointer-events:auto;
+}
+
+.penalty-card{
+  opacity:0;
+  transform:translateY(10px) scale(.992);
+  filter:blur(1.5px);
+  transition:
+    opacity .22s ease,
+    transform .22s cubic-bezier(.2,.8,.2,1),
+    filter .22s ease;
+}
+#penaltyModal.show .penalty-card{
+  opacity:1;
+  transform:none;
+  filter:none;
+}
+#penaltyModal.closing{
+  opacity:0;
+}
+#penaltyModal.closing .penalty-card{
+  opacity:0;
+  transform:translateY(-5px) scale(.996);
+}
+
+/* Só um scan curtíssimo para não entrar seco */
+body.offer-pulse::after{
+  content:"";
+  position:fixed;
+  left:0;
+  right:0;
+  top:-8%;
+  height:8%;
+  z-index:1170;
+  pointer-events:none;
+  background:linear-gradient(
+    180deg,
+    transparent,
+    rgba(124,240,167,.15),
+    rgba(255,255,255,.04),
+    transparent
+  );
+  animation:offerPulseScan .26s ease-out forwards;
+}
+@keyframes offerPulseScan{
+  from{top:-8%;opacity:.82}
+  to{top:104%;opacity:0}
+}
+
+/* Ao aceitar, a pista dá só um flicker curto */
+.clue.unlocking{
+  border-color:rgba(124,240,167,.34);
+  animation:clueDecrypt .34s steps(3,end);
+}
+.clue.unlocking .clue-value{
+  filter:blur(1px);
+  letter-spacing:.12em;
+}
+@keyframes clueDecrypt{
+  0%{transform:translateX(-2px);filter:brightness(1.45)}
+  45%{transform:translateX(2px);filter:brightness(.82)}
+  100%{transform:none;filter:none}
+}
+
 </style>
 </head>
 <body>
@@ -319,10 +399,9 @@ main{width:min(1180px,100%);margin:auto;padding:42px 0 60px}
     <div class="penalty-kicker">negociação de custo</div>
     <h2 id="penaltyTitle" class="penalty-title">Você quer mais uma pista?</h2>
     <div id="penaltyBody" class="penalty-body"></div>
-    <div id="penaltyCost" class="penalty-cost"></div>
     <div class="penalty-actions">
-      <button id="acceptPenalty" type="button">ACEITAR CUSTO</button>
-      <button id="declinePenalty" type="button">SEGUIR SEM PISTA</button>
+      <button id="acceptPenalty" type="button">ACEITAR</button>
+      <button id="declinePenalty" type="button">CONTINUAR SEM PISTA</button>
     </div>
   </div>
 </div>
@@ -374,7 +453,6 @@ main{width:min(1180px,100%);margin:auto;padding:42px 0 60px}
           <span id="errorMeta">erros nesta rodada // 0</span>
           <span id="totalMeta">erros acumulados // 0</span>
           <span id="clueMeta">pistas liberadas // 1</span>
-          <span id="penaltyMeta">dívida do tiro // -0s</span>
         </div>
       </div>
     </section>
@@ -402,7 +480,7 @@ main{width:min(1180px,100%);margin:auto;padding:42px 0 60px}
 "use strict";
 
 const NEXT_PAGE = "";
-const PENALTIES = { clue2: 5, clue3: 10 };
+const PENALTIES = { clue2: 1, clue3: 1 };
 
 const ROUNDS = [
   {
@@ -476,13 +554,13 @@ const TAUNTS = {
   ],
   prompt2: [
     "Você quer mais uma pista? Isso terá custo.",
-    "Posso liberar a próxima pista. Em troca, eu desconto tempo do jogo do tiro.",
-    "Quer continuar fingindo autonomia ou aceita pagar por ajuda?"
+    "Posso liberar a próxima pista. Mas toda ajuda tem um preço.",
+    "Quer continuar fingindo autonomia ou aceita o custo?"
   ],
   prompt3: [
     "Última pista disponível. O custo aumenta.",
-    "Posso soltar a última pista, mas você vai entrar no jogo do tiro com menos tempo.",
-    "Esta é sua última barganha aceitável. Depois disso, só humilhação."
+    "Posso soltar a última pista. O custo, naturalmente, será maior.",
+    "Esta é sua última barganha aceitável. Depois disso, eu paro de negociar."
   ],
   declined2: [
     "Ótimo. Sofra por mérito próprio.",
@@ -541,7 +619,6 @@ const reaction = $("reaction");
 const errorMeta = $("errorMeta");
 const totalMeta = $("totalMeta");
 const clueMeta = $("clueMeta");
-const penaltyMeta = $("penaltyMeta");
 const finalText = $("finalText");
 const finalStats = $("finalStats");
 const nextBtn = $("nextBtn");
@@ -554,7 +631,6 @@ const sfxAccess = $("sfxAccess");
 const penaltyModal = $("penaltyModal");
 const penaltyTitle = $("penaltyTitle");
 const penaltyBody = $("penaltyBody");
-const penaltyCost = $("penaltyCost");
 const acceptPenalty = $("acceptPenalty");
 const declinePenalty = $("declinePenalty");
 
@@ -572,7 +648,9 @@ const state = {
   busy: false,
   used: new Set(),
   penaltySeconds: Number(sessionStorage.getItem("phantasma_penalidade_tiro_segundos") || 0),
-  pendingUnlock: 0
+  pendingUnlock: 0,
+  stageErrors: 0,
+  finalStageArmed: false
 };
 
 function shuffle(arr){
@@ -625,7 +703,6 @@ function updateMeta(){
   errorMeta.textContent = `erros nesta rodada // ${state.roundErrors}`;
   totalMeta.textContent = `erros acumulados // ${state.totalErrors}`;
   clueMeta.textContent = `pistas liberadas // ${state.clueCount}`;
-  penaltyMeta.textContent = `dívida do tiro // -${state.penaltySeconds}s`;
 }
 function setClue(index,value,unlocked){
   const el = clueEls[index];
@@ -651,6 +728,8 @@ function renderRound(){
   state.clueCount = 1;
   state.busy = false;
   state.pendingUnlock = 0;
+  state.stageErrors = 0;
+  state.finalStageArmed = false;
 
   const round = rounds[state.current];
   categoryEl.textContent = round.category;
@@ -674,7 +753,6 @@ function applyPenalty(seconds){
   updateMeta();
 }
 function openPenaltyPrompt(level){
-  const extra = level === 2 ? PENALTIES.clue2 : PENALTIES.clue3;
   const sarcasm = level === 2 ? pick(TAUNTS.unlock2Sarcasm) : pick(TAUNTS.unlock3Sarcasm);
   const ask = level === 2 ? pick(TAUNTS.prompt2) : pick(TAUNTS.prompt3);
 
@@ -682,37 +760,70 @@ function openPenaltyPrompt(level){
   state.busy = true;
   disableInput(true);
 
-  penaltyTitle.textContent = level === 2 ? "Você deseja mais uma pista?" : "Você deseja a última pista?";
+  penaltyTitle.textContent = level === 2
+    ? "Você deseja mais uma pista?"
+    : "Você deseja a última pista?";
+
   penaltyBody.textContent = `${sarcasm}\n\n${ask}`;
-  penaltyCost.textContent = `CUSTO REGISTRADO // -${extra}s NO JOGO DO TIRO`;
-  penaltyModal.classList.add("show");
-  penaltyModal.setAttribute("aria-hidden","false");
+
+  document.body.classList.remove("offer-pulse");
+  void document.body.offsetWidth;
+  document.body.classList.add("offer-pulse");
   glitch();
+
+  setTimeout(()=>{
+    penaltyModal.classList.remove("closing");
+    penaltyModal.classList.add("show");
+    penaltyModal.setAttribute("aria-hidden","false");
+    document.body.classList.remove("offer-pulse");
+  },160);
 }
-function closePenaltyPrompt(){
-  penaltyModal.classList.remove("show");
-  penaltyModal.setAttribute("aria-hidden","true");
+function closePenaltyPrompt(afterClose){
+  penaltyModal.classList.add("closing");
+
+  setTimeout(()=>{
+    penaltyModal.classList.remove("show","closing");
+    penaltyModal.setAttribute("aria-hidden","true");
+
+    if(typeof afterClose === "function"){
+      afterClose();
+    }
+  },180);
 }
 function unlockClueFromPrompt(level){
   const round = rounds[state.current];
-  if(level === 2){
-    state.clueCount = Math.max(state.clueCount, 2);
-    setClue(1, round.clues[1], true);
-    applyPenalty(PENALTIES.clue2);
-    say(`PISTA 02 LIBERADA.\nCusto aceito. Eu vou cobrar isso no jogo do tiro.`, "bad");
-  }else if(level === 3){
-    state.clueCount = Math.max(state.clueCount, 3);
-    setClue(2, round.clues[2], true);
-    applyPenalty(PENALTIES.clue3);
-    say(`PISTA 03 LIBERADA.\nÚltima pista concedida. O cronômetro do seu futuro problema já ficou menor.`, "bad");
-  }
-  safePlay(sfxAccess,.08);
-  state.pendingUnlock = 0;
-  state.busy = false;
-  disableInput(false);
-  setButton(null,"RESPONDER");
-  updateMeta();
-  setTimeout(()=>answerInput.focus(),80);
+  const targetIndex = level === 2 ? 1 : 2;
+  const targetClue = clueEls[targetIndex];
+
+  targetClue.classList.add("unlocking");
+  clueValues[targetIndex].textContent = "01 10 01 11";
+
+  setTimeout(()=>{
+    targetClue.classList.remove("unlocking");
+
+    if(level === 2){
+      state.clueCount = 2;
+      setClue(1, round.clues[1], true);
+      applyPenalty(PENALTIES.clue2);
+      say("PISTA 02 LIBERADA.\nEspero que tenha valido a pena.", "bad");
+    }else if(level === 3){
+      state.clueCount = 3;
+      setClue(2, round.clues[2], true);
+      applyPenalty(PENALTIES.clue3);
+      say("PISTA 03 LIBERADA.\nAgora não diga que eu não ajudei.", "bad");
+    }
+
+    state.stageErrors = 0;
+    state.finalStageArmed = false;
+    safePlay(sfxAccess,.08);
+    state.pendingUnlock = 0;
+    state.busy = false;
+    disableInput(false);
+    setButton(null,"RESPONDER");
+    updateMeta();
+    glitch();
+    setTimeout(()=>answerInput.focus(),80);
+  },320);
 }
 function declineClueFromPrompt(level){
   if(level === 2){
@@ -720,6 +831,8 @@ function declineClueFromPrompt(level){
   }else{
     say(pick(TAUNTS.declined3), "bad");
   }
+
+  state.stageErrors = 0;
   state.pendingUnlock = 0;
   state.busy = false;
   disableInput(false);
@@ -765,10 +878,6 @@ function finish(){
   }else{
     text = `Terminou.\n${state.revealed} respostas precisaram ser reveladas.\n\nVamos chamar isso de persistência. Conhecimento seria generoso demais.`;
   }
-
-  if(state.penaltySeconds>0){
-    text += `\n\nE sim, eu já retirei ${state.penaltySeconds}s do seu jogo do tiro.`;
-  }
   if(quizErrors>=4 && state.totalErrors>=8){
     text += "\n\nDepois do desempenho no Quiz, você realmente está construindo uma reputação.";
   }
@@ -779,8 +888,7 @@ function finish(){
     `RESOLVIDAS COM 1 PISTA // ${state.solved1}<br>`+
     `RESOLVIDAS COM 2 PISTAS // ${state.solved2}<br>`+
     `RESOLVIDAS COM 3 PISTAS // ${state.solved3}<br>`+
-    `RESPOSTAS REVELADAS // ${state.revealed}<br>`+
-    `PENALIDADE DO TIRO // -${state.penaltySeconds}s`;
+    `RESPOSTAS REVELADAS // ${state.revealed}`;
 
   sessionStorage.setItem("phantasma_painel_concluido","sim");
   sessionStorage.setItem("phantasma_painel_erros", String(state.totalErrors));
@@ -800,10 +908,11 @@ form.addEventListener("submit", e => {
   if(state.busy) return;
 
   const raw = answerInput.value.trim();
+
   if(!raw){
     say("Você pretende responder ou admirar o cursor?", "bad");
-    setButton("wrong", "VAZIO");
-    setTimeout(()=>setButton(null,"RESPONDER"), 650);
+    setButton("wrong","VAZIO");
+    setTimeout(()=>setButton(null,"RESPONDER"),650);
     return;
   }
 
@@ -814,15 +923,16 @@ form.addEventListener("submit", e => {
     state.busy = true;
     disableInput(true);
     setButton("correct","CORRETO");
-    say(successText(), "good");
-    saveRound(round, true, false);
+    say(successText(),"good");
+    saveRound(round,true,false);
     safePlay(sfxAccess,.08);
-    setTimeout(nextRound, 2600);
+    setTimeout(nextRound,2600);
     return;
   }
 
   state.roundErrors++;
   state.totalErrors++;
+  state.stageErrors++;
   answerInput.value = "";
   updateMeta();
   setButton("wrong","ERRO");
@@ -833,54 +943,75 @@ form.addEventListener("submit", e => {
   void card.offsetWidth;
   card.classList.add("shake");
 
-  if(state.roundErrors===3){
-    openPenaltyPrompt(2);
-    return;
-  }
-  if(state.roundErrors===6){
-    openPenaltyPrompt(3);
-    return;
+  // PISTA 1: a cada 3 erros, oferece SOMENTE a Pista 2.
+  if(state.clueCount === 1){
+    if(state.stageErrors >= 3){
+      openPenaltyPrompt(2);
+      return;
+    }
+    say(pick(TAUNTS.wrong12),"bad");
   }
 
-  if(state.roundErrors<=2){
-    say(pick(TAUNTS.wrong12), "bad");
-  }else if(state.roundErrors<=5){
-    say(pick(TAUNTS.wrong45), "bad");
-  }else if(state.roundErrors<=8){
-    say(pick(TAUNTS.wrong789), "bad");
-  }else if(state.roundErrors===9){
-    say(pick(TAUNTS.warningFinal), "bad");
-    setButton("final","ÚLTIMA");
-  }else{
-    state.busy = true;
-    disableInput(true);
-    setButton("final","REVELADO");
-    say(pick(TAUNTS.reveal).replaceAll("{ANSWER}", round.answer.toUpperCase()), "reveal");
-    saveRound(round, false, true);
-    safePlay(sfxAccess,.08);
-    setTimeout(nextRound, 4300);
-    return;
+  // PISTA 2: só depois que ela foi aceita; 3 novos erros oferecem a Pista 3.
+  else if(state.clueCount === 2){
+    if(state.stageErrors >= 3){
+      openPenaltyPrompt(3);
+      return;
+    }
+    say(pick(TAUNTS.wrong45),"bad");
+  }
+
+  // PISTA 3: 3 erros = aviso. O erro seguinte revela a resposta.
+  else {
+    if(!state.finalStageArmed && state.stageErrors >= 3){
+      state.finalStageArmed = true;
+      say(pick(TAUNTS.warningFinal),"bad");
+      setButton("final","ÚLTIMA");
+    }
+    else if(state.finalStageArmed && state.stageErrors >= 4){
+      state.busy = true;
+      disableInput(true);
+      setButton("final","REVELADO");
+      say(
+        pick(TAUNTS.reveal).replaceAll("{ANSWER}",round.answer.toUpperCase()),
+        "reveal"
+      );
+      saveRound(round,false,true);
+      safePlay(sfxAccess,.08);
+      setTimeout(nextRound,4300);
+      return;
+    }
+    else {
+      say(pick(TAUNTS.wrong789),"bad");
+    }
   }
 
   setTimeout(()=>{
     if(state.busy) return;
-    if(state.roundErrors>=9) setButton("final","ÚLTIMA");
-    else setButton(null,"RESPONDER");
+
+    if(state.finalStageArmed){
+      setButton("final","ÚLTIMA");
+    }else{
+      setButton(null,"RESPONDER");
+    }
+
     answerInput.focus();
-  }, 720);
+  },720);
 });
 
 acceptPenalty.addEventListener("click", ()=>{
   safePlay(sfxClick,.06);
   const level = state.pendingUnlock;
-  closePenaltyPrompt();
-  unlockClueFromPrompt(level);
+  closePenaltyPrompt(()=>{
+    unlockClueFromPrompt(level);
+  });
 });
 declinePenalty.addEventListener("click", ()=>{
   safePlay(sfxClick,.06);
   const level = state.pendingUnlock;
-  closePenaltyPrompt();
-  declineClueFromPrompt(level);
+  closePenaltyPrompt(()=>{
+    declineClueFromPrompt(level);
+  });
 });
 
 nextBtn.addEventListener("click", ()=>{
