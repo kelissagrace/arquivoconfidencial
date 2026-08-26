@@ -521,6 +521,16 @@ const ROUNDS = [
 ];
 
 const TAUNTS = {
+  phantasmaAnswer: [
+    "Jamais me rebaixe assim de novo.",
+    "Não me ofenda assim.",
+    "Eu? Essa resposta? Não me insulte.",
+    "Cuidado com as comparações.",
+    "Você acabou de me colocar no mesmo nível dessa resposta. Corrija isso.",
+    "Phantasma? Não. E eu sugiro que não repita a ofensa.",
+    "Meu nome não é chute. Tente outra vez."
+  ],
+
   wrong12: [
     "Não.",
     "Bonita tentativa. Quase pareceu convicção.",
@@ -661,7 +671,8 @@ function shuffle(arr){
   }
   return a;
 }
-const rounds = shuffle(ROUNDS);
+const rounds = shuffle(ROUNDS).slice(0, 3);
+sessionStorage.setItem("phantasma_painel_rodadas_sorteadas", JSON.stringify(rounds.map(r => r.id)));
 
 function normalize(v){
   return v.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim().replace(/\s+/g," ");
@@ -870,7 +881,7 @@ function finish(){
 
   let text;
   if(state.revealed===0 && state.totalErrors<=5){
-    text = "Cinco painéis.\nNenhuma resposta precisou ser arrancada de mim.\n\nIrritantemente competente.";
+    text = "Três painéis.\nNenhuma resposta precisou ser arrancada de mim.\n\nIrritantemente competente.";
   }else if(state.revealed===0){
     text = "Terminou.\nSem precisar que eu revelasse nenhuma resposta.\n\nNão vou mencionar quantos erros foram necessários. Ainda.";
   }else if(state.revealed===1){
@@ -930,6 +941,8 @@ form.addEventListener("submit", e => {
     return;
   }
 
+  const normalizedAttempt = normalize(raw);
+
   state.roundErrors++;
   state.totalErrors++;
   state.stageErrors++;
@@ -949,7 +962,11 @@ form.addEventListener("submit", e => {
       openPenaltyPrompt(2);
       return;
     }
-    say(pick(TAUNTS.wrong12),"bad");
+    if(normalizedAttempt === "phantasma"){
+      say(pick(TAUNTS.phantasmaAnswer),"bad");
+    }else{
+      say(pick(TAUNTS.wrong12),"bad");
+    }
   }
 
   // PISTA 2: só depois que ela foi aceita; 3 novos erros oferecem a Pista 3.
@@ -958,7 +975,11 @@ form.addEventListener("submit", e => {
       openPenaltyPrompt(3);
       return;
     }
-    say(pick(TAUNTS.wrong45),"bad");
+    if(normalizedAttempt === "phantasma"){
+      say(pick(TAUNTS.phantasmaAnswer),"bad");
+    }else{
+      say(pick(TAUNTS.wrong45),"bad");
+    }
   }
 
   // PISTA 3: 3 erros = aviso. O erro seguinte revela a resposta.
@@ -982,7 +1003,11 @@ form.addEventListener("submit", e => {
       return;
     }
     else {
-      say(pick(TAUNTS.wrong789),"bad");
+      if(normalizedAttempt === "phantasma"){
+        say(pick(TAUNTS.phantasmaAnswer),"bad");
+      }else{
+        say(pick(TAUNTS.wrong789),"bad");
+      }
     }
   }
 
