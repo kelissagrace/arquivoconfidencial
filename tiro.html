@@ -628,6 +628,10 @@ button{font:inherit}
 (() => {
 "use strict";
 
+const SITE_ROOT = location.hostname.endsWith("github.io")
+  ? "/arquivoconfidencial/"
+  : "./";
+
 const LETTER_POOL = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789#%?@&+";
 const NUMBER_POOL = "0123456789";
 
@@ -1186,7 +1190,7 @@ startGame.addEventListener("click",()=>{
   glitch();
 
   setTimeout(()=>{
-    location.href = "jogo/index.html";
+    location.href = SITE_ROOT + "jogo/index.html";
   },260);
 });
 

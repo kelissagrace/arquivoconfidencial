@@ -479,7 +479,10 @@ body.offer-pulse::after{
 (() => {
 "use strict";
 
-const NEXT_PAGE = "tiro.html";
+const SITE_ROOT = location.hostname.endsWith("github.io")
+  ? "/arquivoconfidencial/"
+  : "./";
+const NEXT_PAGE = SITE_ROOT + "tiro.html";
 const PENALTIES = { clue2: 1, clue3: 1 };
 
 const ROUNDS = [
