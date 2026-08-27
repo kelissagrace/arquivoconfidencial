@@ -4,7 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#020403">
-<title>PHANTASMA // FASE FINAL</title>
+<title>PHANTASMA // FASE FINAL // V68</title>
+<!-- V68 // loading natural + fix transição -->
 <style>
 :root{
   --bg:#020403;
@@ -124,10 +125,10 @@ button{font:inherit}
   min-height:48px;
   margin-top:14px;
   color:#edf5f0;
-  font-family:Georgia,"Times New Roman",serif;
-  font-size:clamp(25px,4vw,39px);
-  font-weight:700;
-  letter-spacing:.015em;
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-size:clamp(24px,3.8vw,38px);
+  font-weight:720;
+  letter-spacing:-.035em;
   line-height:1.1;
   transition:opacity .17s ease,transform .17s ease,filter .17s ease;
 }
@@ -195,7 +196,36 @@ button{font:inherit}
   color:#536058;
   font-size:8px;
   letter-spacing:.10em;
+  animation:bootFootBlink 2.2s ease-in-out infinite;
 }
+@keyframes bootFootBlink{
+  0%,100%{opacity:.36}
+  50%{opacity:.78}
+}
+
+.boot-activity{
+  position:absolute;
+  right:18px;
+  top:18px;
+  z-index:3;
+  display:flex;
+  gap:4px;
+  align-items:center;
+}
+.boot-activity span{
+  width:4px;
+  height:4px;
+  border-radius:50%;
+  background:rgba(124,240,167,.48);
+  animation:activityPulse 1.2s ease-in-out infinite;
+}
+.boot-activity span:nth-child(2){animation-delay:.16s}
+.boot-activity span:nth-child(3){animation-delay:.32s}
+@keyframes activityPulse{
+  0%,80%,100%{opacity:.18;transform:scale(.82)}
+  40%{opacity:1;transform:scale(1)}
+}
+
 
 @media(max-width:640px){
   .boot-shell{padding:22px 18px}
@@ -522,6 +552,7 @@ button{font:inherit}
 <div id="boot">
   <div class="boot-inner">
     <div class="boot-shell">
+      <div class="boot-activity" aria-hidden="true"><span></span><span></span><span></span></div>
       <div class="boot-head">SESSÃO // RECUPERAÇÃO DE ESTADO</div>
 
       <div class="boot-content">
@@ -628,10 +659,6 @@ button{font:inherit}
 (() => {
 "use strict";
 
-const SITE_ROOT = location.hostname.endsWith("github.io")
-  ? "/arquivoconfidencial/"
-  : "./";
-
 const LETTER_POOL = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789#%?@&+";
 const NUMBER_POOL = "0123456789";
 
@@ -660,10 +687,30 @@ const CHARACTER_IDS = {
 };
 
 const BOOT_SEQUENCE = [
-  {at:0,     main:"VERIFICANDO INTEGRIDADE...", sub:"> analisando fragmentos...", pct:8},
-  {at:3300,  main:"RASTREANDO REFERÊNCIA...",   sub:"> origem protegida // índice parcial", pct:31},
-  {at:7000,  main:"ARQUIVO ENCONTRADO.",        sub:"> referência recuperada.", pct:68},
-  {at:10300, main:"DECODIFICAÇÃO INICIADA.",    sub:"> montando estrutura do arquivo...", pct:100}
+  {
+    at:0,
+    main:"VERIFICANDO INTEGRIDADE...",
+    sub:"> analisando fragmentos // bloco 01",
+    pct:9
+  },
+  {
+    at:3600,
+    main:"RASTREANDO REFERÊNCIA...",
+    sub:"> cruzando assinatura // origem protegida",
+    pct:38
+  },
+  {
+    at:7600,
+    main:"ARQUIVO ENCONTRADO",
+    sub:"> índice recuperado // validando conteúdo",
+    pct:72
+  },
+  {
+    at:11200,
+    main:"DECODIFICAÇÃO INICIADA",
+    sub:"> montando estrutura do arquivo...",
+    pct:100
+  }
 ];
 
 /* primeira tentativa: lenta */
@@ -1190,7 +1237,7 @@ startGame.addEventListener("click",()=>{
   glitch();
 
   setTimeout(()=>{
-    location.href = SITE_ROOT + "jogo/index.html";
+    location.href = "jogo/index.html";
   },260);
 });
 
@@ -1202,8 +1249,6 @@ function setBootStatus(main,sub,pct){
   setTimeout(()=>{
     bootText.textContent=main;
     bootSub.textContent=sub;
-    bootPct.textContent=pct+"%";
-    bootFill.style.width=pct+"%";
 
     if(pct<35){
       bootStatus.textContent="> transferência em andamento...";
@@ -1220,8 +1265,51 @@ function setBootStatus(main,sub,pct){
   },190);
 }
 
+
+let bootProgress = 0;
+let bootProgressTarget = 9;
+let bootProgressTimer = null;
+
+function setBootProgressTarget(value){
+  bootProgressTarget = Math.max(bootProgressTarget, value);
+}
+
+function startNaturalBootProgress(){
+  clearInterval(bootProgressTimer);
+
+  bootProgressTimer = setInterval(()=>{
+    if(bootProgress >= 100){
+      clearInterval(bootProgressTimer);
+      return;
+    }
+
+    const gap = bootProgressTarget - bootProgress;
+
+    if(gap <= 0){
+      return;
+    }
+
+    let step = 1;
+
+    if(gap > 18 && Math.random() > .58){
+      step = 2;
+    }
+
+    if(gap < 5){
+      step = 1;
+    }
+
+    bootProgress = Math.min(bootProgressTarget, bootProgress + step);
+    bootPct.textContent = bootProgress + "%";
+    bootFill.style.width = bootProgress + "%";
+  }, 145 + Math.random()*55);
+}
+
+startNaturalBootProgress();
+
 BOOT_SEQUENCE.forEach(step=>{
   setTimeout(()=>{
+    setBootProgressTarget(step.pct);
     setBootStatus(step.main,step.sub,step.pct);
 
     if(step.main==="ARQUIVO ENCONTRADO"){
@@ -1229,7 +1317,18 @@ BOOT_SEQUENCE.forEach(step=>{
     }
 
     if(step.main==="DECODIFICAÇÃO INICIADA"){
-      setTimeout(beginDecode,1650);
+      /*
+        FIX V68:
+        a transição agora dispara exatamente aqui.
+        Sem ponto final divergente entre texto e condição.
+      */
+      setTimeout(()=>{
+        bootProgress = 100;
+        bootPct.textContent = "100%";
+        bootFill.style.width = "100%";
+
+        setTimeout(beginDecode,1250);
+      },950);
     }
   },step.at);
 });
