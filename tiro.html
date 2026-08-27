@@ -55,32 +55,87 @@ button{font:inherit}
 
 /* BOOT */
 #boot{
-  position:fixed;inset:0;display:grid;place-items:center;padding:24px;
-  transition:opacity .55s ease,filter .55s ease;
+  position:fixed;inset:0;display:grid;place-items:center;
+  padding:clamp(18px,5vw,60px);
+  transition:opacity .72s ease,filter .72s ease,transform .72s ease;
 }
-#boot.fade{opacity:.16;filter:blur(1.6px)}
-.boot-inner{width:min(720px,100%)}
+#boot.fade{
+  opacity:.10;
+  filter:blur(2px);
+  transform:scale(.992);
+}
+.boot-inner{
+  position:relative;
+  width:min(610px,100%);
+  padding:0;
+}
+.boot-shell{
+  position:relative;
+  padding:22px 24px 20px;
+  border:1px solid rgba(220,235,226,.105);
+  background:
+    linear-gradient(180deg,rgba(7,11,8,.68),rgba(3,6,4,.42));
+  box-shadow:
+    0 28px 80px rgba(0,0,0,.22),
+    inset 0 1px rgba(255,255,255,.018);
+}
+.boot-shell::before{
+  content:"";
+  position:absolute;left:0;right:0;top:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(124,240,167,.30),transparent);
+}
+.boot-head{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:14px;padding-bottom:16px;
+  border-bottom:1px solid rgba(220,235,226,.065);
+  color:#556159;font-size:8px;letter-spacing:.18em;text-transform:uppercase;
+}
+.boot-live{
+  display:flex;align-items:center;gap:7px;
+}
+.boot-live::before{
+  content:"";width:5px;height:5px;border-radius:50%;
+  background:#748279;box-shadow:0 0 10px rgba(124,240,167,.14);
+  animation:bootPulse 1.5s ease-in-out infinite;
+}
+@keyframes bootPulse{50%{opacity:.25}}
+.boot-content{
+  padding:27px 0 8px;
+}
 .boot-kicker{
-  margin-bottom:16px;color:#56635b;font-size:9px;letter-spacing:.22em;text-transform:uppercase;
+  margin-bottom:11px;color:#4d5951;font-size:8px;
+  letter-spacing:.20em;text-transform:uppercase;
 }
 #bootText{
-  min-height:42px;color:#eef5f0;font-size:clamp(17px,2.2vw,25px);
-  letter-spacing:.08em;text-transform:uppercase;
+  min-height:34px;
+  color:#edf3ef;
+  font-size:clamp(16px,2vw,22px);
+  letter-spacing:.065em;text-transform:uppercase;
+  transition:opacity .18s ease,transform .18s ease,filter .18s ease;
 }
 #bootSub{
-  min-height:28px;margin-top:10px;color:#657169;font-size:10px;
-  letter-spacing:.15em;text-transform:uppercase;
+  min-height:22px;margin-top:10px;
+  color:#69756d;font-size:9px;
+  letter-spacing:.13em;text-transform:uppercase;
+  transition:opacity .18s ease,transform .18s ease;
+}
+#bootText.swap,#bootSub.swap{
+  opacity:0;transform:translateY(3px);filter:blur(2px);
 }
 .boot-line{
-  position:relative;width:100%;height:1px;margin-top:28px;overflow:hidden;
-  background:rgba(219,234,225,.08);
+  position:relative;width:100%;height:1px;margin-top:18px;
+  overflow:hidden;background:rgba(219,234,225,.065);
 }
 .boot-line::after{
-  content:"";position:absolute;inset:0 auto 0 -30%;width:30%;
-  background:linear-gradient(90deg,transparent,rgba(124,240,167,.75),transparent);
-  animation:bootSweep 1.25s ease-in-out infinite;
+  content:"";position:absolute;inset:0 auto 0 -18%;width:18%;
+  background:linear-gradient(90deg,transparent,rgba(124,240,167,.48),transparent);
+  animation:bootSweep 2.1s cubic-bezier(.35,.15,.35,.85) infinite;
 }
 @keyframes bootSweep{to{left:100%}}
+@media(max-width:640px){
+  .boot-shell{padding:19px 18px 17px}
+  .boot-content{padding-top:23px}
+}
 
 /* DECODE WINDOW */
 #decodeLayer{
@@ -401,10 +456,19 @@ button{font:inherit}
 
 <div id="boot">
   <div class="boot-inner">
-    <div class="boot-kicker">PHANTASMA // PROCESSAMENTO</div>
-    <div id="bootText">CARREGANDO...</div>
-    <div id="bootSub">sincronizando registros</div>
-    <div class="boot-line"></div>
+    <div class="boot-shell">
+      <div class="boot-head">
+        <span>SESSÃO // 04</span>
+        <span class="boot-live">PROCESSO ATIVO</span>
+      </div>
+
+      <div class="boot-content">
+        <div class="boot-kicker">RECUPERAÇÃO DE DADOS</div>
+        <div id="bootText">VERIFICANDO INTEGRIDADE...</div>
+        <div id="bootSub">pacotes recebidos // aguardando resposta</div>
+        <div class="boot-line"></div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -520,10 +584,10 @@ const CHARACTER_IDS = {
 };
 
 const BOOT_SEQUENCE = [
-  {at:0,    main:"CARREGANDO...",           sub:"sincronizando registros"},
-  {at:2600, main:"LOCALIZANDO ARQUIVOS...", sub:"varredura em andamento"},
-  {at:5700, main:"ARQUIVO ENCONTRADO",      sub:"origem // protegida"},
-  {at:8600, main:"DECODIFICAÇÃO INICIADA",  sub:"tentando acesso"}
+  {at:0,     main:"VERIFICANDO INTEGRIDADE...", sub:"pacotes recebidos // aguardando resposta"},
+  {at:3400,  main:"RASTREANDO REFERÊNCIA...",   sub:"assinatura fragmentada // origem protegida"},
+  {at:7200,  main:"ARQUIVO ENCONTRADO",          sub:"índice recuperado // conteúdo restrito"},
+  {at:10800, main:"DECODIFICAÇÃO INICIADA",      sub:"montando estrutura do arquivo"}
 ];
 
 /* primeira tentativa: lenta */
@@ -1052,17 +1116,28 @@ startGame.addEventListener("click",()=>{
 });
 
 /* boot */
+function setBootStatus(main,sub){
+  bootText.classList.add("swap");
+  bootSub.classList.add("swap");
+
+  setTimeout(()=>{
+    bootText.textContent=main;
+    bootSub.textContent=sub;
+    bootText.classList.remove("swap");
+    bootSub.classList.remove("swap");
+  },190);
+}
+
 BOOT_SEQUENCE.forEach(step=>{
   setTimeout(()=>{
-    bootText.textContent=step.main;
-    bootSub.textContent=step.sub;
+    setBootStatus(step.main,step.sub);
 
     if(step.main==="ARQUIVO ENCONTRADO"){
-      glitch();
+      setTimeout(glitch,210);
     }
 
     if(step.main==="DECODIFICAÇÃO INICIADA"){
-      setTimeout(beginDecode,1200);
+      setTimeout(beginDecode,1650);
     }
   },step.at);
 });
