@@ -1,0 +1,1239 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#020403">
+<title>PHANTASMA // PROTOCOLO FINAL</title>
+
+<style>
+:root{
+  --g:#69ff96;
+  --r:#ff4058;
+  --c:#31e6ff;
+  --fg:#ecfff2;
+  --dim:#7d8d82;
+  --bg:#000;
+}
+*{box-sizing:border-box}
+html{min-height:100%;background:#000;-webkit-text-size-adjust:100%}
+body{
+  margin:0;
+  min-height:100svh;
+  min-height:100dvh;
+  background:
+    radial-gradient(circle at 50% 10%,rgba(27,99,53,.14),transparent 36%),
+    #000;
+  color:var(--fg);
+  font-family:"Courier New",monospace;
+  overflow-x:hidden;
+  padding:
+    max(12px,env(safe-area-inset-top))
+    max(10px,env(safe-area-inset-right))
+    max(22px,env(safe-area-inset-bottom))
+    max(10px,env(safe-area-inset-left));
+}
+body::before{
+  content:"";
+  position:fixed;inset:0;z-index:1000;pointer-events:none;
+  background:repeating-linear-gradient(to bottom,rgba(255,255,255,.022) 0 1px,transparent 2px 4px);
+  opacity:.45;
+}
+button{font:inherit;-webkit-tap-highlight-color:transparent}
+.app{width:min(1120px,100%);margin:8px auto 0}
+.top{
+  display:flex;align-items:flex-end;justify-content:space-between;
+  gap:16px;margin-bottom:10px;
+}
+.brand-title{
+  font-size:clamp(20px,3vw,31px);
+  line-height:1.05;font-weight:700;letter-spacing:.07em;
+}
+.brand-sub{margin-top:5px;color:var(--dim);font-size:11px}
+.hud{
+  display:flex;flex-wrap:wrap;justify-content:flex-end;align-items:center;
+  gap:8px 16px;font-size:12px;color:var(--g);
+}
+.hud strong{color:var(--fg)}
+.progress-track{
+  flex:0 0 310px;width:310px;height:3px;
+  background:#10361f;overflow:hidden;
+}
+.progress-bar{
+  height:100%;width:0%;background:var(--g);
+  transition:width .2s linear;
+}
+
+.arena{
+  position:relative;width:100%;
+  height:clamp(480px,66dvh,650px);min-height:480px;
+  overflow:hidden;
+  border:1px solid rgba(105,255,150,.28);
+  background:
+    linear-gradient(rgba(105,255,150,.028) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(105,255,150,.028) 1px,transparent 1px),
+    #020403;
+  background-size:34px 34px;
+  box-shadow:0 0 45px rgba(105,255,150,.07);
+  isolation:isolate;
+  touch-action:none;user-select:none;-webkit-user-select:none;
+}
+.arena::after{
+  content:"";
+  position:absolute;inset:0;z-index:2;pointer-events:none;
+  background:
+    linear-gradient(to bottom,transparent,rgba(0,0,0,.10)),
+    repeating-linear-gradient(to bottom,transparent 0 3px,rgba(105,255,150,.015) 4px 5px);
+}
+.tip{margin-top:8px;color:#68786e;font-size:10px;line-height:1.5}
+
+.sound-toggle{
+  position:fixed;
+  right:max(12px,env(safe-area-inset-right));
+  bottom:max(12px,env(safe-area-inset-bottom));
+  z-index:3000;
+  border:1px solid rgba(105,255,150,.52);
+  background:rgba(0,0,0,.88);
+  color:var(--g);
+  padding:9px 12px;
+  font-size:10px;letter-spacing:.08em;cursor:pointer;
+}
+.sound-toggle.on{box-shadow:0 0 16px rgba(105,255,150,.14)}
+
+/* alvos DOM */
+.target{
+  position:absolute;left:0;top:0;z-index:5;
+  width:var(--size);height:var(--size);
+  border:0;background:transparent;padding:0;margin:0;
+  cursor:crosshair;
+  transform:translate3d(-200px,-200px,0);
+  will-change:transform;touch-action:none;outline:none;
+}
+.target::before{
+  content:"";
+  position:absolute;left:4%;top:44%;
+  width:62%;height:31%;
+  border:2px solid rgba(105,255,150,.95);
+  border-radius:50% 55% 48% 52%;
+  background:rgba(3,12,7,.95);
+  box-shadow:0 0 0 1px rgba(255,64,88,.25),0 0 14px rgba(105,255,150,.10);
+}
+.target .wing{
+  position:absolute;left:17%;top:45%;
+  width:36%;height:25%;
+  border:2px solid rgba(105,255,150,.65);
+  border-radius:70% 20% 60% 20%;
+  transform:rotate(-16deg);
+}
+.target .neck{
+  position:absolute;right:18%;top:20%;
+  width:28%;height:38%;
+  border-right:3px solid rgba(105,255,150,.92);
+  border-top:3px solid rgba(105,255,150,.92);
+  border-radius:0 70% 0 0;
+  transform:rotate(7deg);
+}
+.target .portrait{
+  position:absolute;right:-2%;top:-2%;
+  width:56%;aspect-ratio:1;object-fit:cover;border-radius:50%;
+  border:3px solid var(--g);background:#050a07;
+  box-shadow:
+    3px 0 0 rgba(255,64,88,.58),
+    -3px 0 0 rgba(49,230,255,.48),
+    0 0 20px rgba(105,255,150,.16);
+  pointer-events:none;
+}
+.target .beak{
+  position:absolute;right:-3%;top:24%;
+  width:14%;height:8%;
+  background:rgba(255,64,88,.82);
+  clip-path:polygon(0 0,100% 50%,0 100%);
+}
+.target.hit{
+  pointer-events:none;
+  animation:targetHit .22s steps(2) forwards;
+}
+@keyframes targetHit{
+  0%{filter:brightness(1);opacity:1}
+  35%{filter:brightness(2.1) contrast(1.8);transform:var(--last-transform) scale(1.12)}
+  100%{filter:brightness(.5);opacity:0;transform:var(--last-transform) scale(.78)}
+}
+
+/* overlays */
+.overlay{
+  position:absolute;inset:0;z-index:20;
+  display:none;align-items:center;justify-content:center;
+  padding:clamp(18px,4vw,34px);
+  background:rgba(0,0,0,.92);
+  overflow-y:auto;overscroll-behavior:contain;
+}
+.overlay.show{display:flex;animation:overlayIn .34s ease both}
+.overlay.show .panel{animation:panelIn .42s cubic-bezier(.22,.8,.22,1) both}
+@keyframes overlayIn{from{opacity:0}to{opacity:1}}
+@keyframes panelIn{
+  from{opacity:0;transform:translateY(8px) scale(.995);filter:blur(3px)}
+  to{opacity:1;transform:none;filter:none}
+}
+.panel{
+  width:min(760px,100%);margin:auto;padding:clamp(2px,1vw,8px);text-align:center;
+}
+.panel h2{
+  margin:0 0 16px;color:var(--g);
+  font-size:clamp(28px,6.5vw,58px);line-height:1;
+  text-shadow:2px 0 var(--r),-2px 0 var(--c);
+  overflow-wrap:anywhere;
+}
+.panel h2.bad{color:var(--r)}
+.panel p{
+  color:rgba(236,255,242,.80);
+  line-height:1.65;margin:10px 0;
+}
+.small-note{color:#718078!important;font-size:11px}
+.action{
+  min-height:48px;margin-top:16px;
+  border:1px solid var(--g);
+  background:#000;color:var(--g);
+  padding:13px 18px;text-transform:uppercase;
+  letter-spacing:.08em;cursor:pointer;
+}
+.action:hover,.action:focus-visible{background:var(--g);color:#001407}
+.access-cost{
+  width:min(670px,100%);margin:10px auto 0;padding:13px 15px;
+  border:1px solid rgba(255,64,88,.28);
+  background:rgba(28,0,5,.20);text-align:left;
+}
+.access-cost .rule{
+  margin:5px 0;color:rgba(236,255,242,.76);line-height:1.45;
+}
+.access-cost .rule strong{color:var(--g)}
+.access-cost .danger{color:var(--r)}
+.access-cost .protected{color:var(--g);font-weight:700}
+.result-card{
+  display:flex;align-items:center;justify-content:center;gap:16px;
+  width:min(500px,100%);margin:16px auto;padding:14px;
+  border:1px solid rgba(255,64,88,.35);
+  background:rgba(30,0,5,.34);
+}
+.result-card img{
+  width:70px;height:70px;border-radius:50%;object-fit:cover;border:1px solid var(--r);
+}
+.result-name{color:var(--r);font-size:clamp(18px,4vw,28px);font-weight:700}
+.countdown{
+  font-size:clamp(80px,22vw,180px);
+  color:var(--g);line-height:1;
+  text-shadow:4px 0 var(--r),-4px 0 var(--c);
+}
+
+/* hack transition */
+.hack{
+  position:absolute;inset:0;z-index:90;
+  display:none;place-items:center;overflow:hidden;
+  padding:clamp(18px,4vw,34px);
+  background:rgba(0,0,0,.91);
+  backdrop-filter:blur(4px);
+  pointer-events:none;opacity:0;
+  transition:opacity .26s ease;
+}
+.hack.show{display:grid;opacity:1}
+.hack.leaving{opacity:0}
+.matrix-layer{position:absolute;inset:0;overflow:hidden;opacity:.24}
+.matrix-col{
+  position:absolute;top:-120%;
+  color:rgba(105,255,150,.28);
+  font-size:13px;line-height:1.05;white-space:pre;
+  writing-mode:vertical-rl;text-orientation:upright;
+  animation:matrixFall linear infinite;
+}
+@keyframes matrixFall{from{transform:translateY(-15%)}to{transform:translateY(245%)}}
+.hack-card{
+  position:relative;z-index:5;width:min(650px,92%);
+  padding:clamp(22px,4vw,36px);
+  border:1px solid rgba(105,255,150,.24);
+  background:rgba(0,7,3,.84);
+  box-shadow:0 22px 80px rgba(0,0,0,.54),inset 0 0 35px rgba(105,255,150,.022);
+}
+.hack-kicker{color:#718078;font-size:10px;letter-spacing:.14em}
+.hack-message{margin:16px 0 20px;text-align:left}
+.hack-message span{
+  color:var(--fg);font-size:clamp(18px,3.6vw,30px);
+  font-weight:700;letter-spacing:.025em;line-height:1.25;
+}
+.hack-meta{
+  display:flex;justify-content:space-between;gap:10px;
+  margin-bottom:7px;color:#718078;font-size:10px;letter-spacing:.07em;
+}
+.hack-meta strong{color:var(--g);font-weight:400}
+.hack-track{
+  height:4px;overflow:hidden;background:rgba(105,255,150,.08);
+  box-shadow:0 0 0 1px rgba(105,255,150,.12);
+}
+.hack-fill{
+  width:0;height:100%;background:var(--g);
+  box-shadow:0 0 13px rgba(105,255,150,.34);
+}
+.banner{
+  position:absolute;left:50%;top:12px;z-index:120;
+  transform:translate(-50%,-18px);opacity:0;
+  width:min(620px,calc(100% - 26px));padding:10px 14px;
+  border:1px solid rgba(105,255,150,.28);
+  background:rgba(0,0,0,.88);color:var(--g);
+  text-align:center;font-size:12px;
+  transition:.18s ease;pointer-events:none;
+}
+.banner.show{opacity:1;transform:translate(-50%,0)}
+.flash{
+  position:absolute;inset:0;z-index:110;pointer-events:none;opacity:0;
+  background:rgba(105,255,150,.12);
+}
+.flash.go{animation:flash .17s linear}
+@keyframes flash{0%{opacity:0}40%{opacity:.75}100%{opacity:0}}
+
+@media(max-width:760px){
+  body{padding:max(8px,env(safe-area-inset-top)) 7px max(70px,env(safe-area-inset-bottom))}
+  .app{width:100%;margin:4px auto 0}
+  .top{display:grid;grid-template-columns:1fr;align-items:start;gap:8px}
+  .brand-title{font-size:clamp(19px,6vw,26px)}
+  .brand-sub{font-size:9px}
+  .hud{width:100%;justify-content:space-between;text-align:left;gap:6px 10px;font-size:10px}
+  .progress-track{order:3;flex:1 0 100%;width:100%}
+  .arena{height:clamp(470px,70dvh,690px);min-height:470px}
+  .overlay{align-items:flex-start;padding:max(18px,env(safe-area-inset-top)) 13px max(24px,env(safe-area-inset-bottom))}
+  .panel{margin:auto;padding:10px 0 18px}
+  .panel h2{font-size:clamp(27px,10vw,48px)}
+  .panel p{font-size:14px;line-height:1.55}
+  .action{width:100%;min-height:52px;font-size:16px}
+  .target{cursor:pointer;min-width:96px;min-height:96px}
+  .target .portrait{width:48%;right:0;top:1%;border-width:3px}
+  .target::before{left:5%;width:64%}
+  .target .neck{right:17%;width:28%}
+  .tip{padding-right:110px}
+}
+@media(min-width:761px){
+  html,body{width:100%;height:100%;min-height:100%;overflow:hidden}
+  body{min-height:100dvh;padding:10px 14px}
+  .app{
+    width:min(1120px,100%);height:calc(100dvh - 20px);
+    margin:0 auto;display:grid;
+    grid-template-rows:auto minmax(0,1fr) auto;gap:7px;
+  }
+  .top{margin:0;min-height:58px;align-items:center}
+  .arena{height:auto;min-height:0;max-height:none}
+  .tip{margin:0;min-height:14px;font-size:9px}
+  .overlay{overflow:hidden;padding:14px 20px}
+}
+</style>
+</head>
+
+<body>
+<button id="soundToggle" class="sound-toggle" type="button">SOM: ATIVAR</button>
+
+<main class="app">
+  <header class="top">
+    <div>
+      <div class="brand-title">ATÉ ONDE VOCÊ VAI POR ELES?</div>
+      <div class="brand-sub">Protocolo final em andamento.</div>
+    </div>
+
+    <div class="hud">
+      <div>TRANSMISSÃO: <strong id="signalHud">INSTÁVEL</strong></div>
+      <div>TEMPO: <strong id="timeHud">--</strong></div>
+      <div class="progress-track"><div class="progress-bar" id="progressBar"></div></div>
+    </div>
+  </header>
+
+  <section class="arena" id="arena" aria-label="Área do teste">
+    <div class="banner" id="banner"></div>
+    <div class="flash" id="flash"></div>
+
+    <div class="hack" id="hack" aria-hidden="true">
+      <div class="matrix-layer" id="matrixLayer"></div>
+      <div class="hack-card">
+        <div class="hack-kicker">SESSÃO // RECONFIGURAÇÃO</div>
+        <div class="hack-message"><span id="hackText">&gt; ACESSANDO...</span></div>
+        <div class="hack-meta">
+          <span id="hackStatus">&gt; preparando estado...</span>
+          <strong id="hackPct">0%</strong>
+        </div>
+        <div class="hack-track"><div class="hack-fill" id="hackFill"></div></div>
+      </div>
+    </div>
+
+    <div class="overlay" id="briefingScreen">
+      <div class="panel">
+        <div class="small-note">CONDIÇÃO DE ACESSO // PHANTASMA</div>
+        <h2>AGORA PROVE.</h2>
+        <p>Você escolheu quem quer manter a salvo.</p>
+
+        <div class="access-cost">
+          <div class="rule">&gt; OBJETIVO: <strong>ATINJA OS OUTROS CISNES ANTES DO TEMPO ACABAR.</strong></div>
+          <div class="rule">&gt; PROTEGIDO: <span class="protected" id="briefingProtectedName">---</span></div>
+          <div class="rule">&gt; TEMPO: <strong id="briefingTime">--</strong></div>
+          <div class="rule danger">&gt; ALERTA: SEU PROTEGIDO TAMBÉM ENTRARÁ NA LINHA DE TIRO.</div>
+        </div>
+
+        <p class="small-note">Eu dei a você alguém para proteger. Não prometi facilitar.</p>
+        <button class="action" id="briefingBtn">INICIAR TESTE</button>
+      </div>
+    </div>
+
+    <div class="overlay" id="countdownScreen">
+      <div class="panel"><div class="countdown" id="countdownNumber">3</div></div>
+    </div>
+
+    <div class="overlay" id="phaseResultScreen">
+      <div class="panel">
+        <h2 id="phaseResultTitle">HM.</h2>
+        <div class="result-card">
+          <img id="eliminatedImg" alt="">
+          <div>
+            <div class="small-note">ELIMINADO</div>
+            <div class="result-name" id="eliminatedName"></div>
+          </div>
+        </div>
+        <p id="phaseResultLine"></p>
+        <button class="action" id="phaseContinueBtn">CONTINUAR</button>
+      </div>
+    </div>
+
+    <div class="overlay" id="favoriteLostScreen">
+      <div class="panel">
+        <div class="small-note">STATUS DO PROTEGIDO</div>
+        <h2 class="bad" id="favoriteLostTitle">PERDIDO.</h2>
+        <p id="favoriteLostLine"></p>
+        <button class="action" id="favoriteRetryBtn">ACEITAR SEGUNDA CHANCE</button>
+      </div>
+    </div>
+
+    <div class="overlay" id="timeoutScreen">
+      <div class="panel">
+        <h2 class="bad">QUE PENA.</h2>
+        <p>O tempo acabou.</p>
+        <p><strong>“Estou me sentindo caridoso hoje. Não se acostume.”</strong></p>
+        <button class="action" id="timeoutRetryBtn">ACEITAR A CARIDADE</button>
+      </div>
+    </div>
+
+    <div class="overlay" id="winScreen">
+      <div class="panel">
+        <h2>IRRITANTE.</h2>
+        <p id="finalMessage"></p>
+        <p>Infelizmente, regras são regras.</p>
+        <p><strong>Você ganhou acesso ao arquivo final.</strong></p>
+        <button class="action" id="revealBtn">ABRIR ARQUIVO</button>
+      </div>
+    </div>
+
+    <div class="overlay" id="lockedScreen">
+      <div class="panel">
+        <h2 class="bad">ACABOU.</h2>
+        <p id="lockedLine"></p>
+      </div>
+    </div>
+  </section>
+
+  <div class="tip">
+    Desktop: clique nos Cisnes. Mobile: toque nos Cisnes. Não há limite de disparos.
+  </div>
+</main>
+
+<script>
+"use strict";
+
+/*
+  MOTOR DA V62
+  Baseado na lógica do jogo fornecido pela autora.
+*/
+
+const RAW_BASE = "https://raw.githubusercontent.com/miaverso/arquivopessoalmiasalvani/3c7e08dd0760e855df3c02f3404eca2711b667a4";
+const START_TIME = Math.max(
+  1,
+  Number(sessionStorage.getItem("phantasma_tiro_tempo_inicial") || 60)
+);
+const TOTAL_TIME = START_TIME;
+const MAX_RESTARTS = 2;
+const REVEAL_URL = "../anuncio.html";
+
+const FAVORITE_WEIGHTS = [1.8,2.0,2.5,4.5];
+
+const TARGET_SIZE = {
+  mobileMin:118,
+  mobileMax:150,
+  mobileRatio:.34,
+  desktopMin:150,
+  desktopMax:190,
+  desktopRatio:.16
+};
+
+const PHASES = [
+  {
+    quota:6,
+    speedMin:70,speedMax:190,
+    spawnMin:.90,spawnMax:1.35,
+    size:1.12,
+    intro:"Vamos começar devagar. Você disse que protegeria um. Eu não disse o que aconteceria com os outros.",
+    endTitle:"HM.",
+    endLine:"Olha só. É bem mais fácil quando eles são apenas alvos, não é?"
+  },
+  {
+    quota:12,
+    speedMin:115,speedMax:220,
+    spawnMin:.70,spawnMax:1.05,
+    size:1.00,
+    intro:"Curioso. Para salvar alguém, você está ficando bastante confortável em escolher quem não salvar.",
+    endTitle:"QUE BONITO.",
+    endLine:"Depois você inventa uma justificativa. Vocês fãs são ótimos nisso."
+  },
+  {
+    quota:16,
+    speedMin:175,speedMax:300,
+    spawnMin:.52,spawnMax:.82,
+    size:.90,
+    intro:"É sempre assim com vocês fãs? O protegido ganha um nome. Os outros viram consequência?",
+    endTitle:"ADORÁVEL.",
+    endLine:"Continue. Tenho certeza de que seu protegido entenderia."
+  },
+  {
+    quota:20,
+    speedMin:250,speedMax:400,
+    spawnMin:.34,spawnMax:.58,
+    size:.80,
+    intro:"Você queria o poder de escolher. Eu só tive a gentileza de dar a você.",
+    endTitle:"SUFICIENTE.",
+    endLine:"Talvez o teste nunca tenha sido descobrir quem você salvaria. Talvez fosse descobrir o que você faria com os outros."
+  }
+];
+
+const CHARACTERS = [
+  {id:"dex",name:"Dexter",img:RAW_BASE+"/jogo/dex.jpg"},
+  {id:"olivia",name:"Olivia",img:RAW_BASE+"/jogo/olivia.jpg"},
+  {id:"declan",name:"Declan",img:RAW_BASE+"/jogo/declan.jpg"},
+  {id:"charlotte",name:"Charlotte",img:RAW_BASE+"/jogo/charlotte.jpg"},
+  {id:"killian",name:"Killian",img:RAW_BASE+"/jogo/killian.jpg"},
+  {id:"melissa",name:"Melissa",img:RAW_BASE+"/jogo/melissa.jpg"},
+  {id:"reid",name:"Reid",img:RAW_BASE+"/jogo/reid.jpg"},
+  {id:"lara",name:"Lara",img:RAW_BASE+"/jogo/lara.jpg"},
+  {id:"chuck",name:"Charles",img:RAW_BASE+"/jogo/chuck.jpg"},
+  {id:"zuri",name:"Zuri",img:RAW_BASE+"/jogo/zuri.jpg"}
+];
+
+const COUPLES = {
+  dex:"olivia",olivia:"dex",
+  declan:"charlotte",charlotte:"declan",
+  killian:"melissa",melissa:"killian",
+  reid:"lara",lara:"reid",
+  chuck:"zuri",zuri:"chuck"
+};
+
+const COUPLE_TAUNTS = {
+  "dex:olivia":"Dexter está salvo. Olivia, nem tanto. Espero que ele aprecie o seu conceito de final feliz.",
+  "olivia:dex":"Olivia continua. Dexter não. Tecnicamente você cumpriu sua promessa. Romanticamente... um desastre.",
+  "declan:charlotte":"Declan está intacto. Charlotte saiu do jogo. Que maneira eficiente de simplificar um relacionamento.",
+  "charlotte:declan":"Charlotte está segura. Declan virou consequência. Tenho certeza de que ela vai entender.",
+  "killian:melissa":"Você salvou Killian e tirou Melissa do caminho. Isso conta como proteção... ou ciúme?",
+  "melissa:killian":"Melissa ficou. Killian não. Não se preocupe, eu não vou contar quem apertou o gatilho.",
+  "reid:lara":"Reid continua. Lara não. Que bom que eu mandei você escolher só um, não é?",
+  "lara:reid":"Lara está protegida. Reid virou estatística. O amor é mesmo cheio de sacrifícios.",
+  "chuck:zuri":"Charles está salvo. Zuri não. Parece que alguém levou 'escolher um' a sério demais.",
+  "zuri:chuck":"Zuri continua. Charles não. Um casal a menos, uma promessa tecnicamente cumprida."
+};
+
+const PROTECTED_TEXTS = {
+  intacto:(nome)=>
+    `“Você escolheu ${nome}. E, contra as minhas expectativas, manteve sua palavra. Que inconveniente.”`,
+  umAcerto:(nome)=>
+    `“Um acerto em ${nome}. Foi só um acidente, não foi? É sempre mais confortável chamar assim.”`,
+  algunsAcertos:(nome,total)=>
+    `“Você fez questão de escolher ${nome} para proteger. ${total} acertos depois, eu só estou assistindo você esquecer.”`,
+  muitosAcertos:(nome,total)=>
+    `“${nome} estava sob sua responsabilidade. ${total} acertos. Talvez eu não seja a maior ameaça aqui.”`,
+  primeiraFalha:(nome)=>
+    `“Foi você quem escolheu ${nome}. Eu só coloquei o alvo na sua frente. Quer tentar salvá-lo de novo?”`,
+  segundaFalha:(nome)=>
+    `“${nome}, de novo. Ainda tentando? Isso já não parece proteção. Parece culpa.”`,
+  terceiraFalha:(nome)=>
+    `“Você queria o poder de escolher ${nome}. Eu só tive a gentileza de dar a você. Três oportunidades foram suficientes.”`
+};
+
+const SOUND_FILES = {
+  ambiente:RAW_BASE+"/sons/ambiente.wav",
+  acesso:RAW_BASE+"/sons/acesso.wav",
+  erro:RAW_BASE+"/sons/erro.wav",
+  countdown:RAW_BASE+"/sons/countdown.wav",
+  agora:RAW_BASE+"/sons/agora.wav",
+  tiro:RAW_BASE+"/sons/tiro.wav",
+  click:RAW_BASE+"/sons/click.wav",
+  glitch:RAW_BASE+"/sons/glitch.wav"
+};
+
+const TIMING = {
+  countdownPasso:1150,
+  agoraNaTela:1000,
+  trocaDeFase:4200,
+  novaTentativa:2100
+};
+
+/* DOM */
+const arena=document.getElementById("arena");
+const signalHud=document.getElementById("signalHud");
+const timeHud=document.getElementById("timeHud");
+const progressBar=document.getElementById("progressBar");
+const banner=document.getElementById("banner");
+const flash=document.getElementById("flash");
+
+const hack=document.getElementById("hack");
+const matrixLayer=document.getElementById("matrixLayer");
+const hackText=document.getElementById("hackText");
+const hackStatus=document.getElementById("hackStatus");
+const hackPct=document.getElementById("hackPct");
+const hackFill=document.getElementById("hackFill");
+
+const briefingScreen=document.getElementById("briefingScreen");
+const briefingProtectedName=document.getElementById("briefingProtectedName");
+const briefingTime=document.getElementById("briefingTime");
+const briefingBtn=document.getElementById("briefingBtn");
+const countdownScreen=document.getElementById("countdownScreen");
+const countdownNumber=document.getElementById("countdownNumber");
+
+const phaseResultScreen=document.getElementById("phaseResultScreen");
+const phaseResultTitle=document.getElementById("phaseResultTitle");
+const phaseResultLine=document.getElementById("phaseResultLine");
+const eliminatedImg=document.getElementById("eliminatedImg");
+const eliminatedName=document.getElementById("eliminatedName");
+const phaseContinueBtn=document.getElementById("phaseContinueBtn");
+
+const favoriteLostScreen=document.getElementById("favoriteLostScreen");
+const favoriteLostTitle=document.getElementById("favoriteLostTitle");
+const favoriteLostLine=document.getElementById("favoriteLostLine");
+const favoriteRetryBtn=document.getElementById("favoriteRetryBtn");
+
+const timeoutScreen=document.getElementById("timeoutScreen");
+const timeoutRetryBtn=document.getElementById("timeoutRetryBtn");
+const winScreen=document.getElementById("winScreen");
+const finalMessage=document.getElementById("finalMessage");
+const revealBtn=document.getElementById("revealBtn");
+const lockedScreen=document.getElementById("lockedScreen");
+const lockedLine=document.getElementById("lockedLine");
+const soundToggle=document.getElementById("soundToggle");
+
+/* protected */
+let favoriteId=sessionStorage.getItem("phantasma_protegido_id") || "";
+if(!CHARACTERS.some(c=>c.id===favoriteId)){
+  const byName=(sessionStorage.getItem("phantasma_protegido")||"").toLowerCase();
+  const aliases={dexter:"dex",charles:"chuck"};
+  const found=CHARACTERS.find(c=>c.name.toLowerCase()===byName);
+  favoriteId=found ? found.id : (aliases[byName]||"");
+}
+
+function getCharacter(id){return CHARACTERS.find(c=>c.id===id)}
+function coupleTaunt(protectedId,removedId){
+  if(COUPLES[protectedId]!==removedId) return null;
+  return COUPLE_TAUNTS[`${protectedId}:${removedId}`] || null;
+}
+
+/* audio */
+let soundEnabled=localStorage.getItem("phantasma_sound")!=="off";
+let audioUnlocked=sessionStorage.getItem("phantasma_audio_unlocked")==="1";
+let ambientAudio=null;
+const pools=new Map();
+
+function updateSoundButton(){
+  soundToggle.textContent=!soundEnabled
+    ?"SOM: OFF"
+    :(audioUnlocked?"SOM: ON":"SOM: ATIVAR");
+  soundToggle.classList.toggle("on",soundEnabled&&audioUnlocked);
+}
+function getAudioPool(name){
+  if(pools.has(name)) return pools.get(name);
+  const count=name==="tiro"?5:2;
+  const pool=Array.from({length:count},()=>{
+    const a=new Audio(SOUND_FILES[name]);
+    a.preload="auto";
+    return a;
+  });
+  pool.index=0;
+  pools.set(name,pool);
+  return pool;
+}
+function playSound(name,volume=.35){
+  if(!soundEnabled||!audioUnlocked||!SOUND_FILES[name]) return;
+  const pool=getAudioPool(name);
+  const audio=pool[pool.index%pool.length];
+  pool.index++;
+  try{
+    audio.pause();audio.currentTime=0;audio.volume=volume;
+    audio.play().catch(()=>{});
+  }catch(_){}
+}
+function ensureAmbient(){
+  if(!soundEnabled||!audioUnlocked) return;
+  if(!ambientAudio){
+    ambientAudio=new Audio(SOUND_FILES.ambiente);
+    ambientAudio.loop=true;
+    ambientAudio.volume=.08;
+  }
+  ambientAudio.play().catch(()=>{});
+}
+function unlockAudio(){
+  if(audioUnlocked) return;
+  audioUnlocked=true;
+  sessionStorage.setItem("phantasma_audio_unlocked","1");
+  updateSoundButton();
+  ensureAmbient();
+}
+soundToggle.addEventListener("click",(e)=>{
+  e.stopPropagation();
+  if(!audioUnlocked){
+    soundEnabled=true;
+    localStorage.setItem("phantasma_sound","on");
+    unlockAudio();
+    playSound("acesso",.25);
+    return;
+  }
+  soundEnabled=!soundEnabled;
+  localStorage.setItem("phantasma_sound",soundEnabled?"on":"off");
+  if(!soundEnabled&&ambientAudio) ambientAudio.pause();
+  if(soundEnabled){ensureAmbient();playSound("acesso",.20)}
+  updateSoundButton();
+});
+document.addEventListener("pointerdown",(e)=>{
+  if(e.target!==soundToggle&&soundEnabled) unlockAudio();
+},{capture:true});
+updateSoundButton();
+if(soundEnabled&&audioUnlocked) setTimeout(ensureAmbient,100);
+
+/* state */
+let phaseIndex=0;
+let phaseKills=0;
+let phaseHits={};
+let totalFavoriteHits=0;
+let timeLeft=TOTAL_TIME;
+let timerAccumulator=0;
+let spawnAccumulator=0;
+let running=false;
+let transition=false;
+let targets=[];
+let eliminated=new Set();
+let lastFrame=performance.now();
+let arenaW=0;
+let arenaH=0;
+let phaseResultNext=null;
+
+const RESTART_KEY="phantasma_restarts_session";
+let restartCount=Number(sessionStorage.getItem(RESTART_KEY)||0);
+
+function activeCharacters(){return CHARACTERS.filter(c=>!eliminated.has(c.id))}
+function measureArena(){
+  const rect=arena.getBoundingClientRect();
+  arenaW=Math.max(280,rect.width);
+  arenaH=Math.max(300,rect.height);
+}
+measureArena();
+new ResizeObserver(measureArena).observe(arena);
+
+/* hack */
+function buildMatrix(){
+  matrixLayer.innerHTML="";
+  const count=innerWidth<760?12:24;
+  const glyphs="01ABCDEFGHIJKLMNOPQRSTUVWXYZ#$%&*<>/[]{}";
+  for(let i=0;i<count;i++){
+    const col=document.createElement("div");
+    col.className="matrix-col";
+    col.style.left=`${(i/(count-1))*100}%`;
+    col.style.animationDuration=`${2.2+Math.random()*2.6}s`;
+    col.style.animationDelay=`${-Math.random()*4}s`;
+    let str="";
+    const len=innerWidth<760?22:34;
+    for(let j=0;j<len;j++) str+=glyphs[(Math.random()*glyphs.length)|0];
+    col.textContent=str;
+    matrixLayer.appendChild(col);
+  }
+}
+buildMatrix();
+
+function playHack(message,callback,duration=2300){
+  running=false;
+  transition=true;
+  hackText.textContent=message;
+  hackStatus.textContent="> preparando estado...";
+  hackPct.textContent="0%";
+  buildMatrix();
+  hack.classList.remove("leaving");
+  hack.classList.add("show");
+  hack.setAttribute("aria-hidden","false");
+  hackFill.style.transition="none";
+  hackFill.style.width="0%";
+  playSound("glitch",.16);
+
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    hackFill.style.transition=`width ${Math.max(900,duration-420)}ms cubic-bezier(.18,.8,.24,1)`;
+    hackFill.style.width="100%";
+  }));
+
+  const started=performance.now();
+  const progressDuration=Math.max(900,duration-420);
+
+  function frame(now){
+    const p=Math.min(1,(now-started)/progressDuration);
+    const pct=Math.round((1-Math.pow(1-p,2.2))*100);
+    hackPct.textContent=pct+"%";
+    hackStatus.textContent=
+      pct<34?"> preparando estado...":
+      pct<70?"> sincronizando sessão...":
+      pct<100?"> aplicando configuração...":
+      "> pronto.";
+    if(p<1) requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+
+  setTimeout(()=>hack.classList.add("leaving"),Math.max(500,duration-260));
+  setTimeout(()=>{
+    hack.classList.remove("show","leaving");
+    hack.setAttribute("aria-hidden","true");
+    transition=false;
+    if(callback) callback();
+  },duration);
+}
+
+/* UI */
+function showBanner(text,ms=1250){
+  banner.textContent=text;
+  banner.classList.add("show");
+  clearTimeout(showBanner.timer);
+  showBanner.timer=setTimeout(()=>banner.classList.remove("show"),ms);
+}
+function flashHit(){
+  flash.classList.remove("go");
+  void flash.offsetWidth;
+  flash.classList.add("go");
+}
+function updateHud(){
+  timeHud.textContent=Math.max(0,Math.ceil(timeLeft));
+  const totalQuota=PHASES.reduce((sum,p)=>sum+p.quota,0);
+  const completedBefore=PHASES.slice(0,phaseIndex).reduce((sum,p)=>sum+p.quota,0);
+  const done=completedBefore+phaseKills;
+  progressBar.style.width=`${Math.max(0,Math.min(100,done/totalQuota*100))}%`;
+  const labels=["INSTÁVEL","OSCILANDO","COMPROMETIDA","CRÍTICA"];
+  signalHud.textContent=labels[Math.min(phaseIndex,labels.length-1)];
+}
+function resetPhaseHits(){
+  phaseHits={};
+  for(const c of activeCharacters()) phaseHits[c.id]=0;
+}
+function clearTargets(){
+  for(const t of targets) t.el.remove();
+  targets=[];
+}
+
+/* entry */
+if(!favoriteId){
+  location.replace("../tiro.html");
+}else{
+  const fav=getCharacter(favoriteId);
+  briefingProtectedName.textContent=fav.name.toUpperCase();
+  briefingTime.textContent=TOTAL_TIME+"s";
+  timeHud.textContent=TOTAL_TIME;
+  briefingScreen.classList.add("show");
+}
+
+briefingBtn.addEventListener("click",()=>{
+  briefingScreen.classList.remove("show");
+  playHack("> SINCRONIZANDO ALVOS...",startCountdown,1600);
+});
+
+function startCountdown(){
+  countdownScreen.classList.add("show");
+  let n=3;
+  countdownNumber.textContent=n;
+  playSound("countdown",.35);
+
+  const timer=setInterval(()=>{
+    n--;
+    if(n>0){
+      countdownNumber.textContent=n;
+      playSound("countdown",.35);
+      return;
+    }
+    clearInterval(timer);
+    countdownNumber.textContent="AGORA.";
+    playSound("agora",.45);
+    setTimeout(()=>{
+      countdownScreen.classList.remove("show");
+      startRun();
+    },TIMING.agoraNaTela);
+  },TIMING.countdownPasso);
+}
+
+/* gameplay */
+function weightedCharacter(){
+  const active=activeCharacters();
+  const favWeight=FAVORITE_WEIGHTS[Math.min(phaseIndex,FAVORITE_WEIGHTS.length-1)];
+  let total=0;
+  const weights=active.map(c=>{
+    const w=c.id===favoriteId?favWeight:1;
+    total+=w;
+    return [c,total];
+  });
+  const r=Math.random()*total;
+  for(const [c,limit] of weights){
+    if(r<=limit) return c;
+  }
+  return active[active.length-1];
+}
+
+function createTargetElement(character,size){
+  const el=document.createElement("button");
+  el.className="target";
+  el.type="button";
+  el.setAttribute("aria-label",character.name);
+  el.style.setProperty("--size",`${size}px`);
+  el.innerHTML=`
+    <span class="wing"></span>
+    <span class="neck"></span>
+    <img class="portrait" src="${character.img}" alt="">
+    <span class="beak"></span>
+  `;
+  return el;
+}
+
+function spawnTarget(force=false){
+  if((!running||transition)&&!force) return;
+  measureArena();
+
+  const p=PHASES[phaseIndex];
+  const mobile=innerWidth<=760;
+  const base=mobile
+    ?Math.max(TARGET_SIZE.mobileMin,Math.min(TARGET_SIZE.mobileMax,arenaW*TARGET_SIZE.mobileRatio))
+    :Math.max(TARGET_SIZE.desktopMin,Math.min(TARGET_SIZE.desktopMax,arenaW*TARGET_SIZE.desktopRatio));
+
+  const size=base*p.size;
+  const dir=Math.random()<.5?1:-1;
+  const minY=26;
+  const maxY=Math.max(minY+10,arenaH-size-32);
+  const y=minY+Math.random()*(maxY-minY);
+  const character=weightedCharacter();
+  const el=createTargetElement(character,size);
+  arena.appendChild(el);
+
+  const target={
+    el,character,size,dir,
+    speed:p.speedMin+Math.random()*(p.speedMax-p.speedMin),
+    x:dir===1?-size-10:arenaW+10,
+    baseY:y,y,age:0,
+    wobble:(phaseIndex+1)*(mobile?5:8),
+    dead:false
+  };
+  targets.push(target);
+
+  el.addEventListener("pointerdown",(event)=>{
+    event.preventDefault();
+    hitTarget(target);
+  },{passive:false});
+
+  return target;
+}
+
+function hitTarget(target){
+  if(!running||transition||target.dead) return;
+  target.dead=true;
+  if(navigator.vibrate) navigator.vibrate(10);
+  playSound("tiro",.14);
+  flashHit();
+
+  phaseHits[target.character.id]=(phaseHits[target.character.id]||0)+1;
+
+  if(target.character.id===favoriteId){
+    totalFavoriteHits++;
+    timeLeft=Math.max(0,timeLeft-1);
+    updateHud();
+    showBanner("PROTEGIDO ATINGIDO // -1s",1250);
+  }
+
+  phaseKills++;
+
+  const lastTransform=`translate3d(${target.x}px,${target.y}px,0)`;
+  target.el.style.setProperty("--last-transform",lastTransform);
+  target.el.classList.add("hit");
+
+  setTimeout(()=>target.el.remove(),230);
+  targets=targets.filter(t=>t!==target);
+
+  if(phaseKills>=PHASES[phaseIndex].quota){
+    finishPhase();
+  }
+}
+
+function resetRunState(finalChance=false){
+  clearTargets();
+
+  if(finalChance){
+    phaseIndex=PHASES.length-1;
+  }else{
+    phaseIndex=0;
+    eliminated.clear();
+  }
+
+  phaseKills=0;
+  totalFavoriteHits=0;
+  if(favoriteId) eliminated.delete(favoriteId);
+
+  timeLeft=TOTAL_TIME;
+  timerAccumulator=0;
+  spawnAccumulator=0;
+  resetPhaseHits();
+  updateHud();
+  measureArena();
+
+  running=true;
+  transition=false;
+
+  showBanner(finalChance?"PROTOCOLO FINAL.":"TESTE INICIADO.",1300);
+  spawnTarget(true);
+
+  setTimeout(()=>{
+    if(running&&targets.length===0) spawnTarget(true);
+  },450);
+}
+
+function startRun(){resetRunState(false)}
+function startFinalChance(){resetRunState(true)}
+
+function chooseEliminated(){
+  const active=activeCharacters();
+  let max=-1;
+  let tied=[];
+
+  for(const c of active){
+    const hits=phaseHits[c.id]||0;
+    if(hits>max){
+      max=hits;tied=[c];
+    }else if(hits===max){
+      tied.push(c);
+    }
+  }
+  return tied[(Math.random()*tied.length)|0];
+}
+
+function finishPhase(){
+  if(transition) return;
+  running=false;
+  transition=true;
+  clearTargets();
+
+  const favHits=phaseHits[favoriteId]||0;
+
+  if(favHits===0){
+    timeLeft+=3;
+    updateHud();
+    showBanner("PROTEGIDO INTACTO // +3s",1450);
+  }
+
+  const removed=chooseEliminated();
+  eliminated.add(removed.id);
+
+  if(removed.id===favoriteId){
+    handleFavoriteLoss(removed);
+    return;
+  }
+
+  const relationshipTaunt=coupleTaunt(favoriteId,removed.id);
+
+  if(relationshipTaunt){
+    phaseResultTitle.textContent="QUE ROMÂNTICO.";
+    phaseResultLine.textContent=relationshipTaunt;
+  }else{
+    phaseResultTitle.textContent=PHASES[phaseIndex].endTitle;
+    phaseResultLine.textContent=PHASES[phaseIndex].endLine;
+  }
+
+  eliminatedImg.src=removed.img;
+  eliminatedImg.alt=removed.name;
+  eliminatedName.textContent=removed.name;
+
+  if(phaseIndex===PHASES.length-1){
+    phaseResultNext="win";
+    phaseContinueBtn.textContent="ENCERRAR TESTE";
+  }else{
+    phaseResultNext="next";
+    phaseContinueBtn.textContent="CONTINUAR";
+  }
+
+  phaseResultScreen.classList.add("show");
+}
+
+phaseContinueBtn.addEventListener("click",()=>{
+  phaseResultScreen.classList.remove("show");
+
+  if(phaseResultNext==="win"){
+    finishGame();
+    return;
+  }
+
+  phaseIndex++;
+  phaseKills=0;
+  resetPhaseHits();
+  updateHud();
+
+  const intro=PHASES[phaseIndex].intro;
+
+  playHack(
+    `> ${intro.toUpperCase()}`,
+    ()=>{
+      running=true;
+      transition=false;
+      spawnAccumulator=0;
+      spawnTarget(true);
+    },
+    TIMING.trocaDeFase
+  );
+});
+
+function handleFavoriteLoss(fav){
+  playSound("erro",.42);
+
+  if(restartCount<MAX_RESTARTS){
+    restartCount++;
+    sessionStorage.setItem(RESTART_KEY,String(restartCount));
+
+    favoriteLostTitle.textContent=restartCount===1
+      ?"PROTEGIDO PERDIDO."
+      :"AINDA TENTANDO?";
+
+    favoriteLostLine.textContent=restartCount===1
+      ?PROTECTED_TEXTS.primeiraFalha(fav.name)
+      :PROTECTED_TEXTS.segundaFalha(fav.name);
+
+    favoriteRetryBtn.textContent=restartCount===1
+      ?"TENTAR SALVÁ-LO DE NOVO"
+      :"ACEITAR ÚLTIMA CHANCE";
+
+    favoriteLostScreen.classList.add("show");
+    return;
+  }
+
+  lockedLine.textContent=PROTECTED_TEXTS.terceiraFalha(fav.name);
+  lockedScreen.classList.add("show");
+}
+
+favoriteRetryBtn.addEventListener("click",()=>{
+  favoriteLostScreen.classList.remove("show");
+  playHack(
+    "> VAMOS VER SE CULPA MELHORA SUA PRECISÃO // PROTOCOLO FINAL...",
+    startFinalChance,
+    TIMING.novaTentativa
+  );
+});
+
+function handleTimeout(){
+  if(!running) return;
+  running=false;
+  transition=true;
+  clearTargets();
+  playSound("erro",.40);
+  timeoutScreen.classList.add("show");
+}
+
+timeoutRetryBtn.addEventListener("click",()=>{
+  timeoutScreen.classList.remove("show");
+  playHack(
+    "> CARIDADE AUTORIZADA // PROTOCOLO FINAL...",
+    startFinalChance,
+    TIMING.novaTentativa
+  );
+});
+
+function finishGame(){
+  running=false;
+  transition=true;
+  clearTargets();
+
+  const fav=getCharacter(favoriteId);
+  let line="";
+
+  if(totalFavoriteHits===0){
+    line=PROTECTED_TEXTS.intacto(fav.name);
+  }else if(totalFavoriteHits===1){
+    line=PROTECTED_TEXTS.umAcerto(fav.name);
+  }else if(totalFavoriteHits<=3){
+    line=PROTECTED_TEXTS.algunsAcertos(fav.name,totalFavoriteHits);
+  }else{
+    line=PROTECTED_TEXTS.muitosAcertos(fav.name,totalFavoriteHits);
+  }
+
+  finalMessage.textContent=line;
+  sessionStorage.setItem("phantasma_tiro_concluido","1");
+  playSound("acesso",.40);
+  winScreen.classList.add("show");
+}
+
+revealBtn.addEventListener("click",()=>{
+  sessionStorage.setItem("corvo_access","granted");
+  location.href=REVEAL_URL;
+});
+
+function updateTargets(dt){
+  for(let i=targets.length-1;i>=0;i--){
+    const t=targets[i];
+    if(t.dead) continue;
+
+    t.age+=dt;
+    t.x+=t.speed*t.dir*dt;
+    t.y=t.baseY+Math.sin(t.age*(3.3+phaseIndex*.75))*t.wobble;
+
+    const transform=`translate3d(${t.x}px,${t.y}px,0)`;
+    t.el.style.transform=transform;
+    t.el.style.setProperty("--last-transform",transform);
+
+    if(
+      (t.dir===1&&t.x>arenaW+t.size+30)||
+      (t.dir===-1&&t.x<-t.size-30)
+    ){
+      t.el.remove();
+      targets.splice(i,1);
+    }
+  }
+}
+
+function gameLoop(now){
+  const dt=Math.min(.05,Math.max(0,(now-lastFrame)/1000));
+  lastFrame=now;
+
+  if(running&&!transition){
+    timerAccumulator+=dt;
+    spawnAccumulator+=dt;
+    timeLeft-=dt;
+
+    if(timeLeft<=0){
+      timeLeft=0;
+      updateHud();
+      handleTimeout();
+    }else{
+      const p=PHASES[phaseIndex];
+
+      if(spawnAccumulator>=p.spawnMin){
+        const threshold=p.spawnMin+Math.random()*(p.spawnMax-p.spawnMin);
+        if(spawnAccumulator>=threshold){
+          spawnAccumulator=0;
+          spawnTarget();
+        }
+      }
+
+      updateTargets(dt);
+      updateHud();
+    }
+  }
+
+  requestAnimationFrame(gameLoop);
+}
+
+requestAnimationFrame(gameLoop);
+
+window.addEventListener("pageshow",(event)=>{
+  measureArena();
+  if(event.persisted) lastFrame=performance.now();
+});
+document.addEventListener("visibilitychange",()=>{
+  lastFrame=performance.now();
+});
+</script>
+</body>
+</html>

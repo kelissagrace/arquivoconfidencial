@@ -506,6 +506,19 @@ const CHARACTERS = [
   "Melissa","Reid","Lara","Charles","Zuri"
 ];
 
+const CHARACTER_IDS = {
+  Olivia:"olivia",
+  Dexter:"dex",
+  Declan:"declan",
+  Charlotte:"charlotte",
+  Killian:"killian",
+  Melissa:"melissa",
+  Reid:"reid",
+  Lara:"lara",
+  Charles:"chuck",
+  Zuri:"zuri"
+};
+
 const BOOT_SEQUENCE = [
   {at:0,    main:"CARREGANDO...",           sub:"sincronizando registros"},
   {at:2600, main:"LOCALIZANDO ARQUIVOS...", sub:"varredura em andamento"},
@@ -997,6 +1010,10 @@ confirmProtected.addEventListener("click",()=>{
   if(!selectedProtected) return;
 
   sessionStorage.setItem("phantasma_protegido",selectedProtected);
+  sessionStorage.setItem(
+    "phantasma_protegido_id",
+    CHARACTER_IDS[selectedProtected] || ""
+  );
 
   protectedScreen.classList.remove("show");
   protectedFinal.textContent=selectedProtected.toUpperCase();
@@ -1027,8 +1044,11 @@ confirmProtected.addEventListener("click",()=>{
 
 startGame.addEventListener("click",()=>{
   pregame.classList.remove("show");
-  gamePlaceholder.classList.add("show");
   glitch();
+
+  setTimeout(()=>{
+    location.href = "jogo/index.html";
+  },260);
 });
 
 /* boot */
