@@ -464,6 +464,10 @@ button{font:inherit;-webkit-tap-highlight-color:transparent}
 <script>
 "use strict";
 
+const SITE_ROOT = location.hostname.endsWith("github.io")
+  ? "/arquivoconfidencial/"
+  : "../";
+
 /*
   MOTOR DA V62
   Baseado na lógica do jogo fornecido pela autora.
@@ -476,7 +480,7 @@ const START_TIME = Math.max(
 );
 const TOTAL_TIME = START_TIME;
 const MAX_RESTARTS = 2;
-const REVEAL_URL = "../anuncio.html";
+const REVEAL_URL = SITE_ROOT + "anuncio.html";
 
 const FAVORITE_WEIGHTS = [1.8,2.0,2.5,4.5];
 
@@ -864,7 +868,7 @@ function clearTargets(){
 
 /* entry */
 if(!favoriteId){
-  location.replace("../tiro.html");
+  location.replace(SITE_ROOT + "tiro.html");
 }else{
   const fav=getCharacter(favoriteId);
   briefingProtectedName.textContent=fav.name.toUpperCase();
