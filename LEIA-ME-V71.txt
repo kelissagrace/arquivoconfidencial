@@ -1,0 +1,74 @@
+PHANTASMA // V71 // FLUXO VISUAL
+
+OBJETIVO:
+Corrigir a sensação de "tudo entrando seco" da V70.
+
+ARQUIVOS PARA SUBSTITUIR
+/quiz.html
+/pistas.html
+/tiro.html
+
+CORREÇÕES
+
+QUIZ
+- perguntas agora entram e saem em crossfade/blur curto
+- regras e banco V70 mantidos
+
+PAINEL
+- PISTA 2 e PISTA 3 NÃO aparecem escondidas
+- inicialmente existe visualmente SOMENTE a PISTA 1
+- PISTA 2 só nasce na tela quando for aceita
+- PISTA 3 só nasce na tela quando for aceita
+- transição suave entre rodadas
+- regras de penalidade e 3 acertos mantidas
+
+PARTE IV / TIRO.HTML
+
+DECODIFICAÇÃO
+- título com mais espaço entre caracteres
+- sem sublinhados/caixinhas comprimindo os símbolos
+- troca de quantidade mais lenta e legível
+- continua variando 5,7,8,3,10,4,9,6...
+- data mantém DD.DD.DDDD
+- primeiro erro agora corrompe caracteres e data ANTES do aviso
+- regressão 99 > 98 > 99
+- cortes horizontais mais fortes
+- flash mais forte
+- estado vermelho/instável bem mais evidente
+- segunda falha usa glitch ainda mais agressivo
+
+TRANSIÇÕES
+- todas as trocas internas da Parte IV passam por fade para preto
+- moral, escolha, tempo, roleta e tela final não "brotam" mais na tela
+
+MORAL
+- saiu da caixa
+- agora ocupa a tela inteira
+- texto aparece em etapas/fade:
+  1. frase principal
+  2. justificativas
+  3. "Vocês encontraram..."
+  4. pergunta final + botão
+
+ESCOLHA
+- P&B reforçado por classe + filtro direto na imagem
+- não escolhido drena cor em cascata
+- escolhido permanece totalmente colorido
+- nenhum texto de "descartado"
+
+TEMPO
+- caixa antiga removida
+- tela cinematográfica centralizada
+- protegido aparece discretamente
+- TEMPO CONCEDIDO
+- número gigante no centro
+- se houver penalidade, o número começa em 60 e DESCE visualmente até o tempo real
+- roleta continua abaixo de 30s
+
+TELA 11
+A tela "VOCÊ FICOU ATÉ O FIM" NÃO está em quiz.html, pistas.html ou tiro.html.
+Ela não foi alterada nesta versão para evitar editar um arquivo por adivinhação.
+Envie o HTML da página dessa tela e ela pode ser redesenhada no mesmo padrão.
+
+TESTES
+?reset=1 continua disponível nas páginas da V70/V71.

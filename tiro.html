@@ -3,13 +3,21 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>PHANTASMA // PROTOCOLO FINAL // V70</title>
+<title>PHANTASMA // PROTOCOLO FINAL // V71</title>
 <style>
 :root{--bg:#030403;--panel:#080c09;--line:rgba(219,234,224,.105);--fg:#e7ede8;--muted:#727e75;--g:#8fd2a6;--r:#db7079;--a:#c9b77f}
 *{box-sizing:border-box}html,body{margin:0;min-height:100%;background:#020302;color:var(--fg);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
 body{min-height:100dvh;overflow-x:hidden;background:radial-gradient(circle at 50% -10%,rgba(74,109,87,.11),transparent 34%),linear-gradient(#060906,#020302 74%)}
-.stage{min-height:100dvh;display:grid;place-items:center;padding:16px}.screen{display:none;width:min(980px,100%)}.screen.show{display:block;animation:screenIn .55s cubic-bezier(.2,.8,.2,1) both}
-@keyframes screenIn{from{opacity:0;transform:translateY(7px);filter:blur(4px)}to{opacity:1;transform:none;filter:none}}
+.stage{min-height:100dvh;display:grid;place-items:center;padding:16px}
+.screen{display:none;width:min(980px,100%);opacity:0}
+.screen.show{display:block;animation:screenIn .72s cubic-bezier(.2,.8,.2,1) .08s both}
+@keyframes screenIn{from{opacity:0;transform:translateY(8px);filter:blur(5px)}to{opacity:1;transform:none;filter:none}}
+#sceneVeil{position:fixed;inset:0;z-index:90;background:#020302;opacity:0;pointer-events:none;transition:opacity .36s ease}
+#sceneVeil.on{opacity:1;pointer-events:auto}
+.cinematic{width:min(1120px,100%);min-height:calc(100dvh - 32px);display:none;place-items:center}
+.cinematic.show{display:grid}
+.cinematic-inner{width:min(1000px,92vw);margin:auto;text-align:center}
+.cinematic-kicker{color:#66736b;font-size:9px;letter-spacing:.18em;text-transform:uppercase;margin-bottom:28px}
 .shell{position:relative;border:1px solid var(--line);background:rgba(7,11,8,.91);box-shadow:0 30px 110px rgba(0,0,0,.60);overflow:hidden}
 .head{display:flex;justify-content:space-between;gap:18px;padding:11px 14px;border-bottom:1px solid rgba(219,234,224,.07);color:#68746c;font-size:9px;letter-spacing:.14em}.head strong{color:#84978a;font-weight:600}
 .body{padding:clamp(24px,5vw,50px)}
@@ -21,33 +29,128 @@ button:hover,button:focus-visible{border-color:var(--g);background:rgba(143,210,
 .track{height:4px;background:rgba(143,210,166,.08);overflow:hidden;margin:18px 0 8px}.fill{height:100%;width:0;background:#8cbda0;transition:width .13s linear}.pct{font-size:10px;color:#6a766e}
 .log{min-height:56px;margin-top:18px;border-top:1px solid rgba(219,234,224,.06);padding-top:11px;line-height:1.75}.log .good{color:#83bd97}.log .warn{color:var(--a)}.log .bad{color:var(--r)}
 /* decode */
-.decode-title{display:flex;justify-content:center;align-items:center;gap:4px;min-height:82px;margin:18px 0 6px;overflow:hidden}.reel{width:clamp(18px,4.2vw,35px);height:clamp(38px,8vw,66px);display:grid;place-items:center;border-bottom:1px solid rgba(229,239,232,.12);font:650 clamp(27px,6vw,52px)/1 ui-monospace,SFMono-Regular,Menlo,monospace;color:#e4ebe6}.reel span{display:block}.reel.kick span{animation:reelKick .14s ease both}@keyframes reelKick{from{transform:translateY(-55%);opacity:.18;filter:blur(5px)}to{transform:none;opacity:1;filter:none}}
-.decode-date{display:flex;justify-content:center;align-items:center;gap:3px;color:#829087;font:500 clamp(19px,4vw,33px)/1 ui-monospace,monospace;min-height:42px}.decode-date .digit{min-width:.65em;text-align:center}.decode-date .dot{opacity:.45}
-.decode-status{text-align:center;margin-top:16px;color:#87958c;font-size:10px;letter-spacing:.13em}.decode-progress{width:min(520px,80%);height:3px;background:rgba(143,210,166,.07);margin:14px auto 0;overflow:hidden}.decode-progress i{display:block;height:100%;width:0;background:#8cbda0}.decode-pct{text-align:center;font-size:9px;color:#657168;margin-top:7px}
-.decode-shell.warning{border-color:rgba(201,183,127,.27)}.decode-shell.error{border-color:rgba(219,112,121,.40);animation:damage .5s cubic-bezier(.36,.07,.19,.97) both;background:rgba(11,4,5,.94)}
-@keyframes damage{10%{transform:translate(6px,-1px)}25%{transform:translate(-5px,1px)}40%{transform:translate(4px,0)}58%{transform:translate(-3px,1px)}75%{transform:translate(2px,-1px)}100%{transform:none}}
-#fault{position:fixed;inset:0;z-index:99;pointer-events:none;display:none}#fault.show{display:block}.fault-slice{position:absolute;left:0;width:100%;background:rgba(219,112,121,.14);mix-blend-mode:screen;animation:faultSlice .16s steps(2) infinite alternate}
-@keyframes faultSlice{from{transform:translateX(-4%);opacity:.20}to{transform:translateX(5%);opacity:.65}}
-.flash{position:fixed;inset:0;z-index:98;pointer-events:none;background:rgba(220,235,225,.70);opacity:0}.flash.go{animation:flash .45s steps(2) both}@keyframes flash{0%{opacity:0}18%{opacity:.75}35%{opacity:.05}54%{opacity:.45}100%{opacity:0}}
+.decode-shell .body{padding-top:clamp(34px,6vw,66px);padding-bottom:clamp(30px,5vw,54px)}
+.decode-title{
+  display:flex;justify-content:center;align-items:center;
+  gap:clamp(6px,1.25vw,15px);
+  min-height:106px;margin:12px auto 28px;
+  max-width:92%;overflow:visible;white-space:nowrap;
+}
+.reel{
+  position:relative;overflow:hidden;
+  width:auto;min-width:.72em;height:1.16em;
+  display:grid;place-items:center;
+  font:650 clamp(31px,5.6vw,58px)/1 ui-monospace,SFMono-Regular,Menlo,monospace;
+  color:#e5ece7;
+  text-shadow:0 0 18px rgba(229,236,231,.025);
+}
+.reel span{display:block}
+.reel.kick span{animation:reelKick .19s cubic-bezier(.2,.75,.2,1) both}
+@keyframes reelKick{
+  0%{transform:translateY(-95%);opacity:.05;filter:blur(7px)}
+  60%{opacity:.78}
+  100%{transform:none;opacity:1;filter:none}
+}
+.decode-title.morph{animation:titleMorph .22s ease both}
+@keyframes titleMorph{0%{opacity:.16;filter:blur(6px);transform:scale(.985)}100%{opacity:1;filter:none;transform:none}}
+.decode-title.corrupt .reel:nth-child(3n){opacity:.08;transform:translateY(4px)}
+.decode-title.corrupt .reel:nth-child(4n+1){filter:blur(3px);transform:translateX(5px)}
+.decode-title.corrupt .reel:nth-child(5n+2){color:var(--r)}
+
+.decode-date{
+  display:flex;justify-content:center;align-items:center;
+  gap:clamp(5px,1vw,11px);
+  color:#8a978f;font:500 clamp(20px,3.3vw,31px)/1 ui-monospace,monospace;
+  min-height:44px;margin-bottom:31px;letter-spacing:.06em
+}
+.decode-date .digit{min-width:.62em;text-align:center}.decode-date .dot{opacity:.32;margin:0 2px}
+.decode-date.corrupt .digit:nth-child(2n){color:var(--r);animation:digitJitter .12s steps(2) infinite alternate}
+@keyframes digitJitter{from{transform:translateX(-2px)}to{transform:translateX(2px)}}
+
+.decode-status{text-align:center;margin-top:20px;color:#87958c;font-size:10px;letter-spacing:.15em}
+.decode-progress{width:min(540px,76%);height:3px;background:rgba(143,210,166,.07);margin:16px auto 0;overflow:hidden}
+.decode-progress i{display:block;height:100%;width:0;background:#8cbda0;transition:filter .2s ease}
+.decode-pct{text-align:center;font-size:9px;color:#657168;margin-top:8px}
+.decode-shell.warning{border-color:rgba(201,183,127,.30);box-shadow:0 30px 110px rgba(0,0,0,.65),0 0 42px rgba(201,183,127,.03)}
+.decode-shell.error{
+  border-color:rgba(219,112,121,.58);
+  animation:damage .56s cubic-bezier(.36,.07,.19,.97) both,errorPulse .78s steps(2) 2;
+  background:rgba(13,3,5,.96);
+  box-shadow:0 30px 110px rgba(0,0,0,.70),0 0 55px rgba(219,112,121,.08)
+}
+.decode-shell.error .decode-progress i{background:var(--r);filter:brightness(1.35)}
+@keyframes damage{10%{transform:translate(9px,-2px) skewX(-.4deg)}22%{transform:translate(-8px,2px)}38%{transform:translate(6px,-1px)}54%{transform:translate(-5px,2px)}70%{transform:translate(3px,-1px)}100%{transform:none}}
+@keyframes errorPulse{0%,100%{filter:none}50%{filter:brightness(1.35) contrast(1.18)}}
+
+#fault{position:fixed;inset:0;z-index:99;pointer-events:none;display:none;overflow:hidden}
+#fault.show{display:block}
+.fault-slice{position:absolute;left:-8%;width:116%;background:rgba(219,112,121,.18);mix-blend-mode:screen;animation:faultSlice .11s steps(2) infinite alternate}
+.fault-slice:nth-child(3n){background:rgba(231,238,233,.12)}
+@keyframes faultSlice{from{transform:translateX(-7%) skewX(-4deg);opacity:.16}to{transform:translateX(8%) skewX(3deg);opacity:.80}}
+.flash{position:fixed;inset:0;z-index:98;pointer-events:none;background:#e3ebe5;opacity:0}
+.flash.go{animation:flash .52s steps(2) both}
+@keyframes flash{0%{opacity:0}12%{opacity:.88}23%{opacity:.03}36%{opacity:.55}46%{opacity:.04}63%{opacity:.28}100%{opacity:0}}
+
 /* moral */
-.moral-lines{margin:30px 0;color:#87938b;line-height:1.85;font-size:clamp(15px,2.4vw,20px)}.moral-lines span{display:block}.moral-lines .terms{margin:20px 0;color:#c9d2cc;letter-spacing:.03em}.moral-question{margin-top:26px;font-size:clamp(25px,4.6vw,45px);line-height:1.12;font-weight:650;letter-spacing:-.035em}
+.moral-screen{background:transparent}
+.moral-sequence{width:min(1020px,92vw);text-align:center}
+.moral-step{opacity:0;transform:translateY(10px);filter:blur(5px)}
+.moral-screen.play .moral-step:nth-child(1){animation:moralIn 1s ease .25s both}
+.moral-screen.play .moral-step:nth-child(2){animation:moralIn .9s ease 1.65s both}
+.moral-screen.play .moral-step:nth-child(3){animation:moralIn .9s ease 3.15s both}
+.moral-screen.play .moral-step:nth-child(4){animation:moralIn 1s ease 4.45s both}
+.moral-screen.play .moral-step:nth-child(5){animation:moralIn .8s ease 5.75s both}
+@keyframes moralIn{to{opacity:1;transform:none;filter:none}}
+.moral-opening{font-size:clamp(30px,5.2vw,61px);line-height:1.08;font-weight:660;letter-spacing:-.045em}
+.moral-terms{margin:34px auto;color:#9ca89f;font-size:clamp(15px,2vw,20px);line-height:1.8;max-width:880px;letter-spacing:.02em}
+.moral-context{color:#77847b;font-size:clamp(14px,1.8vw,18px);margin-top:20px}
+.moral-question{margin:42px auto 28px;font-size:clamp(27px,4.5vw,49px);line-height:1.12;font-weight:650;letter-spacing:-.04em;max-width:900px}
 /* choice */
 .choice-title{font-size:clamp(27px,5vw,48px);font-weight:660;letter-spacing:-.04em;margin:0 0 20px}.grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:9px}.person{position:relative;border:1px solid rgba(219,234,224,.09);background:#070a08;padding:7px;cursor:pointer;transition:filter .7s ease,opacity .7s ease,transform .55s ease,border-color .4s ease}.person:hover{border-color:rgba(143,210,166,.35);transform:translateY(-2px)}
 .photo{aspect-ratio:1/1;overflow:hidden;background:linear-gradient(135deg,#151b17,#090c0a);position:relative}.photo img{width:100%;height:100%;object-fit:cover;display:block}.fallback{position:absolute;inset:0;display:grid;place-items:center;color:#57625b;font-size:22px;letter-spacing:.08em}.person span.name{display:block;margin-top:7px;color:#aeb9b1;font-size:10px;text-align:center;letter-spacing:.04em}
-.grid.chosen .person:not(.selected){filter:grayscale(1) brightness(.38) contrast(1.08);opacity:.72;transform:scale(.985)}.grid.chosen .person.selected{filter:none;transform:scale(1.025);border-color:rgba(143,210,166,.48);z-index:2}.grid.chosen{pointer-events:none}
+.grid.chosen{pointer-events:none}
+.person .photo img{transition:filter .85s ease,opacity .85s ease,transform .75s ease}
+.person.muted{opacity:.58;transform:scale(.982)}
+.person.muted .photo img{filter:grayscale(1) saturate(0) brightness(.28) contrast(1.15)!important}
+.person.muted .photo{background:#050605}
+.person.muted span.name{color:#566159}
+.person.selected{filter:none!important;opacity:1!important;transform:scale(1.025)!important;border-color:rgba(143,210,166,.52)!important;z-index:2}
+.person.selected .photo img{filter:none!important;opacity:1!important;transform:scale(1.02)}
 .choice-taunt{display:none;margin-top:22px;border-top:1px solid rgba(219,234,224,.07);padding-top:19px}.choice-taunt.show{display:block;animation:screenIn .5s ease both}.choice-taunt strong{display:block;font-size:clamp(21px,4vw,36px);letter-spacing:-.035em;line-height:1.12;margin-bottom:8px}.choice-taunt p{color:#87938b;margin:0 0 16px}
 /* time / roulette */
+.time-screen{width:100%;min-height:calc(100dvh - 32px);display:none;place-items:center}
+.time-screen.show{display:grid}
+.time-wrap{text-align:center;width:min(860px,92vw)}
+.time-protected{color:#657168;font-size:9px;letter-spacing:.16em;text-transform:uppercase;margin-bottom:32px;opacity:0}
+.time-screen.play .time-protected{animation:moralIn .7s ease .2s both}
+.time-label{font-size:clamp(13px,2vw,18px);letter-spacing:.16em;color:#89968e;text-transform:uppercase;opacity:0}
+.time-screen.play .time-label{animation:moralIn .7s ease .65s both}
+.time-number{
+  margin:18px 0 10px;
+  font-size:clamp(110px,25vw,250px);
+  font-weight:680;line-height:.78;letter-spacing:-.095em;
+  opacity:0;
+}
+.time-screen.play .time-number{animation:timeReveal .95s cubic-bezier(.15,.85,.2,1) 1.05s both}
+@keyframes timeReveal{from{opacity:0;transform:scale(.94);filter:blur(8px)}to{opacity:1;transform:none;filter:none}}
+.time-unit{color:#626f67;font-size:11px;letter-spacing:.2em;text-transform:uppercase;opacity:0}
+.time-screen.play .time-unit{animation:moralIn .7s ease 1.45s both}
+.time-note{min-height:24px;margin:32px auto 20px;color:#7d8981;line-height:1.6;font-size:13px;max-width:620px;opacity:0}
+.time-screen.play .time-note{animation:moralIn .7s ease 1.9s both}
+.time-action{opacity:0}
+.time-screen.play .time-action{animation:moralIn .7s ease 2.25s both}
+
 .time-number{font-size:clamp(78px,18vw,170px);font-weight:680;letter-spacing:-.08em;line-height:.8;margin:28px 0 20px}.time-number small{font-size:.22em;color:#728077;letter-spacing:.02em;margin-left:8px}.notice{color:#87938b;line-height:1.65;max-width:660px}.roulette-layout{display:grid;grid-template-columns:minmax(270px,430px) 1fr;gap:38px;align-items:center}.wheel-wrap{position:relative;width:min(78vw,420px);aspect-ratio:1;margin:auto}.pointer{position:absolute;z-index:5;left:50%;top:-5px;transform:translateX(-50%);width:0;height:0;border-left:13px solid transparent;border-right:13px solid transparent;border-top:25px solid #d8e0da;filter:drop-shadow(0 4px 6px #000)}
 .wheel{position:absolute;inset:9%;border-radius:50%;border:1px solid rgba(219,234,224,.15);background:conic-gradient(#111713 0 60deg,#0a0e0b 60deg 120deg,#151b17 120deg 180deg,#090c0a 180deg 240deg,#131915 240deg 300deg,#0a0e0b 300deg 360deg);box-shadow:0 20px 65px rgba(0,0,0,.60),inset 0 0 40px rgba(143,210,166,.025);transition:transform 4.3s cubic-bezier(.12,.68,.12,1)}
 .wheel::after{content:"";position:absolute;inset:42%;border-radius:50%;background:#050806;border:1px solid rgba(219,234,224,.14)}.wheel-label{position:absolute;left:50%;top:50%;width:72px;text-align:center;margin-left:-36px;margin-top:-8px;font:650 12px/1 ui-monospace,monospace;color:#c5d0c8;transform-origin:36px 8px;z-index:2}
 .roulette-copy h2{font-size:clamp(28px,5vw,50px);line-height:1;letter-spacing:-.045em}.roulette-copy p{color:#8b978f;line-height:1.68}.bonus{font-size:clamp(45px,8vw,84px);font-weight:680;letter-spacing:-.06em;color:#cfe0d4;margin:12px 0}
 /* ready */
 .ready-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:26px 0}.ready-item{border-top:1px solid rgba(219,234,224,.09);padding-top:12px}.ready-item small{display:block;color:#657168;font-size:9px;letter-spacing:.13em}.ready-item strong{display:block;margin-top:6px;font-size:clamp(24px,4vw,38px)}
-@media(max-width:760px){.stage{padding:9px}.body{padding:24px 16px}.grid{grid-template-columns:repeat(2,minmax(0,1fr));max-height:58dvh;overflow:auto}.roulette-layout{grid-template-columns:1fr;gap:20px}.roulette-copy{text-align:center}.ready-grid{grid-template-columns:1fr}.head{font-size:8px}.decode-title{gap:2px}.reel{width:clamp(16px,7vw,29px)}}
+@media(max-width:760px){.stage{padding:9px}.body{padding:24px 16px}.grid{grid-template-columns:repeat(2,minmax(0,1fr));max-height:58dvh;overflow:auto}.roulette-layout{grid-template-columns:1fr;gap:20px}.roulette-copy{text-align:center}.ready-grid{grid-template-columns:1fr}.head{font-size:8px}.decode-title{gap:clamp(3px,1.2vw,7px);max-width:96%}.reel{font-size:clamp(24px,7.2vw,34px);min-width:.62em}}
 </style>
 </head>
 <body>
-<div class="flash" id="flash"></div><div id="fault"></div>
+<div id="sceneVeil"></div><div class="flash" id="flash"></div><div id="fault"></div>
 <main class="stage">
 <section class="screen show" id="bootScreen"><div class="shell"><div class="head"><span>SESSÃO // RECUPERAÇÃO DE ESTADO</span><strong id="bootHead">CONTROLE LOCAL</strong></div><div class="body">
   <div class="boot-main" id="bootMain">VERIFICANDO INTEGRIDADE...</div><div class="boot-sub" id="bootSub">&gt; analisando fragmentos // bloco 01</div>
@@ -66,23 +169,34 @@ button:hover,button:focus-visible{border-color:var(--g);background:rgba(143,210,
   <h1 class="big">CONTROLE ASSUMIDO.</h1><p class="copy">O arquivo não vai abrir.</p><button id="controlNext">CONTINUAR</button>
 </div></div></section>
 
-<section class="screen" id="moralScreen"><div class="shell"><div class="head"><span>PHANTASMA // TESTE DE CRITÉRIO</span><strong>DECISÃO EXIGIDA</strong></div><div class="body">
-  <h1 class="big">É curioso como uma morte muda de nome dependendo de quem a comete.</h1>
-  <div class="moral-lines"><span class="terms">Defesa.<br>Misericórdia.<br>Proteção.<br>Necessidade.<br>Omissão.<br>Prova de lealdade.</span>
-  <span>Vocês encontraram uma justificativa para todos eles.</span></div>
-  <div class="moral-question">Agora escolha qual delas você está disposto a proteger.</div>
-  <button id="chooseBtn" style="margin-top:26px">ESCOLHER PROTEGIDO</button>
-</div></div></section>
+<section class="screen cinematic moral-screen" id="moralScreen">
+  <div class="moral-sequence">
+    <div class="cinematic-kicker moral-step">PHANTASMA // TESTE DE CRITÉRIO</div>
+    <div class="moral-opening moral-step">É curioso como uma morte muda de nome dependendo de quem a comete.</div>
+    <div class="moral-terms moral-step">Defesa. &nbsp; Misericórdia. &nbsp; Proteção. &nbsp; Necessidade. &nbsp; Omissão. &nbsp; Prova de lealdade.</div>
+    <div class="moral-context moral-step">Vocês encontraram uma justificativa para todos eles.</div>
+    <div class="moral-step">
+      <div class="moral-question">Agora escolha qual delas você está disposto a proteger.</div>
+      <button id="chooseBtn">ESCOLHER PROTEGIDO</button>
+    </div>
+  </div>
+</section>
 
 <section class="screen" id="choiceScreen"><div class="shell"><div class="head"><span>SESSÃO // PROTEÇÃO</span><strong>UMA ESCOLHA</strong></div><div class="body">
   <h2 class="choice-title">Quem você protege?</h2><div class="grid" id="peopleGrid"></div>
   <div class="choice-taunt" id="choiceTaunt"><strong id="tauntA"></strong><p id="tauntB"></p><button id="choiceContinue">CONTINUAR</button></div>
 </div></div></section>
 
-<section class="screen" id="timeScreen"><div class="shell"><div class="head"><span>SESSÃO // CONFIGURAÇÃO DO TESTE</span><strong>PROTEGIDO REGISTRADO</strong></div><div class="body">
-  <div class="copy">TEMPO CONCEDIDO</div><div class="time-number"><span id="rawTime">60</span><small>SEGUNDOS</small></div>
-  <p class="notice" id="penaltyNote"></p><button id="timeNext">INICIAR TESTE</button>
-</div></div></section>
+<section class="screen time-screen" id="timeScreen">
+  <div class="time-wrap">
+    <div class="time-protected" id="timeProtected">PROTEGIDO // REGISTRADO</div>
+    <div class="time-label">TEMPO CONCEDIDO</div>
+    <div class="time-number"><span id="rawTime">60</span></div>
+    <div class="time-unit">SEGUNDOS</div>
+    <div class="time-note" id="penaltyNote"></div>
+    <div class="time-action"><button id="timeNext">INICIAR TESTE</button></div>
+  </div>
+</section>
 
 <section class="screen" id="rouletteScreen"><div class="shell"><div class="head"><span>SESSÃO // VARIÁVEL ADICIONAL</span><strong>SORTE</strong></div><div class="body">
   <div class="roulette-layout"><div class="wheel-wrap"><div class="pointer"></div><div class="wheel" id="wheel"></div></div>
@@ -112,14 +226,45 @@ if(qs.has("reset")){
 }
 const $=id=>document.getElementById(id);
 const screens=[...document.querySelectorAll(".screen")];
-function show(id){screens.forEach(s=>s.classList.toggle("show",s.id===id))}
+const sceneVeil=$("sceneVeil");
+function show(id){
+  screens.forEach(s=>{
+    const active=s.id===id;
+    s.classList.toggle("show",active);
+    if(!active)s.classList.remove("play");
+  });
+  const target=$(id);
+  if(target && (id==="moralScreen"||id==="timeScreen")){
+    target.classList.remove("play");void target.offsetWidth;target.classList.add("play");
+  }
+}
+let sceneBusy=false;
+async function transitionTo(id,hold=180){
+  if(sceneBusy)return;
+  sceneBusy=true;
+  sceneVeil.classList.add("on");
+  await wait(380+hold);
+  show(id);
+  await wait(100);
+  sceneVeil.classList.remove("on");
+  await wait(430);
+  sceneBusy=false;
+}
 function wait(ms){return new Promise(r=>setTimeout(r,ms))}
 function log(container,text,kind=""){const d=document.createElement("div");d.className=kind;d.textContent=text;container.appendChild(d);while(container.children.length>3)container.firstElementChild.remove()}
 const flash=$("flash"),fault=$("fault");
 function faultBurst(power=1){
-  fault.innerHTML="";const n=power>1?22:12;
-  for(let i=0;i<n;i++){const s=document.createElement("div");s.className="fault-slice";s.style.top=(Math.random()*100)+"%";s.style.height=(1+Math.random()*(power>1?4:2))+"%";s.style.animationDuration=(.08+Math.random()*.12)+"s";fault.appendChild(s)}
-  fault.classList.add("show");flash.classList.remove("go");void flash.offsetWidth;flash.classList.add("go");setTimeout(()=>fault.classList.remove("show"),power>1?900:600)
+  fault.innerHTML="";
+  const n=power>=3?34:(power>1?25:13);
+  for(let i=0;i<n;i++){
+    const s=document.createElement("div");s.className="fault-slice";
+    s.style.top=(Math.random()*100)+"%";
+    s.style.height=(1+Math.random()*(power>=3?7:(power>1?4:2)))+"%";
+    s.style.animationDuration=(.06+Math.random()*.10)+"s";
+    fault.appendChild(s)
+  }
+  fault.classList.add("show");flash.classList.remove("go");void flash.offsetWidth;flash.classList.add("go");
+  setTimeout(()=>fault.classList.remove("show"),power>=3?1150:(power>1?900:600))
 }
 /* BOOT */
 const bootMain=$("bootMain"),bootSub=$("bootSub"),bootFill=$("bootFill"),bootPct=$("bootPct"),bootLog=$("bootLog"),bootHead=$("bootHead");
@@ -140,15 +285,30 @@ let titleTimer=null,dateTimers=[],titleFast=false,lastLen=0;
 const LENGTHS=[5,7,8,3,10,4,9,6];
 function rndChar(){return GLYPHS[(Math.random()*GLYPHS.length)|0]}
 function buildTitle(len){
+  decodeTitle.classList.remove("morph");
   decodeTitle.innerHTML="";
-  for(let i=0;i<len;i++){const d=document.createElement("div");d.className="reel";const s=document.createElement("span");s.textContent=rndChar();d.appendChild(s);decodeTitle.appendChild(d)}
+  for(let i=0;i<len;i++){
+    const d=document.createElement("div");d.className="reel";
+    const s=document.createElement("span");s.textContent=rndChar();
+    d.appendChild(s);decodeTitle.appendChild(d)
+  }
+  void decodeTitle.offsetWidth;decodeTitle.classList.add("morph");
 }
-function kickReel(el){el.classList.remove("kick");void el.offsetWidth;el.classList.add("kick");el.querySelector("span").textContent=rndChar()}
+function kickReel(el){
+  el.classList.remove("kick");void el.offsetWidth;
+  el.querySelector("span").textContent=rndChar();
+  el.classList.add("kick")
+}
 function startTitle(fast=false){
   titleFast=fast;clearInterval(titleTimer);lastLen=0;
-  const morph=()=>{let len;do{len=LENGTHS[(Math.random()*LENGTHS.length)|0]}while(len===lastLen);lastLen=len;buildTitle(len);
-    [...decodeTitle.children].forEach((el,i)=>setTimeout(()=>kickReel(el),Math.random()*(fast?170:300)))};
-  morph();titleTimer=setInterval(morph,fast?310:620);
+  const morph=()=>{
+    let len;
+    do{len=LENGTHS[(Math.random()*LENGTHS.length)|0]}while(len===lastLen);
+    lastLen=len;buildTitle(len);
+    [...decodeTitle.children].forEach(el=>setTimeout(()=>kickReel(el),Math.random()*(fast?180:320)))
+  };
+  morph();
+  titleTimer=setInterval(morph,fast?430:820);
 }
 function buildDate(fast=false){
   dateTimers.forEach(clearInterval);dateTimers=[];decodeDate.innerHTML="";
@@ -164,7 +324,8 @@ function progress(duration,done){
   requestAnimationFrame(frame)
 }
 async function beginDecode(){
-  show("decodeScreen");decodeStatus.textContent="DECODIFICANDO...";decodeLed.textContent="CANAL SEGURO";decodeShell.className="shell decode-shell";
+  await transitionTo("decodeScreen",80);
+  decodeStatus.textContent="DECODIFICANDO...";decodeLed.textContent="CANAL SEGURO";decodeShell.className="shell decode-shell";
   decodeLog.innerHTML="";log(decodeLog,"[SISTEMA] estrutura recebida.","good");startTitle(false);buildDate(false);
   setTimeout(()=>log(decodeLog,"[SISTEMA] iniciando leitura de blocos."),900);
   progress(12000,firstFreeze)
@@ -172,18 +333,50 @@ async function beginDecode(){
 async function firstFreeze(){
   decodePct.textContent="99%";decodeFill.style.width="99%";decodeStatus.textContent="DECODIFICAÇÃO // 99%";decodeLed.textContent="AGUARDANDO";
   log(decodeLog,"[SISTEMA] aguardando confirmação do último bloco.");
-  await wait(700);decodeShell.classList.add("warning");log(decodeLog,"[AVISO] latência fora do intervalo.","warn");decodePct.textContent="98%";decodeFill.style.width="98.4%";
-  await wait(620);decodePct.textContent="99%";decodeFill.style.width="99%";log(decodeLog,"[AVISO] resposta do processo interrompida.","warn");
-  await wait(520);systemError()
+  await wait(750);
+
+  decodeShell.classList.add("warning");
+  decodeTitle.classList.add("corrupt");
+  log(decodeLog,"[AVISO] latência fora do intervalo.","warn");
+  decodePct.textContent="98%";decodeFill.style.width="98.2%";
+
+  await wait(520);
+  decodeDate.classList.add("corrupt");
+  decodeStatus.textContent="VALIDANDO BLOCO FINAL...";
+  faultBurst(1);
+
+  await wait(620);
+  decodePct.textContent="99%";decodeFill.style.width="99%";
+  decodeStatus.textContent="SEM RESPOSTA";
+  log(decodeLog,"[AVISO] resposta do processo interrompida.","warn");
+
+  await wait(650);
+  systemError()
 }
 async function systemError(){
-  stopReels();decodeShell.classList.remove("warning");decodeShell.classList.add("error");decodeLed.textContent="FALHA";decodeStatus.textContent="ERRO NO SISTEMA";log(decodeLog,"[FALHA] bloco final não confirmou.","bad");faultBurst(2);
-  await wait(1600);decodeStatus.textContent="RECUPERANDO PROCESSO...";log(decodeLog,"[SISTEMA] isolando bloco corrompido.");
-  await wait(1500);decodeStatus.textContent="REINICIANDO DECODIFICAÇÃO";faultBurst(1);
-  await wait(1300);secondDecode()
+  stopReels();
+  decodeShell.classList.remove("warning");decodeShell.classList.add("error");
+  decodeTitle.classList.add("corrupt");decodeDate.classList.add("corrupt");
+  decodeLed.textContent="FALHA";
+  decodeStatus.textContent="ERRO NO SISTEMA";
+  log(decodeLog,"[FALHA] bloco final não confirmou.","bad");
+  faultBurst(3);
+
+  await wait(1550);
+  decodeStatus.textContent="RECUPERANDO PROCESSO...";
+  log(decodeLog,"[SISTEMA] isolando processo corrompido.");
+
+  await wait(1450);
+  decodeStatus.textContent="REINICIANDO DECODIFICAÇÃO";
+  faultBurst(2);
+
+  await wait(1250);
+  decodeTitle.classList.remove("corrupt");decodeDate.classList.remove("corrupt");
+  secondDecode()
 }
 function secondDecode(){
-  decodeShell.className="shell decode-shell";decodeLed.textContent="CANAL RECUPERADO";decodeStatus.textContent="DECODIFICANDO...";decodeLog.innerHTML="";
+  decodeShell.className="shell decode-shell";decodeTitle.classList.remove("corrupt");decodeDate.classList.remove("corrupt");
+  decodeLed.textContent="CANAL RECUPERADO";decodeStatus.textContent="DECODIFICANDO...";decodeLog.innerHTML="";
   log(decodeLog,"[SISTEMA] sessão reconfigurada.","good");startTitle(true);buildDate(true);progress(4100,secondFreeze)
 }
 async function secondFreeze(){
@@ -216,22 +409,60 @@ CHARACTERS.forEach(c=>{
   b.onclick=()=>choosePerson(c,b)
 });
 function choosePerson(c,b){
-  [...peopleGrid.children].forEach(x=>x.classList.toggle("selected",x===b));peopleGrid.classList.add("chosen");
-  sessionStorage.setItem("phantasma_protegido",c.name);sessionStorage.setItem("phantasma_protegido_id",c.id);
-  const t=TAUNTS[(Math.random()*TAUNTS.length)|0];tauntA.textContent=t[0];tauntB.textContent=t[1];
-  setTimeout(()=>choiceTaunt.classList.add("show"),900)
+  const cards=[...peopleGrid.children];
+  cards.forEach((x,i)=>{
+    const selected=x===b;
+    x.classList.toggle("selected",selected);
+    if(!selected){
+      setTimeout(()=>{
+        x.classList.add("muted");
+        const img=x.querySelector("img");
+        if(img)img.style.filter="grayscale(1) saturate(0) brightness(.28) contrast(1.15)";
+      },i*55);
+    }else{
+      x.classList.remove("muted");
+      const img=x.querySelector("img");
+      if(img)img.style.filter="none";
+    }
+  });
+  peopleGrid.classList.add("chosen");
+
+  sessionStorage.setItem("phantasma_protegido",c.name);
+  sessionStorage.setItem("phantasma_protegido_id",c.id);
+
+  const t=TAUNTS[(Math.random()*TAUNTS.length)|0];
+  tauntA.textContent=t[0];tauntB.textContent=t[1];
+  setTimeout(()=>choiceTaunt.classList.add("show"),1250)
 }
 $("choiceContinue").onclick=()=>showTime();
 /* TIME */
 let baseTime=60;
-function showTime(){
+async function showTime(){
   const penalty=Math.max(0,Number(sessionStorage.getItem("phantasma_penalidade_tiro_segundos")||0));
   baseTime=Math.max(1,60-penalty);
   sessionStorage.setItem("phantasma_tempo_antes_roleta",String(baseTime));
-  $("rawTime").textContent=baseTime;
+
+  $("timeProtected").textContent=(sessionStorage.getItem("phantasma_protegido")||"PROTEGIDO").toUpperCase()+" // PROTEGIDO REGISTRADO";
+  $("rawTime").textContent="60";
   $("penaltyNote").textContent=penalty>0?"Você aceitou ajuda quando precisou. Eu disse que teria um custo.":"";
   $("timeNext").textContent=baseTime<30?"CONTINUAR":"INICIAR TESTE";
-  show("timeScreen")
+
+  await transitionTo("timeScreen",180);
+
+  if(baseTime<60){
+    await wait(1100);
+    const start=60,end=baseTime,duration=1250,t0=performance.now();
+    function tick(now){
+      const p=Math.min(1,(now-t0)/duration);
+      const eased=1-Math.pow(1-p,3);
+      const v=Math.round(start+(end-start)*eased);
+      $("rawTime").textContent=v;
+      if(p<1)requestAnimationFrame(tick);else $("rawTime").textContent=end
+    }
+    requestAnimationFrame(tick)
+  }else{
+    $("rawTime").textContent="60"
+  }
 }
 $("timeNext").onclick=()=>{
   if(baseTime<30){
@@ -249,8 +480,8 @@ function makeValues(time){
   for(let i=1;i<vals.length;i++)if(vals[i]<=vals[i-1])vals[i]=Math.min(max,vals[i-1]+1);
   vals[vals.length-1]=max;return vals
 }
-function prepareRoulette(){
-  show("rouletteScreen");spun=false;spinResult.style.display="none";spinBtn.style.display="inline-block";wheel.style.transition="none";wheel.style.transform="rotate(0deg)";
+async function prepareRoulette(){
+  await transitionTo("rouletteScreen",150);spun=false;spinResult.style.display="none";spinBtn.style.display="inline-block";wheel.style.transition="none";wheel.style.transform="rotate(0deg)";
   wheelValues=makeValues(baseTime);wheel.querySelectorAll(".wheel-label").forEach(x=>x.remove());
   wheelValues.forEach((v,i)=>{const s=document.createElement("div");s.className="wheel-label";const angle=i*60+30;s.style.transform=`rotate(${angle}deg) translateY(-145px) rotate(${-angle}deg)`;s.textContent="+"+v+"s";wheel.appendChild(s)})
 }
@@ -265,8 +496,10 @@ spinBtn.onclick=()=>{
   },4450)
 };
 $("rouletteNext").onclick=()=>showReady(Number(sessionStorage.getItem("phantasma_tiro_tempo_inicial")||baseTime));
-function showReady(time){
-  $("readyProtected").textContent=(sessionStorage.getItem("phantasma_protegido")||"—").toUpperCase();$("readyTime").textContent=time+"s";show("readyScreen")
+async function showReady(time){
+  $("readyProtected").textContent=(sessionStorage.getItem("phantasma_protegido")||"—").toUpperCase();
+  $("readyTime").textContent=time+"s";
+  await transitionTo("readyScreen",160)
 }
 $("gameBtn").onclick=()=>location.href=SITE_ROOT+"jogo/";
 </script>

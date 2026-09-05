@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>PHANTASMA // VERIFICAÇÃO I // V70</title>
+<title>PHANTASMA // VERIFICAÇÃO I // V71</title>
 <style>
 :root{
   --bg:#050706;--panel:rgba(8,12,9,.88);--line:rgba(218,236,224,.10);
@@ -29,7 +29,10 @@ body::before{
 .eyebrow{display:flex;justify-content:space-between;gap:16px;color:#68746c;font-size:10px;letter-spacing:.15em;text-transform:uppercase;margin-bottom:12px}
 .pips{display:flex;gap:7px;align-items:center}.pip{width:7px;height:7px;border-radius:50%;border:1px solid #536158;background:transparent;transition:.35s}
 .pip.on{background:var(--green);border-color:var(--green);box-shadow:0 0 14px rgba(143,210,166,.28)}
-.card{border:1px solid var(--line);background:var(--panel);box-shadow:0 30px 100px rgba(0,0,0,.55);padding:clamp(24px,5vw,52px);min-height:390px;display:flex;flex-direction:column;justify-content:center}
+.card{border:1px solid var(--line);background:var(--panel);box-shadow:0 30px 100px rgba(0,0,0,.55);padding:clamp(24px,5vw,52px);min-height:390px;display:flex;flex-direction:column;justify-content:center;transition:opacity .28s ease,transform .28s ease,filter .28s ease}
+.card.switching{opacity:0;transform:translateY(6px);filter:blur(4px)}
+.card.arrive{animation:questionArrive .48s cubic-bezier(.2,.8,.2,1) both}
+@keyframes questionArrive{from{opacity:0;transform:translateY(8px);filter:blur(4px)}to{opacity:1;transform:none;filter:none}}
 .type{color:#69756d;font-size:10px;letter-spacing:.15em;text-transform:uppercase;margin-bottom:18px}
 .question{font-size:clamp(26px,4.2vw,45px);line-height:1.12;font-weight:650;letter-spacing:-.035em;max-width:790px}
 .answer-zone{margin-top:34px}
@@ -95,19 +98,29 @@ function isCorrect(q,value){
   return q.answers.some(a=>norm(a)===norm(value));
 }
 function updatePips(){pips.forEach((p,i)=>p.classList.toggle("on",i<state.correct))}
+let switchingQuestion=false;
 function nextQuestion(){
-  feedback.textContent="";feedback.className="feedback";meta.textContent="";
+  if(switchingQuestion)return;
   if(state.correct>=3){finish();return}
-  if(state.index>=state.deck.length){
-    const last=state.current;
-    state.deck=shuffle(QUESTIONS.map(q=>q.id));
-    if(last&&state.deck[0]===last&&state.deck.length>1)[state.deck[0],state.deck[1]]=[state.deck[1],state.deck[0]];
-    state.index=0;
-  }
-  state.current=state.deck[state.index++];
-  state.attempts=0;
-  if(!state.seen.includes(state.current))state.seen.push(state.current);
-  save();renderCurrent();
+  switchingQuestion=true;
+  card.classList.add("switching");
+  setTimeout(()=>{
+    feedback.textContent="";feedback.className="feedback";meta.textContent="";
+    if(state.index>=state.deck.length){
+      const last=state.current;
+      state.deck=shuffle(QUESTIONS.map(q=>q.id));
+      if(last&&state.deck[0]===last&&state.deck.length>1)[state.deck[0],state.deck[1]]=[state.deck[1],state.deck[0]];
+      state.index=0;
+    }
+    state.current=state.deck[state.index++];
+    state.attempts=0;
+    if(!state.seen.includes(state.current))state.seen.push(state.current);
+    save();renderCurrent();
+    card.classList.remove("switching","arrive");
+    void card.offsetWidth;
+    card.classList.add("arrive");
+    switchingQuestion=false;
+  },300);
 }
 function renderCurrent(){
   updatePips();
@@ -166,7 +179,14 @@ function finish(){
 }
 updatePips();
 if(state.finished){state=fresh();save()}
-if(!state.current)nextQuestion();else renderCurrent();
+if(!state.current){
+  /* primeira pergunta entra suavemente, sem flash seco */
+  card.classList.add("switching");
+  setTimeout(()=>nextQuestion(),120);
+}else{
+  renderCurrent();
+  card.classList.add("arrive");
+}
 </script>
 </body>
 </html>
