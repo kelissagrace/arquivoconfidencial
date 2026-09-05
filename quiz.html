@@ -3,946 +3,170 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#050806">
-<title>Teste // PHANTASMA</title>
-
+<title>PHANTASMA // VERIFICAÇÃO I // V70</title>
 <style>
 :root{
-  --bg:#040705;
-  --text:#eef5f0;
-  --muted:#7c8982;
-  --soft:#c6d2ca;
-  --line:rgba(220,235,226,.12);
-  --line2:rgba(220,235,226,.22);
-  --red:#ff5f68;
-  --green:#74e99f;
+  --bg:#050706;--panel:rgba(8,12,9,.88);--line:rgba(218,236,224,.10);
+  --fg:#e8eee9;--muted:#78837b;--green:#8fd2a6;--red:#d96f78;--amber:#c9b77f;
 }
 *{box-sizing:border-box}
-html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text)}
+html,body{margin:0;min-height:100%;background:#030403;color:var(--fg);
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
 body{
-  min-height:100dvh;
-  overflow-x:hidden;
-  font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
-}
-button,input{font:inherit}
-
-.bg{
-  position:fixed;inset:-5%;z-index:-5;
+  min-height:100dvh;display:grid;place-items:center;padding:18px;overflow-x:hidden;
   background:
-    linear-gradient(rgba(2,5,4,.72),rgba(2,5,4,.89)),
-    url("assets/phantasma-bg.jpg") center/cover no-repeat;
-  transform:scale(1.08);
-  animation:bgDrift 24s ease-in-out infinite alternate;
+    radial-gradient(circle at 50% -15%,rgba(87,128,101,.10),transparent 36%),
+    linear-gradient(180deg,#070a08 0%,#020302 78%);
 }
-@keyframes bgDrift{
-  from{transform:scale(1.08) translate3d(-1.2%,-.8%,0)}
-  to{transform:scale(1.13) translate3d(1.4%,1%,0)}
-}
-#binaryCanvas{
-  position:fixed;inset:0;z-index:-4;pointer-events:none;
-  opacity:.17;mix-blend-mode:screen;
-}
-.scanlines{
-  position:fixed;inset:0;z-index:-3;pointer-events:none;opacity:.08;
-  background:repeating-linear-gradient(0deg,transparent 0 2px,rgba(255,255,255,.025) 3px 4px);
-}
-.vignette{
-  position:fixed;inset:0;z-index:-2;pointer-events:none;
-  background:radial-gradient(circle at 50% 46%,transparent 0 28%,rgba(0,0,0,.22) 62%,rgba(0,0,0,.78) 100%);
-}
-#glitchFlash{
-  position:fixed;inset:0;z-index:70;pointer-events:none;opacity:0;
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;opacity:.16;
   background:
-    linear-gradient(90deg,rgba(255,0,60,.14),transparent 24%,rgba(117,255,180,.11) 74%,transparent),
-    rgba(255,255,255,.03);
+    linear-gradient(90deg,transparent 0 49.8%,rgba(255,255,255,.025) 50%,transparent 50.2%),
+    linear-gradient(0deg,transparent 0 49.8%,rgba(255,255,255,.018) 50%,transparent 50.2%);
+  background-size:72px 72px;
 }
-#glitchFlash.hit{animation:glitch .25s steps(2,end)}
-@keyframes glitch{
-  0%{opacity:0}
-  20%{opacity:.9;transform:translateX(-7px)}
-  45%{opacity:.24;transform:translateX(8px)}
-  70%{opacity:.52;transform:translateX(-3px)}
-  100%{opacity:0;transform:none}
+.wrap{width:min(860px,100%);position:relative;z-index:2}
+.eyebrow{display:flex;justify-content:space-between;gap:16px;color:#68746c;font-size:10px;letter-spacing:.15em;text-transform:uppercase;margin-bottom:12px}
+.pips{display:flex;gap:7px;align-items:center}.pip{width:7px;height:7px;border-radius:50%;border:1px solid #536158;background:transparent;transition:.35s}
+.pip.on{background:var(--green);border-color:var(--green);box-shadow:0 0 14px rgba(143,210,166,.28)}
+.card{border:1px solid var(--line);background:var(--panel);box-shadow:0 30px 100px rgba(0,0,0,.55);padding:clamp(24px,5vw,52px);min-height:390px;display:flex;flex-direction:column;justify-content:center}
+.type{color:#69756d;font-size:10px;letter-spacing:.15em;text-transform:uppercase;margin-bottom:18px}
+.question{font-size:clamp(26px,4.2vw,45px);line-height:1.12;font-weight:650;letter-spacing:-.035em;max-width:790px}
+.answer-zone{margin-top:34px}
+input{
+  width:100%;border:0;border-bottom:1px solid rgba(231,240,234,.18);background:transparent;color:var(--fg);
+  padding:14px 2px;font:inherit;font-size:clamp(17px,2.6vw,22px);outline:0
 }
-
-.shell{
-  min-height:100dvh;
-  display:flex;flex-direction:column;
-  padding:max(18px,env(safe-area-inset-top)) clamp(18px,4vw,56px) max(20px,env(safe-area-inset-bottom));
+input:focus{border-color:rgba(143,210,166,.58)}
+.actions{display:flex;gap:10px;margin-top:18px}
+button{
+  appearance:none;border:1px solid rgba(143,210,166,.30);background:rgba(0,0,0,.20);color:#cfe2d5;
+  min-height:46px;padding:11px 18px;font:600 12px/1 inherit;letter-spacing:.08em;cursor:pointer
 }
-.topbar{
-  width:min(1240px,100%);
-  margin:0 auto;
-  min-height:58px;
-  display:flex;align-items:center;justify-content:space-between;gap:16px;
-  border-bottom:1px solid var(--line);
-}
-.brand{
-  display:flex;align-items:center;gap:11px;
-  color:#d8e2dc;font-size:11px;letter-spacing:.20em;text-transform:uppercase;
-}
-.brand-dot{
-  width:7px;height:7px;border-radius:50%;background:var(--red);
-  box-shadow:0 0 14px rgba(255,95,104,.58);
-  animation:pulse 1.8s ease-in-out infinite;
-}
-@keyframes pulse{50%{opacity:.38;box-shadow:0 0 5px rgba(255,95,104,.28)}}
-#watchState{
-  color:#75827a;font-size:10px;letter-spacing:.16em;text-transform:uppercase;white-space:nowrap;
-}
-
-main{
-  width:min(1120px,100%);
-  margin:auto;
-  padding:56px 0 70px;
-}
-.stage{
-  min-height:min(650px,72dvh);
-  display:flex;flex-direction:column;justify-content:center;
-}
-.kicker{
-  margin-bottom:26px;
-  color:rgba(180,199,188,.48);
-  font-size:10px;letter-spacing:.24em;text-transform:uppercase;
-}
-.question-wrap{
-  position:relative;
-  padding-left:26px;
-}
-.question-wrap::before{
-  content:"";
-  position:absolute;left:0;top:3px;bottom:3px;width:2px;
-  background:linear-gradient(var(--red),rgba(255,95,104,.08));
-}
-#question{
-  margin:0;
-  max-width:980px;
-  font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-  font-size:clamp(34px,5.4vw,74px);
-  line-height:1.02;
-  font-weight:720;
-  letter-spacing:-.045em;
-  text-wrap:balance;
-}
-.sub{
-  margin:22px 0 0;
-  color:rgba(201,216,207,.45);
-  font-size:12px;line-height:1.7;
-}
-
-.answer-zone{
-  margin-top:52px;
-  width:min(900px,100%);
-}
-.answer-line{
-  display:grid;
-  grid-template-columns:28px minmax(0,1fr) 142px;
-  align-items:center;
-  gap:12px;
-  border-bottom:1px solid rgba(223,236,228,.27);
-  transition:border-color .2s,box-shadow .2s;
-}
-.answer-line:focus-within{
-  border-bottom-color:rgba(219,236,225,.62);
-  box-shadow:0 10px 22px -20px rgba(187,255,216,.34);
-}
-.prompt{
-  color:var(--green);
-  font-size:20px;
-  padding-bottom:4px;
-}
-#answer{
-  width:100%;height:62px;border:0;outline:none;background:transparent;
-  color:var(--text);padding:0 4px;font-size:16px;caret-color:var(--red);
-}
-#answer::placeholder{color:#5f6b64;letter-spacing:.03em}
-#answer:disabled{opacity:.5}
-
-#submit{
-  height:44px;
-  border:1px solid rgba(222,235,227,.22);
-  background:rgba(226,235,229,.92);
-  color:#101511;
-  cursor:pointer;
-  letter-spacing:.12em;text-transform:uppercase;font-size:10px;font-weight:850;
-  transition:background .18s,color .18s,border-color .18s,box-shadow .18s,transform .12s,opacity .18s;
-}
-#submit:hover{filter:brightness(1.04)}
-#submit:active{transform:translateY(1px)}
-#submit:disabled{cursor:default}
-#submit.state-correct{
-  background:var(--green);border-color:var(--green);color:#07110b;
-  box-shadow:0 0 24px rgba(116,233,159,.28);
-}
-#submit.state-wrong{
-  background:var(--red);border-color:var(--red);color:#180608;
-  box-shadow:0 0 24px rgba(255,95,104,.28);
-}
-
-#reaction{
-  min-height:118px;
-  margin-top:27px;
-  padding:19px 0 0 26px;
-  border-top:1px solid rgba(218,234,224,.09);
-  color:var(--soft);
-  line-height:1.78;font-size:14px;white-space:pre-line;
-}
-#reaction::before{
-  content:"PHANTASMA //";
-  display:block;
-  margin-bottom:10px;
-  color:#66736c;
-  font-size:9px;letter-spacing:.20em;
-}
-#reaction:empty::after{content:"aguardando resposta.";color:#546059}
-#reaction.bad{color:#f1b7ba}
-#reaction.good{color:#d7e8dd}
-
-.footer-meta{
-  margin-top:22px;
-  display:flex;gap:18px;flex-wrap:wrap;
-  color:#5f6b64;
-  font-size:9px;letter-spacing:.14em;text-transform:uppercase;
-}
-
-.shake{animation:shake .27s linear}
-@keyframes shake{
-  20%{transform:translateX(-5px)}
-  45%{transform:translateX(4px)}
-  70%{transform:translateX(-2px)}
-  90%{transform:translateX(2px)}
-}
-
-#final{display:none;width:min(1120px,100%);margin:auto}
-#final.show{display:block}
-#quizView.hidden{display:none}
-.final-stage{
-  min-height:min(650px,72dvh);
-  display:flex;align-items:center;
-}
-.final-inner{width:min(920px,100%)}
-.final-kicker{
-  color:var(--red);
-  font-size:10px;letter-spacing:.24em;text-transform:uppercase;margin-bottom:22px;
-}
-#finalText{
-  font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-  font-size:clamp(32px,5vw,64px);
-  line-height:1.1;white-space:pre-line;font-weight:680;letter-spacing:-.04em;
-}
-#finalStats{
-  margin-top:30px;
-  color:#68756e;font-size:10px;line-height:1.9;letter-spacing:.10em;text-transform:uppercase;
-}
-#nextBtn{
-  margin-top:30px;min-height:48px;padding:0 22px;
-  background:transparent;border:1px solid rgba(218,234,224,.22);
-  color:#dce6e0;cursor:pointer;letter-spacing:.12em;text-transform:uppercase;font-size:10px;
-}
-#nextMessage{margin-top:14px;color:#748078;font-size:10px;letter-spacing:.09em}
-
-#absence{
-  position:fixed;left:18px;bottom:max(16px,env(safe-area-inset-bottom));z-index:30;
-  max-width:min(420px,calc(100vw - 36px));padding:10px 12px;
-  border-left:2px solid rgba(255,95,104,.5);
-  background:rgba(4,6,5,.84);color:#87938c;font-size:10px;letter-spacing:.08em;
-  opacity:0;transform:translateY(8px);pointer-events:none;transition:.25s;
-}
-#absence.show{opacity:1;transform:none}
-
-@media(max-width:700px){
-  .topbar{min-height:52px}
-  .brand{font-size:10px}
-  #watchState{display:none}
-  main{padding:34px 0 48px}
-  .stage{min-height:74dvh}
-  .question-wrap{padding-left:18px}
-  #question{font-size:clamp(32px,10vw,48px)}
-  .answer-zone{margin-top:42px}
-  .answer-line{grid-template-columns:22px minmax(0,1fr);gap:8px}
-  #submit{grid-column:1/-1;width:100%;height:48px;margin-top:8px}
-  #reaction{padding-left:18px;min-height:132px;font-size:13px}
-}
-
-#binaryWipe{position:fixed;inset:0;z-index:9999;pointer-events:none;opacity:0;visibility:hidden;background:#020503}
-#binaryWipe.show{opacity:1;visibility:visible}
-#binaryWipe canvas{position:absolute;inset:0;width:100%;height:100%}
-#binaryWipe .wipe-status{position:absolute;left:50%;bottom:max(28px,env(safe-area-inset-bottom));transform:translateX(-50%);color:rgba(181,255,211,.68);font-size:10px;letter-spacing:.22em;text-transform:uppercase;white-space:nowrap;opacity:0}
-#binaryWipe.show .wipe-status{animation:wipeStatus .35s ease .95s forwards}
-@keyframes wipeStatus{to{opacity:1}}
+button:hover,button:focus-visible{border-color:var(--green);background:rgba(143,210,166,.07)}
+.bool{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.bool button{min-height:62px;font-size:13px}
+.feedback{min-height:23px;margin-top:18px;color:#7e8b82;font-size:12px;line-height:1.5}
+.feedback.good{color:var(--green)}.feedback.bad{color:var(--red)}
+.meta{margin-top:15px;color:#4e5952;font-size:9px;letter-spacing:.09em}
+.shake{animation:shake .35s ease}@keyframes shake{25%{transform:translateX(4px)}50%{transform:translateX(-3px)}75%{transform:translateX(2px)}}
+.curtain{position:fixed;inset:0;z-index:50;background:#020302;display:grid;place-items:center;opacity:0;pointer-events:none;transition:.35s}
+.curtain.show{opacity:1;pointer-events:auto}.bits{font-family:ui-monospace,monospace;color:#789383;opacity:.44;font-size:12px;line-height:1.7;letter-spacing:.2em;text-align:center;width:min(820px,94vw);word-break:break-all}
+@media(max-width:620px){body{padding:12px}.card{min-height:460px;padding:24px 18px}.bool{grid-template-columns:1fr}.eyebrow{font-size:9px}}
 </style>
-
 </head>
 <body>
-
-<div class="bg"></div>
-<canvas id="binaryCanvas" aria-hidden="true"></canvas>
-<div class="scanlines"></div>
-<div class="vignette"></div>
-<div id="glitchFlash"></div>
-
-<div class="shell">
-  <header class="topbar">
-    <div class="brand"><span class="brand-dot"></span><span>PHANTASMA // TESTE DE CONHECIMENTO</span></div>
-    <div id="watchState">OBSERVAÇÃO // ATIVA</div>
-  </header>
-
-  <main id="quizView">
-    <section id="card" class="stage">
-      <div class="kicker">teste desbloqueado // resposta livre</div>
-
-      <div class="question-wrap">
-        <h1 id="question"></h1>
-        <p class="sub">Responda. Eu percebo quando você desaparece.</p>
-      </div>
-
-      <div class="answer-zone">
-        <form id="form" class="answer-line" autocomplete="off">
-          <span class="prompt">&gt;</span>
-          <input id="answer" type="text" inputmode="text" autocapitalize="off" spellcheck="false" placeholder="digite sua resposta">
-          <button id="submit" type="submit">VALIDAR</button>
-        </form>
-
-        <div id="reaction" aria-live="polite"></div>
-
-        <div class="footer-meta">
-          <span id="errorCount">falhas // 0</span>
-          <span id="awayCount">ausências // 0</span>
-          <span>validação // local</span>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <section id="final">
-    <div class="final-stage">
-      <div class="final-inner">
-        <div class="final-kicker">teste concluído</div>
-        <div id="finalText"></div>
-        <div id="finalStats"></div>
-        <button id="nextBtn">PRÓXIMO TESTE</button>
-        <div id="nextMessage"></div>
-      </div>
-    </div>
+<main class="wrap">
+  <div class="eyebrow"><span>PHANTASMA // VERIFICAÇÃO I</span><span class="pips" id="pips"><i class="pip"></i><i class="pip"></i><i class="pip"></i></span></div>
+  <section class="card" id="card">
+    <div class="type" id="typeLabel"></div>
+    <div class="question" id="question"></div>
+    <div class="answer-zone" id="answerZone"></div>
+    <div class="feedback" id="feedback"></div>
+    <div class="meta" id="meta"></div>
   </section>
-</div>
-
-<div id="absence">SESSÃO // AUSÊNCIA REGISTRADA</div>
-<div id="binaryWipe" aria-hidden="true">
-  <canvas id="binaryWipeCanvas"></canvas>
-  <div class="wipe-status">limpando sessão // carregando próximo protocolo</div>
-</div>
-
-<audio id="sfxClick" preload="auto" src="assets/sfx/click.wav"></audio>
-<audio id="sfxError" preload="auto" src="assets/sfx/erro.wav"></audio>
-<audio id="sfxAccess" preload="auto" src="assets/sfx/acesso.wav"></audio>
-
+</main>
+<div class="curtain" id="curtain"><div class="bits" id="bits"></div></div>
 <script>
-(() => {
-  "use strict";
-  const NEXT_PAGE = "pistas.html";
-
-  const QUESTIONS = [
-    { id:"westbridge-shooter", question:"Qual é o nome do atirador de Westbrigde?", accepted:["luke","luke hancey"], type:"text" },
-    { id:"charlotte-necklace", question:"Qual o valor do colar que o Killian compra no leilão da Charlotte?", accepted:[], type:"money200k" },
-    { id:"ivy-capsule", question:"Qual era o desenho dentro da cápsula da Ivy?", accepted:["medusa"], type:"text" }
-  ];
-
-  const TAUNTS = {
-    correctFirst:[
-      "Hm.\nEntão você prestou atenção.\nNão se empolgue.",
-      "Certo.\nEra o mínimo, mas certo.",
-      "Uma resposta correta.\nTente não transformar isso em um evento.",
-      "Muito bem.\nAinda não estou impressionado."
-    ],
-    correctSecond:[
-      "De novo?\nEstou começando a achar isso inconveniente.",
-      "Duas respostas certas.\nQue desagradável.",
-      "Olha só.\nTalvez os livros não tenham sido apenas decoração.",
-      "Você está tornando isso menos divertido para mim."
-    ],
-    correctThird:[
-      "Que irritante.",
-      "Três respostas.\nNenhum tropeço.",
-      "Parece que subestimei você.",
-      "Três de três. Limpo.\nQue inconveniente."
-    ],
-
-    firstWrongQ1:[
-      "Ah.\nIsso foi rápido.",
-      "Nem deu tempo de eu criar expectativas.",
-      "Primeira pergunta.\nImpressionante.",
-      "Começamos muito bem.\nPara mim, pelo menos.",
-      "Você conseguiu tropeçar antes da caminhada começar."
-    ],
-    firstWrongQ2:[
-      "Estava indo tão bem.",
-      "Por alguns segundos eu quase acreditei em você.",
-      "Ah.\nA sequência perfeita durou pouco.",
-      "Uma certa, uma errada.\nVoltamos a uma realidade mais confortável."
-    ],
-    firstWrongQ3:[
-      "Sério?\nVocê chegou até aqui para errar agora?",
-      "Você chegou até aqui para errar agora?\nQue timing impecável.",
-      "Duas perfeitas e você escolhe justamente agora para desmoronar.",
-      "Tão perto.\nDeve ser irritante."
-    ],
-
-    secondWrong:[
-      "Quer que eu espere você reler os quatro livros?",
-      "Vai com calma.\nTemos todo o tempo do mundo. Aparentemente você precisa.",
-      "Segunda tentativa.\nMesmo resultado intelectual.",
-      "Talvez ler a pergunta novamente seja um começo."
-    ],
-    thirdWrong:[
-      "Posso procurar um resumo para você também.\nTalvez um com figuras.",
-      "Estamos oficialmente transformando isso numa investigação.",
-      "Você sabe que chutar repetidamente não transforma uma resposta em correta, certo?",
-      "Estou começando a achar que você leu outros quatro livros."
-    ],
-    fourthPlus:[
-      "A essa altura eu já não sei se você está tentando responder ou me entreter.",
-      "Continue.\nIsso começou como teste e virou estudo de caso.",
-      "Eu poderia diminuir a dificuldade.\nMas aí teríamos que fingir que isso ainda é um teste.",
-      "Vocês discutem esses livros com tanta convicção na internet.\nFascinante.",
-      "Quatro livros.\nQuatro.\nE ainda estamos aqui.",
-      "Não tenha pressa.\nOs segredos provavelmente conseguem esperar mais alguns minutos."
-    ],
-
-    clay:[
-      "Quer que eu chame o detetive Clay para te ajudar?",
-      "Detetive Clay teria orgulho de você.\nNão interprete isso como elogio.",
-      "Você e o detetive Clay a 500 km de distância disputando o título de mais incompetente.",
-      "A diferença entre você e o detetive Clay é que você já leu quatro livros e sabe de tudo.\nEle não.",
-      "Clay pelo menos tem a desculpa de não ter lido os quatro livros.\nQual é a sua?",
-      "Em algum lugar, o detetive Clay acabou de se sentir estranhamente competente.",
-      "Você conseguiu fazer o detetive Clay parecer eficiente.\nIsso é quase um talento.",
-      "Se continuar assim, vou chamar Clay.\nTalvez dois investigadores ruins formem um bom."
-    ],
-
-    afterFewErrors:[
-      "Aí está.\nEventualmente.",
-      "Viu?\nNão precisava tornar isso tão dramático.",
-      "Correto.\nNa segunda tentativa, mas não sejamos exigentes.",
-      "Chegou lá.\nPelo caminho turístico."
-    ],
-    afterManyErrors:[
-      "Conseguiu.\nEventualmente.",
-      "Demorou tanto que eu quase esqueci a pergunta.",
-      "Correto.\nDepois de algumas tentativas demais para eu chamar isso de conhecimento.",
-      "Persistência: excelente.\nMemória: discutível.",
-      "Tecnicamente certo.\nVamos evitar falar sobre o caminho até aqui.",
-      "Parabéns.\nVocê venceu a pergunta por exaustão.",
-      "Viu?\nNem precisei esperar você reler os quatro livros.\nSó quase."
-    ],
-
-    awayShort:[
-      "Foi dar uma volta?",
-      "Eu percebi.",
-      "Precisou pensar longe de mim?",
-      "Voltou.\nQue bom."
-    ],
-    awayLong:[
-      "Demorou.",
-      "Precisou de um tempo para… refletir?",
-      "Interessante.\nA pergunta ficou mais fácil enquanto você estava fora?",
-      "Você sabe que eu percebo quando você vai embora, certo?"
-    ],
-    awayWrong:[
-      "Você saiu, voltou e essa ainda é sua resposta?",
-      "Eu realmente esperava algum progresso depois daquela pequena excursão.",
-      "Todo aquele tempo fora para chegar exatamente no lugar errado.",
-      "Isso tornou a saída ainda mais constrangedora.",
-      "Você saiu, investigou e voltou com isso?\nDetetive Clay teria orgulho de você."
-    ],
-    awayCorrect:[
-      "Ah.\nInteressante como a resposta apareceu depois daquela pequena ausência.",
-      "Precisava apenas de alguns segundos de inspiração, imagino.",
-      "Que conveniente.",
-      "Uma pequena investigação paralela?\nClay teria orgulho.\nBem… talvez não. Ele provavelmente reclamaria primeiro."
-    ],
-    awayRepeated:[
-      "Continue entrando e saindo.\nTenho certeza de que a resposta vai aparecer magicamente.",
-      "Você pretende responder ou transformar isso em trabalho de campo?",
-      "Mais uma viagem?",
-      "Estou começando a contabilizar suas fugas.",
-      "Vai.\nEu espero.\nClaramente isso está funcionando muito bem.",
-      "Nesse ritmo, você e o detetive Clay podem abrir uma agência juntos."
-    ],
-
-    finalPerfect:[
-      "Três de três. Limpo.\nQue inconveniente.\n\nVamos ver se continua tão confiante quando conhecimento deixar de ser suficiente.",
-      "Três respostas.\nNenhum erro.\nInteressante.\n\nTalvez você realmente saiba alguma coisa sobre eles.\nNão fique confortável."
-    ],
-    finalFew:[
-      "Terminou.\nCom alguns tropeços, mas terminou.\n\nVou considerar aceitável.\nNão confunda aceitável com impressionante.",
-      "Três respostas certas.\nAlguns arranhões no caminho.\n\nPassável."
-    ],
-    finalMany:[
-      "Três respostas corretas.\nEventualmente.\n\nForam necessárias tentativas demais para eu chamar isso de conhecimento.\nMas parabéns pela persistência. Imagino.",
-      "Conseguiu.\n\nEu não diria que passou no teste.\nDiria que o teste desistiu de você.",
-      "Três respostas certas.\nDepois de transformar cada pergunta numa investigação criminal.\n\nClay teria orgulho.\nIsso não é um elogio."
-    ],
-    finalManyAway:[
-      "Finalmente.\n\nTrês respostas certas, várias tentativas e algumas pequenas excursões.\nVocê não passou por conhecimento.\nPassou por insistência.",
-      "Terminou.\n\nQuase precisei colocar Clay no caso."
-    ],
-    confidenceMilk:[
-      "Confiante, lembra?\nEnvelheceu igual leite.",
-      "Toda aquela confiança para isso?\nEnvelheceu igual leite."
-    ],
-    finalConfidenceMilk:[
-      "Lembra da confiança?\nEu lembro.\n\nEnvelheceu igual leite.\n\nMas você conseguiu.\nEventualmente."
-    ]
-  };
-
-  const $ = id => document.getElementById(id);
-  const quizView = $("quizView");
-  const finalView = $("final");
-  const card = $("card");
-  const questionEl = $("question");
-  const form = $("form");
-  const answer = $("answer");
-  const submit = $("submit");
-  const reaction = $("reaction");
-  const watchState = $("watchState");
-  const finalText = $("finalText");
-  const finalStats = $("finalStats");
-  const nextBtn = $("nextBtn");
-  const nextMessage = $("nextMessage");
-  const absence = $("absence");
-  const glitchFlash = $("glitchFlash");
-  const errorCountEl = $("errorCount");
-  const awayCountEl = $("awayCount");
-
-  const sfxClick = $("sfxClick");
-  const sfxError = $("sfxError");
-  const sfxAccess = $("sfxAccess");
-
-  const confidence = sessionStorage.getItem("phantasma_confianca") || "nao";
-
-  const state = {
-    current:0,
-    totalErrors:0,
-    errorsThisQuestion:0,
-    firstErrorQuestion:null,
-    totalAwayMs:0,
-    awayCount:0,
-    awayStartedAt:null,
-    awayOnCurrentQuestion:0,
-    awayMsCurrentQuestion:0,
-    returnedSinceLastAnswer:false,
-    lastReturnDuration:0,
-    busy:false,
-    used:new Set()
-  };
-
-  function shuffle(arr){
-    const a=[...arr];
-    for(let i=a.length-1;i>0;i--){
-      const j=Math.floor(Math.random()*(i+1));
-      [a[i],a[j]]=[a[j],a[i]];
-    }
-    return a;
+"use strict";
+const QUESTIONS=[{"id":1,"type":"text","q":"Qual é o nome do atirador de Westbrigde?","answers":["Luke","Luke Hancey"]},{"id":2,"type":"text","q":"Qual o valor do colar que o Killian compra no leilão da Charlotte?","answers":["200mil","200 mil","200k","200 K","200.000","200.000,00","200000","200000,00","duzentos mil"],"special":"money200k"},{"id":3,"type":"text","q":"Qual era o desenho dentro da cápsula da Ivy?","answers":["Medusa"]},{"id":4,"type":"text","q":"O que deixam no armário de Olívia em Albatroz?","answers":["pé","um pé"]},{"id":5,"type":"text","q":"Qual pássaro é o símbolo de liberdade e maldição que plana entre o céu e o mar?","answers":["Albatroz"]},{"id":6,"type":"text","q":"Quem é o autor do soneto favorito da Olívia?","answers":["Shakespeare"]},{"id":7,"type":"text","q":"Em qual dedo o Dex tem um Bambi tatuado?","answers":["dedo anelar","anelar"]},{"id":8,"type":"text","q":"Quem disse “Sou um assassino, não um traidor”?","answers":["Dex","Dexter"]},{"id":9,"type":"text","q":"O que a Olívia usou para causar alergia no Dex?","answers":["batom de canela","canela"]},{"id":10,"type":"text","q":"O que significa OPPV?","answers":["obsessão patológica por você"]},{"id":11,"type":"text","q":"Em qual braço fica a tatuagem do Declan?","answers":["direito","braço direito","no braço direito"]},{"id":12,"type":"text","q":"Qual o nome da irmã da Olívia?","answers":["Emily"]},{"id":13,"type":"text","q":"Por quantos minutos o Dex diz que o cérebro humano vive para revisitar os melhores minutos da sua vida?","answers":["7","7 minutos","por 7 minutos"]},{"id":14,"type":"text","q":"“Não é um segredo que nós estamos transando, mas eu não assumiria um homem rodado principalmente quando não temos nada sério.” De quem é essa frase?","answers":["Charlotte","Char"]},{"id":15,"type":"text","q":"Qual foi a tatuagem de henna que o Declan fez na Charlotte?","answers":["mariposa","uma mariposa"]},{"id":16,"type":"text","q":"Quem disse “Você fica linda quando está me desprezando”?","answers":["Declan"]},{"id":17,"type":"text","q":"Quem disse “Uma garota bonita que pode me matar? Não vejo nenhuma desvantagem.”?","answers":["Declan"]},{"id":18,"type":"text","q":"De quem é o pensamento “Eu queimaria o mundo inteiro. E ainda a carregaria no colo, por cima das cinzas.”?","answers":["Declan"]},{"id":19,"type":"text","q":"Quem chama a Melissa de “pequena praga”?","answers":["Phantasma"]},{"id":20,"type":"boolean","q":"Quando Killian era adolescente, ele se cortou para fazer Melissa notá-lo e obrigou Declan a conseguir que apenas os pais dela cuidassem dele.","answer":true},{"id":21,"type":"boolean","q":"Quando o pai de Declan causou um vexame em um evento, Killian e Dex caíram no soco de propósito para tirar o foco da mídia dele.","answer":true},{"id":22,"type":"boolean","q":"Foi Olívia quem deu a ideia de fazer um pacto com sangue e contar segredos para unir ainda mais o grupo, transformando-os nos Cisnes de New York.","answer":false},{"id":23,"type":"boolean","q":"Zuri é, na verdade, o 8º Cisne, e Caspian foi apenas uma forma de desviar o assunto dela.","answer":false},{"id":24,"type":"boolean","q":"Reid teve uma overdose porque usava drogas e inventou que Caspian o havia drogado apenas para se safar e continuar jogando.","answer":false},{"id":25,"type":"text","q":"Como era o nome da babá da Melissa?","answers":["Flora"]},{"id":26,"type":"text","q":"Como Killian chamava Melissa quando queria irritá-la?","answers":["mudinha"]},{"id":27,"type":"text","q":"Quem escreveu o bilhete e deixou a garrafa de bebida para o pai do Declan, em Abutre?","answers":["Melissa"]},{"id":28,"type":"boolean","q":"Na festa em que Killian e Lara se beijaram, Reid viu tudo e levou Lara nos ombros embora, com ciúmes.","answer":true},{"id":29,"type":"boolean","q":"Quando Olívia beijou Dex com batom de canela e ele começou a ter uma crise alérgica, ela foi embora e o deixou lá morrendo sozinho.","answer":false},{"id":30,"type":"boolean","q":"Quando Charlotte descobre toda a verdade por trás dos Cisnes, ela finge não saber de nada até Declan estar pronto para contar tudo.","answer":false},{"id":31,"type":"text","q":"Quem disse “Eu disse que sei que você tem namorado, não disse que me importo com isso.”?","answers":["Killian"]},{"id":32,"type":"boolean","q":"Quando os meninos descobrem que o pai de Reid tinha uma das armas que poderia ter sido usada para atirar em Killian, Reid descobre que o pai dele a vendeu para os pais da Melissa.","answer":true},{"id":33,"type":"boolean","q":"Quando Olívia pergunta a Dex por que ele matou o irmão dela, ele conta o verdadeiro motivo, e os dois se afastam por outra coisa.","answer":false},{"id":34,"type":"boolean","q":"Toda vez que alguém pergunta a Zuri qual é a profissão dos pais dela, ela diz algo diferente e nunca conta o que eles realmente fazem.","answer":true},{"id":35,"type":"boolean","q":"Chuck namorou Olívia por meses e nunca a beijou nenhuma vez.","answer":true},{"id":36,"type":"boolean","q":"Chuck sofre um acidente de carro enquanto estava indo para uma festa.","answer":false},{"id":37,"type":"boolean","q":"Depois que Olívia foi embora, Dex ficou com várias meninas como uma forma de superá-la.","answer":false},{"id":38,"type":"text","q":"Quem disse “Eu sou como a Tinkerbell quando alguém diz que não acredita em fadas. Se continuar chamando outro homem de gostoso, eu morro.”?","answers":["Killian"]},{"id":39,"type":"boolean","q":"Reid usa o número 9 porque é o número favorito de Lara.","answer":true},{"id":40,"type":"boolean","q":"Dex fica bêbado depois que Olívia vai embora, e todos os meninos acabam bebendo com ele e cantando “Bad Day”.","answer":true},{"id":41,"type":"boolean","q":"Durante o aniversário de Zuri em Abutre, Declan faz um show de drones como presente para ela.","answer":false},{"id":42,"type":"text","q":"Reid tinha um melhor amigo que jogava futebol americano com ele quando eram crianças. Qual o nome dele?","answers":["Kade"]}];
+const STATE_KEY="phantasma_quiz_v70_state";
+const qs=new URLSearchParams(location.search);
+if(qs.has("reset"))sessionStorage.removeItem(STATE_KEY);
+const SITE_ROOT=location.hostname.endsWith("github.io")?"/arquivoconfidencial/":"./";
+const $=id=>document.getElementById(id);
+const card=$("card"),questionEl=$("question"),typeLabel=$("typeLabel"),answerZone=$("answerZone"),
+      feedback=$("feedback"),meta=$("meta"),curtain=$("curtain"),bits=$("bits");
+const pips=[...document.querySelectorAll(".pip")];
+function shuffle(a){return [...a].sort(()=>Math.random()-.5)}
+function fresh(){
+  return {deck:shuffle(QUESTIONS.map(q=>q.id)),index:0,correct:0,errors:0,seen:[],current:null,attempts:0,finished:false};
+}
+let state;
+try{state=JSON.parse(sessionStorage.getItem(STATE_KEY))||fresh()}catch(_){state=fresh()}
+function save(){sessionStorage.setItem(STATE_KEY,JSON.stringify(state))}
+function norm(v){return String(v??"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^\p{L}\p{N}]+/gu," ").trim().replace(/\s+/g," ")}
+function isCorrect(q,value){
+  if(q.special==="money200k"){
+    const n=norm(value);
+    const digits=String(value).replace(/\D/g,"");
+    return n==="200k"||n==="200 mil"||n==="duzentos mil"||digits==="200000"||digits==="20000000";
   }
-
-  const sessionQuestions = shuffle(QUESTIONS).slice(0, Math.min(3, QUESTIONS.length));
-
-  function normalizeText(value){
-    return value.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim().replace(/\s+/g," ");
+  return q.answers.some(a=>norm(a)===norm(value));
+}
+function updatePips(){pips.forEach((p,i)=>p.classList.toggle("on",i<state.correct))}
+function nextQuestion(){
+  feedback.textContent="";feedback.className="feedback";meta.textContent="";
+  if(state.correct>=3){finish();return}
+  if(state.index>=state.deck.length){
+    const last=state.current;
+    state.deck=shuffle(QUESTIONS.map(q=>q.id));
+    if(last&&state.deck[0]===last&&state.deck.length>1)[state.deck[0],state.deck[1]]=[state.deck[1],state.deck[0]];
+    state.index=0;
   }
-
-  function validateMoney200k(raw){
-    let v = normalizeText(raw).replace(/\breais?\b/g,"").replace(/r\$/g,"").replace(/\s+/g,"");
-    if(v === "200mil" || v === "200k") return true;
-    return /^200(?:\.?000)(?:,00)?$/.test(v);
+  state.current=state.deck[state.index++];
+  state.attempts=0;
+  if(!state.seen.includes(state.current))state.seen.push(state.current);
+  save();renderCurrent();
+}
+function renderCurrent(){
+  updatePips();
+  const q=QUESTIONS.find(x=>x.id===state.current);
+  if(!q){nextQuestion();return}
+  questionEl.textContent=q.q;
+  if(q.type==="boolean"){
+    typeLabel.textContent="AFIRMAÇÃO // VERDADEIRO OU FALSO";
+    answerZone.innerHTML='<div class="bool"><button data-v="true">VERDADEIRO</button><button data-v="false">FALSO</button></div>';
+    answerZone.querySelectorAll("button").forEach(b=>b.onclick=()=>answerBoolean(b.dataset.v==="true"));
+    meta.textContent="uma escolha. depois, outra pergunta.";
+  }else{
+    typeLabel.textContent="VERIFICAÇÃO // RESPOSTA LIVRE";
+    answerZone.innerHTML='<form id="answerForm"><input id="answerInput" autocomplete="off" autocapitalize="sentences" placeholder="digite sua resposta"><div class="actions"><button type="submit">CONFIRMAR</button></div></form>';
+    const form=$("answerForm"),input=$("answerInput");
+    form.onsubmit=e=>{e.preventDefault();answerText(input.value,input)};
+    setTimeout(()=>input.focus(),80);
+    meta.textContent="a pergunta é encerrada depois de três respostas incorretas.";
   }
-
-  function isCorrect(q, raw){
-    if(q.type === "money200k") return validateMoney200k(raw);
-    const n = normalizeText(raw);
-    return q.accepted.some(x => normalizeText(x) === n);
-  }
-
-  function safePlay(audio, volume=.11){
-    try{
-      audio.pause();
-      audio.currentTime=0;
-      audio.volume=volume;
-      audio.play().catch(()=>{});
-    }catch(_){}
-  }
-
-  function glitch(){
-    glitchFlash.classList.remove("hit");
-    void glitchFlash.offsetWidth;
-    glitchFlash.classList.add("hit");
-  }
-
-  function pick(pool){
-    if(!pool || !pool.length) return "";
-    let candidates = pool.filter(x => !state.used.has(x));
-    if(!candidates.length) candidates = pool;
-    const text = candidates[Math.floor(Math.random()*candidates.length)];
-    state.used.add(text);
-    return text;
-  }
-
-  function maybeClay(basePool, chance){
-    if(Math.random() < chance) return pick(TAUNTS.clay);
-    return pick(basePool);
-  }
-
-  function updateSideNumbers(){
-    errorCountEl.textContent = `falhas // ${state.totalErrors}`;
-    awayCountEl.textContent = `ausências // ${state.awayCount}`;
-  }
-
-  function setButtonState(type){
-    submit.classList.remove("state-correct","state-wrong");
-    if(type==="correct") submit.classList.add("state-correct");
-    if(type==="wrong") submit.classList.add("state-wrong");
-  }
-
-  function renderQuestion(){
-    state.errorsThisQuestion=0;
-    state.awayOnCurrentQuestion=0;
-    state.awayMsCurrentQuestion=0;
-    state.returnedSinceLastAnswer=false;
-    state.lastReturnDuration=0;
-    state.busy=false;
-
-    const q = sessionQuestions[state.current];
-    questionEl.textContent = q.question;
-    reaction.textContent = "";
-    reaction.className = "";
-    answer.value = "";
-    answer.disabled = false;
-    submit.disabled = false;
-    submit.textContent = "VALIDAR";
-    setButtonState(null);
-    answer.focus();
-    watchState.textContent = "observação // ativa";
-    updateSideNumbers();
-  }
-
-  function wrongReaction(){
-    const position = state.current + 1;
-    const justReturned = state.returnedSinceLastAnswer;
-    const awayLong = state.lastReturnDuration >= 6000;
-
-    state.errorsThisQuestion++;
-    state.totalErrors++;
-
-    if(state.firstErrorQuestion === null) state.firstErrorQuestion = position;
-
-    if(justReturned && awayLong){
-      state.returnedSinceLastAnswer = false;
-      return pick(TAUNTS.awayWrong);
-    }
-
-    if(state.totalErrors === 1){
-      if(confidence === "sim") return pick(TAUNTS.confidenceMilk);
-      if(position === 1) return pick(TAUNTS.firstWrongQ1);
-      if(position === 2) return pick(TAUNTS.firstWrongQ2);
-      return pick(TAUNTS.firstWrongQ3);
-    }
-
-    if(state.errorsThisQuestion === 1){
-      if(position === 1) return pick(TAUNTS.firstWrongQ1);
-      if(position === 2) return pick(TAUNTS.firstWrongQ2);
-      return pick(TAUNTS.firstWrongQ3);
-    }
-
-    if(state.errorsThisQuestion === 2) return maybeClay(TAUNTS.secondWrong,.20);
-    if(state.errorsThisQuestion === 3) return maybeClay(TAUNTS.thirdWrong,.32);
-    return maybeClay(TAUNTS.fourthPlus,.46);
-  }
-
-  function correctReaction(){
-    const position = state.current + 1;
-    const justReturned = state.returnedSinceLastAnswer;
-    const awayLong = state.lastReturnDuration >= 6000;
-
-    if(justReturned && awayLong){
-      state.returnedSinceLastAnswer = false;
-      return pick(TAUNTS.awayCorrect);
-    }
-
-    if(state.errorsThisQuestion === 0){
-      if(position === 1) return pick(TAUNTS.correctFirst);
-      if(position === 2) return pick(TAUNTS.correctSecond);
-      return pick(TAUNTS.correctThird);
-    }
-    if(state.errorsThisQuestion >= 3) return maybeClay(TAUNTS.afterManyErrors,.28);
-    return pick(TAUNTS.afterFewErrors);
-  }
-
-  function showReaction(text, type){
-    reaction.className = type;
-    reaction.textContent = text;
-  }
-
-  function finish(){
-    quizView.classList.add("hidden");
-    finalView.classList.add("show");
-
-    let closing;
-    if(state.totalErrors === 0){
-      closing = pick(TAUNTS.finalPerfect);
-    }else if(state.totalErrors <= 2){
-      closing = pick(TAUNTS.finalFew);
-    }else if((state.awayCount >= 2 || state.totalAwayMs >= 12000) && Math.random() < .72){
-      closing = pick(TAUNTS.finalManyAway);
-    }else if(confidence === "sim" && state.totalErrors >= 4 && Math.random() < .42){
-      closing = pick(TAUNTS.finalConfidenceMilk);
-    }else{
-      closing = pick(TAUNTS.finalMany);
-    }
-
-    finalText.textContent = closing;
-    const awaySeconds = Math.round(state.totalAwayMs/1000);
-    finalStats.innerHTML =
-      `ERROS REGISTRADOS // ${state.totalErrors}<br>` +
-      `AUSÊNCIAS REGISTRADAS // ${state.awayCount}` +
-      (state.awayCount ? `<br>TEMPO FORA DE FOCO // ~${awaySeconds}s` : "");
-
-    sessionStorage.setItem("phantasma_quiz_concluido","sim");
-    sessionStorage.setItem("phantasma_quiz_erros", String(state.totalErrors));
-    sessionStorage.setItem("phantasma_quiz_ausencias", String(state.awayCount));
-    sessionStorage.setItem("phantasma_quiz_tempo_fora_ms", String(state.totalAwayMs));
-
-    safePlay(sfxAccess,.10);
-    glitch();
-  }
-
-  function advance(){
-    state.current++;
-    if(state.current >= sessionQuestions.length){
-      finish();
-      return;
-    }
-    renderQuestion();
-  }
-
-  form.addEventListener("submit", e => {
-    e.preventDefault();
-    if(state.busy) return;
-
-    const raw = answer.value.trim();
-    if(!raw){
-      showReaction("Você pretende responder ou só encarar a caixa de texto?","bad");
-      setButtonState("wrong");
-      submit.textContent = "VAZIO";
-      glitch();
-      setTimeout(()=>{
-        setButtonState(null);
-        submit.textContent = "VALIDAR";
-      },650);
-      return;
-    }
-
-    safePlay(sfxClick,.07);
-    const q = sessionQuestions[state.current];
-
-    if(isCorrect(q, raw)){
-      state.busy = true;
-      answer.disabled = true;
-      submit.disabled = true;
-      setButtonState("correct");
-      submit.textContent = "CORRETO";
-      showReaction(correctReaction(),"good");
-      safePlay(sfxAccess,.08);
-      setTimeout(advance, 2800);
-    }else{
-      setButtonState("wrong");
-      submit.textContent = "ERRO";
-      showReaction(wrongReaction(),"bad");
-      safePlay(sfxError,.075);
-      glitch();
-      card.classList.remove("shake");
-      void card.offsetWidth;
-      card.classList.add("shake");
-      answer.value = "";
-      updateSideNumbers();
-
-      setTimeout(()=>{
-        setButtonState(null);
-        submit.textContent = "VALIDAR";
-        answer.focus();
-      },720);
-    }
-
-    state.returnedSinceLastAnswer = false;
-  });
-
-  document.addEventListener("visibilitychange", () => {
-    if(document.hidden){
-      if(state.awayStartedAt === null) state.awayStartedAt = Date.now();
-      watchState.textContent = "observação // sinal perdido";
-      return;
-    }
-
-    if(state.awayStartedAt !== null){
-      const duration = Math.max(0, Date.now() - state.awayStartedAt);
-      state.awayStartedAt = null;
-      state.awayCount++;
-      state.awayOnCurrentQuestion++;
-      state.awayMsCurrentQuestion += duration;
-      state.totalAwayMs += duration;
-      state.returnedSinceLastAnswer = true;
-      state.lastReturnDuration = duration;
-      watchState.textContent = "observação // reestabelecida";
-      updateSideNumbers();
-
-      absence.classList.add("show");
-      clearTimeout(absence._timer);
-      absence._timer = setTimeout(() => absence.classList.remove("show"), 1500);
-
-      if(state.awayOnCurrentQuestion >= 2 && !state.busy){
-        setTimeout(() => {
-          if(!state.busy) showReaction(pick(TAUNTS.awayRepeated), "bad");
-        }, 420);
-      }
-    }
-  });
-
-  window.addEventListener("blur", () => {
-    if(!document.hidden && state.awayStartedAt === null){
-      state.awayStartedAt = Date.now();
-    }
-  });
-
-  window.addEventListener("focus", () => {
-    if(!document.hidden && state.awayStartedAt !== null){
-      const duration = Math.max(0, Date.now() - state.awayStartedAt);
-      state.awayStartedAt = null;
-      if(duration >= 350){
-        state.awayCount++;
-        state.awayOnCurrentQuestion++;
-        state.awayMsCurrentQuestion += duration;
-        state.totalAwayMs += duration;
-        state.returnedSinceLastAnswer = true;
-        state.lastReturnDuration = duration;
-        updateSideNumbers();
-      }
-    }
-  });
-
-  function runBinaryWipe(nextUrl){
-    const overlay=document.getElementById("binaryWipe");
-    const canvas=document.getElementById("binaryWipeCanvas");
-    if(!overlay||!canvas){location.href=nextUrl;return;}
-    overlay.classList.add("show");
-    const ctx=canvas.getContext("2d");
-    const dpr=Math.min(devicePixelRatio||1,1.5);
-    canvas.width=Math.floor(innerWidth*dpr);
-    canvas.height=Math.floor(innerHeight*dpr);
-    canvas.style.width=innerWidth+"px";
-    canvas.style.height=innerHeight+"px";
-    ctx.setTransform(dpr,0,0,dpr,0,0);
-
-    const fs=Math.max(13,Math.min(20,innerWidth/75));
-    const streams=Array.from({length:Math.ceil(innerWidth/fs)},(_,i)=>({
-      x:i*fs,y:-Math.random()*innerHeight*.95,speed:14+Math.random()*20,
-      len:7+Math.floor(Math.random()*13),alpha:.34+Math.random()*.45
-    }));
-    let coverY=-innerHeight*.45,last=performance.now();
-    sessionStorage.setItem("phantasma_binary_transition","1");
-
-    function frame(now){
-      const dt=Math.min(34,now-last)/16.67; last=now;
-      ctx.fillStyle="rgba(2,5,3,.22)";
-      ctx.fillRect(0,0,innerWidth,innerHeight);
-      ctx.font=fs+"px monospace";
-      ctx.textAlign="center";
-
-      streams.forEach(s=>{
-        for(let j=0;j<s.len;j++){
-          const yy=s.y-j*fs;
-          if(yy<-fs||yy>innerHeight+fs)continue;
-          const fade=1-(j/s.len);
-          ctx.fillStyle=`rgba(126,255,181,${s.alpha*fade})`;
-          ctx.fillText(Math.random()>.5?"1":"0",s.x,yy);
-        }
-        s.y+=s.speed*dt;
-      });
-
-      coverY+=29*dt;
-      const g=ctx.createLinearGradient(0,coverY-120,0,coverY+40);
-      g.addColorStop(0,"rgba(2,5,3,0)");
-      g.addColorStop(.55,"rgba(2,5,3,.82)");
-      g.addColorStop(1,"rgba(2,5,3,1)");
-      ctx.fillStyle=g;
-      ctx.fillRect(0,0,innerWidth,Math.max(0,coverY+40));
-
-      if(coverY<innerHeight+150){
-        requestAnimationFrame(frame);
-      }else{
-        ctx.fillStyle="#020503";
-        ctx.fillRect(0,0,innerWidth,innerHeight);
-        setTimeout(()=>location.href=nextUrl,180);
-      }
-    }
-    requestAnimationFrame(frame);
-  }
-
-  nextBtn.addEventListener("click", () => {
-    safePlay(sfxClick,.07);
-    if(NEXT_PAGE){
-      nextBtn.disabled=true;
-      runBinaryWipe(NEXT_PAGE);
-    }else{
-      nextMessage.textContent = "PRÓXIMO PROTOCOLO // AINDA NÃO CONECTADO";
-    }
-  });
-
-  // Fundo binário sutil
-  const binaryCanvas = document.getElementById("binaryCanvas");
-  const bctx = binaryCanvas.getContext("2d");
-  let cols = [];
-  let stepX = 16;
-
-  function sizeBinary(){
-    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
-    binaryCanvas.width = Math.floor(window.innerWidth * dpr);
-    binaryCanvas.height = Math.floor(window.innerHeight * dpr);
-    binaryCanvas.style.width = window.innerWidth + "px";
-    binaryCanvas.style.height = window.innerHeight + "px";
-    bctx.setTransform(dpr,0,0,dpr,0,0);
-
-    stepX = Math.max(14, Math.min(20, window.innerWidth / 85));
-    const count = Math.floor(window.innerWidth / stepX);
-    cols = Array.from({length: count}, () => ({
-      y: Math.random() * window.innerHeight,
-      speed: 0.9 + Math.random() * 1.8,
-      alpha: 0.06 + Math.random() * 0.14,
-      size: 12 + Math.random() * 4
-    }));
-  }
-
-  function drawBinary(){
-    bctx.clearRect(0,0,window.innerWidth,window.innerHeight);
-    cols.forEach((col, i) => {
-      bctx.font = `${col.size}px monospace`;
-      bctx.fillStyle = `rgba(145,255,190,${col.alpha})`;
-      bctx.fillText(Math.random() > 0.5 ? "1" : "0", i * stepX, col.y);
-      col.y += col.speed;
-      if(col.y > window.innerHeight + 20){
-        col.y = -20;
-        col.speed = 0.9 + Math.random() * 1.8;
-        col.alpha = 0.06 + Math.random() * 0.14;
-      }
-    });
-    requestAnimationFrame(drawBinary);
-  }
-
-  sizeBinary();
-  drawBinary();
-  window.addEventListener("resize", sizeBinary);
-
-  renderQuestion();
-})();
+}
+function markGood(){
+  state.correct++;save();updatePips();
+  feedback.textContent="CORRETO.";feedback.className="feedback good";
+  if(state.correct>=3){setTimeout(finish,800)}else setTimeout(nextQuestion,780);
+}
+function wrongFlash(text){
+  state.errors++;save();
+  feedback.textContent=text;feedback.className="feedback bad";
+  card.classList.remove("shake");void card.offsetWidth;card.classList.add("shake");
+}
+function answerBoolean(v){
+  const q=QUESTIONS.find(x=>x.id===state.current);
+  answerZone.querySelectorAll("button").forEach(b=>b.disabled=true);
+  if(v===q.answer){markGood();return}
+  wrongFlash("INCORRETO. Essa afirmação acabou.");
+  setTimeout(nextQuestion,1050);
+}
+function answerText(value,input){
+  if(!value.trim())return;
+  const q=QUESTIONS.find(x=>x.id===state.current);
+  if(isCorrect(q,value)){input.disabled=true;markGood();return}
+  state.attempts++;wrongFlash(state.attempts>=3?"INCORRETO. Próxima pergunta.":"INCORRETO.");
+  if(state.attempts>=3){input.disabled=true;setTimeout(nextQuestion,1050)}
+  else{input.select();save()}
+}
+function finish(){
+  if(state.finished)return;
+  state.finished=true;save();
+  sessionStorage.setItem("phantasma_quiz_concluido","1");
+  sessionStorage.setItem("phantasma_quiz_acertos",String(state.correct));
+  sessionStorage.setItem("phantasma_quiz_erros",String(state.errors));
+  sessionStorage.setItem("phantasma_quiz_perguntas_vistas",String(state.seen.length));
+  bits.textContent=Array.from({length:420},()=>Math.random()<.5?"0":"1").join("");
+  curtain.classList.add("show");
+  setTimeout(()=>location.href=SITE_ROOT+"pistas.html",1100);
+}
+updatePips();
+if(state.finished){state=fresh();save()}
+if(!state.current)nextQuestion();else renderCurrent();
 </script>
 </body>
 </html>

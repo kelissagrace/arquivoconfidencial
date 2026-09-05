@@ -3,1376 +3,272 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#020403">
-<title>PHANTASMA // FASE FINAL // V68</title>
-<!-- V68 // loading natural + fix transição -->
+<title>PHANTASMA // PROTOCOLO FINAL // V70</title>
 <style>
-:root{
-  --bg:#020403;
-  --text:#edf4ef;
-  --muted:#68736c;
-  --green:#7cf0a7;
-  --red:#ff626b;
-  --line:rgba(220,235,226,.12);
-}
-*{box-sizing:border-box}
-html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text)}
-body{
-  min-height:100dvh;overflow:hidden;
-  font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
-}
-button{font:inherit}
-
-.bg{
-  position:fixed;inset:-7%;z-index:-5;
-  background:
-    linear-gradient(rgba(2,4,3,.78),rgba(2,4,3,.94)),
-    url("assets/phantasma-bg.jpg") center/cover no-repeat;
-  transform:scale(1.08);
-  animation:bgDrift 32s ease-in-out infinite alternate;
-}
-@keyframes bgDrift{
-  from{transform:scale(1.08) translate3d(-1%,-.7%,0)}
-  to{transform:scale(1.13) translate3d(1%,.7%,0)}
-}
-.grid{
-  position:fixed;inset:0;z-index:-4;opacity:.055;
-  background:
-    linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);
-  background-size:48px 48px;
-}
-.scanlines{
-  position:fixed;inset:0;z-index:-3;pointer-events:none;opacity:.05;
-  background:repeating-linear-gradient(0deg,transparent 0 3px,rgba(255,255,255,.025) 4px);
-}
-.vignette{
-  position:fixed;inset:0;z-index:-2;pointer-events:none;
-  background:radial-gradient(circle at 50% 46%,transparent 0 32%,rgba(0,0,0,.3) 67%,rgba(0,0,0,.86) 100%);
-}
-#noiseCanvas{
-  position:fixed;inset:0;z-index:-1;width:100%;height:100%;opacity:.14;pointer-events:none;
-}
-
-/* BOOT // estética clássica recuperada */
-#boot{
-  position:fixed;
-  inset:0;
-  z-index:12;
-  display:grid;
-  place-items:center;
-  padding:clamp(18px,4vw,42px);
-  transition:opacity .55s ease,filter .55s ease,transform .55s ease;
-}
-#boot.fade{
-  opacity:.12;
-  filter:blur(2px);
-  transform:scale(.992);
-}
-
-.boot-inner{
-  position:relative;
-  width:min(650px,94vw);
-}
-
-.boot-shell{
-  position:relative;
-  padding:clamp(24px,4vw,36px);
-  border:1px solid rgba(124,240,167,.24);
-  background:rgba(1,8,4,.86);
-  box-shadow:
-    0 24px 85px rgba(0,0,0,.55),
-    inset 0 0 34px rgba(124,240,167,.018);
-}
-
-.boot-shell::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  pointer-events:none;
-  background:
-    repeating-linear-gradient(
-      to bottom,
-      rgba(255,255,255,.016) 0 1px,
-      transparent 2px 5px
-    );
-  opacity:.32;
-}
-
-.boot-head{
-  position:relative;
-  z-index:2;
-  color:#69766e;
-  font-size:9px;
-  letter-spacing:.15em;
-  text-transform:uppercase;
-}
-
-.boot-content{
-  position:relative;
-  z-index:2;
-  margin-top:22px;
-}
-
-.boot-kicker{
-  color:#536058;
-  font-size:9px;
-  letter-spacing:.12em;
-  text-transform:uppercase;
-}
-
-#bootText{
-  min-height:48px;
-  margin-top:14px;
-  color:#edf5f0;
-  font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-  font-size:clamp(24px,3.8vw,38px);
-  font-weight:720;
-  letter-spacing:-.035em;
-  line-height:1.1;
-  transition:opacity .17s ease,transform .17s ease,filter .17s ease;
-}
-
-#bootText::before{
-  content:"> ";
-  color:#d9eee1;
-}
-
-#bootSub{
-  min-height:20px;
-  margin-top:24px;
-  color:#718078;
-  font-size:9px;
-  letter-spacing:.08em;
-  transition:opacity .17s ease,transform .17s ease;
-}
-
-#bootText.swap,
-#bootSub.swap{
-  opacity:0;
-  transform:translateY(3px);
-  filter:blur(2px);
-}
-
-.boot-meta{
-  position:relative;
-  z-index:2;
-  display:flex;
-  justify-content:space-between;
-  gap:12px;
-  margin-top:8px;
-  color:#66736b;
-  font-size:8px;
-  letter-spacing:.08em;
-}
-
-#bootPct{
-  color:#9ef1ba;
-}
-
-.boot-line{
-  position:relative;
-  z-index:2;
-  width:100%;
-  height:3px;
-  margin-top:8px;
-  overflow:hidden;
-  background:rgba(124,240,167,.08);
-  box-shadow:0 0 0 1px rgba(124,240,167,.10);
-}
-
-#bootFill{
-  width:0%;
-  height:100%;
-  background:#71f39d;
-  box-shadow:0 0 14px rgba(124,240,167,.26);
-  transition:width .9s cubic-bezier(.2,.8,.2,1);
-}
-
-.boot-foot{
-  position:relative;
-  z-index:2;
-  margin-top:15px;
-  color:#536058;
-  font-size:8px;
-  letter-spacing:.10em;
-  animation:bootFootBlink 2.2s ease-in-out infinite;
-}
-@keyframes bootFootBlink{
-  0%,100%{opacity:.36}
-  50%{opacity:.78}
-}
-
-.boot-activity{
-  position:absolute;
-  right:18px;
-  top:18px;
-  z-index:3;
-  display:flex;
-  gap:4px;
-  align-items:center;
-}
-.boot-activity span{
-  width:4px;
-  height:4px;
-  border-radius:50%;
-  background:rgba(124,240,167,.48);
-  animation:activityPulse 1.2s ease-in-out infinite;
-}
-.boot-activity span:nth-child(2){animation-delay:.16s}
-.boot-activity span:nth-child(3){animation-delay:.32s}
-@keyframes activityPulse{
-  0%,80%,100%{opacity:.18;transform:scale(.82)}
-  40%{opacity:1;transform:scale(1)}
-}
-
-
-@media(max-width:640px){
-  .boot-shell{padding:22px 18px}
-  #bootText{font-size:clamp(23px,7vw,34px)}
-}
-
-/* DECODE WINDOW */
-#decodeLayer{
-  position:fixed;inset:0;z-index:50;
-  display:flex;align-items:center;justify-content:center;
-  padding:clamp(18px,4vw,42px);
-  background:rgba(1,3,2,.50);
-  backdrop-filter:blur(3px);
-  opacity:0;visibility:hidden;pointer-events:none;
-  transition:opacity .45s ease,visibility .45s ease;
-}
-#decodeLayer.show{opacity:1;visibility:visible;pointer-events:auto}
-.decode-window{
-  position:relative;width:min(940px,100%);min-height:520px;
-  padding:clamp(22px,4vw,44px);overflow:hidden;
-  border:1px solid rgba(220,235,226,.14);
-  background:linear-gradient(180deg,rgba(7,11,8,.96),rgba(3,6,4,.97));
-  box-shadow:0 34px 90px rgba(0,0,0,.52),inset 0 1px rgba(255,255,255,.025);
-  opacity:0;transform:translateY(16px) scale(.992);filter:blur(3px);
-  transition:
-    opacity .58s cubic-bezier(.2,.8,.2,1),
-    transform .58s cubic-bezier(.2,.8,.2,1),
-    filter .58s ease;
-}
-#decodeLayer.show .decode-window{opacity:1;transform:none;filter:none}
-.decode-window::before{
-  content:"";position:absolute;left:0;right:0;top:0;height:1px;
-  background:linear-gradient(90deg,transparent,rgba(124,240,167,.48),transparent);
-}
-.decode-head{
-  display:flex;align-items:center;justify-content:space-between;gap:16px;
-  padding-bottom:18px;border-bottom:1px solid rgba(220,235,226,.08);
-}
-.decode-title{
-  color:#dce7e0;font-size:10px;letter-spacing:.20em;text-transform:uppercase;
-}
-.decode-led{
-  display:flex;align-items:center;gap:8px;color:#5e6a63;font-size:9px;
-  letter-spacing:.15em;text-transform:uppercase;
-}
-.decode-led::before{
-  content:"";width:6px;height:6px;border-radius:50%;
-  background:var(--green);box-shadow:0 0 12px rgba(124,240,167,.38);
-  animation:led 1.1s ease-in-out infinite;
-}
-.decode-led.error::before{background:var(--red);box-shadow:0 0 14px rgba(255,98,107,.55)}
-@keyframes led{50%{opacity:.25}}
-
-.decode-center{
-  min-height:390px;display:flex;flex-direction:column;
-  justify-content:center;align-items:center;text-align:center;gap:44px;
-}
-.slot-line{
-  display:flex;justify-content:center;align-items:center;flex-wrap:wrap;
-  gap:clamp(5px,1.2vw,14px);min-height:72px;user-select:none;
-  transition:opacity .22s ease,transform .22s ease;
-}
-.slot-line.rebuild{opacity:.12;transform:scale(.985)}
-.slot-gap{width:clamp(12px,2vw,28px)}
-.slot-dot{
-  width:clamp(10px,1.4vw,18px);color:#859188;
-  font-size:clamp(20px,3vw,38px);
-}
-.reel{
-  position:relative;width:clamp(24px,3.8vw,45px);
-  height:clamp(48px,6.5vw,74px);overflow:hidden;
-}
-.reel-track{position:absolute;left:0;top:0;width:100%;will-change:transform}
-.reel-char{
-  width:100%;height:clamp(48px,6.5vw,74px);
-  display:flex;align-items:center;justify-content:center;
-  color:#f0f6f2;
-  font-family:Inter,ui-sans-serif,system-ui,sans-serif;
-  font-weight:720;font-size:clamp(28px,5.2vw,58px);
-  letter-spacing:-.04em;text-shadow:0 0 15px rgba(124,240,167,.08);
-}
-.date .reel{
-  width:clamp(21px,3.1vw,38px);height:clamp(40px,5.4vw,62px);
-}
-.date .reel-char{
-  height:clamp(40px,5.4vw,62px);font-size:clamp(23px,4.2vw,45px);font-weight:640;
-}
-#decodeStatus{
-  min-height:22px;color:#78857d;font-size:10px;letter-spacing:.18em;text-transform:uppercase;
-}
-#decodeStatus.error{color:#ff8c93}
-.progress{width:min(520px,82%);margin-top:-26px}
-.progress-track{height:1px;background:rgba(220,235,226,.10);overflow:hidden}
-#progressBar{
-  width:0%;height:100%;
-  background:linear-gradient(90deg,rgba(124,240,167,.12),rgba(124,240,167,.8));
-  transition:width .75s cubic-bezier(.2,.8,.2,1);
-}
-#progressText{
-  margin-top:10px;text-align:right;color:#59665e;font-size:9px;letter-spacing:.14em;
-}
-
-/* GLITCH */
-#glitchFlash{
-  position:fixed;inset:0;z-index:100;pointer-events:none;opacity:0;
-  background:
-    linear-gradient(90deg,rgba(255,0,60,.13),transparent 24%,rgba(124,240,167,.11) 76%,transparent),
-    rgba(255,255,255,.03);
-}
-#glitchFlash.hit{animation:glitchHit .23s steps(2,end)}
-#glitchFlash.heavy{
-  animation:glitchHeavy .74s steps(2,end);
-  background:
-    linear-gradient(90deg,rgba(255,0,60,.32),transparent 22%,rgba(124,240,167,.22) 70%,rgba(255,255,255,.16)),
-    rgba(255,255,255,.08);
-}
-@keyframes glitchHit{
-  0%{opacity:0}
-  20%{opacity:.82;transform:translateX(-6px)}
-  45%{opacity:.18;transform:translateX(7px)}
-  70%{opacity:.42;transform:translateX(-2px)}
-  100%{opacity:0;transform:none}
-}
-@keyframes glitchHeavy{
-  0%{opacity:0;transform:none}
-  10%{opacity:1;transform:translate(-11px,3px) scale(1.01)}
-  22%{opacity:.28;transform:translate(14px,-2px)}
-  36%{opacity:.9;transform:translate(-7px,0)}
-  50%{opacity:.18;transform:translate(9px,3px)}
-  68%{opacity:.75;transform:translate(-4px,-3px)}
-  82%{opacity:.32;transform:translate(3px,0)}
-  100%{opacity:0;transform:none}
-}
-
-/* PHANTASMA PAYOFF */
-#provocation{
-  position:absolute;inset:0;z-index:4;
-  display:flex;align-items:center;justify-content:center;
-  padding:30px;background:rgba(3,6,4,.975);
-  opacity:0;visibility:hidden;
-  transition:opacity .45s ease,visibility .45s ease;
-}
-#provocation.show{opacity:1;visibility:visible}
-.prov-inner{width:min(760px,100%);text-align:center}
-#provMain{
-  color:#f2f6f3;font-family:Inter,ui-sans-serif,system-ui,sans-serif;
-  font-size:clamp(34px,5.5vw,68px);font-weight:760;letter-spacing:-.045em;
-  white-space:pre-line;
-}
-#provSub{
-  margin-top:20px;color:#9aa69f;font-size:clamp(12px,1.5vw,15px);
-  line-height:1.9;white-space:pre-line;
-}
-
-/* MORAL QUESTION */
-#questionScreen{
-  position:fixed;inset:0;z-index:115;
-  display:flex;align-items:center;justify-content:center;
-  padding:clamp(24px,5vw,70px);
-  background:#020403;
-  opacity:0;visibility:hidden;pointer-events:none;
-  transition:opacity .55s ease,visibility .55s ease;
-}
-#questionScreen.show{opacity:1;visibility:visible;pointer-events:auto}
-.question-inner{width:min(970px,100%);text-align:center}
-.question-line{
-  opacity:0;transform:translateY(10px);
-  transition:opacity .6s ease,transform .6s ease;
-}
-.question-line.show{opacity:1;transform:none}
-.question-main{
-  font-family:Inter,ui-sans-serif,system-ui,sans-serif;
-  font-size:clamp(33px,5vw,62px);
-  line-height:1.1;font-weight:760;letter-spacing:-.045em;
-}
-.question-mid{
-  margin-top:30px;color:#c0cbc4;font-size:clamp(15px,2vw,22px);
-  line-height:1.7;
-}
-.question-final{
-  margin-top:38px;
-  font-family:Inter,ui-sans-serif,system-ui,sans-serif;
-  font-size:clamp(29px,4.5vw,56px);
-  line-height:1.12;font-weight:730;letter-spacing:-.04em;
-}
-#questionContinue{
-  opacity:0;visibility:hidden;
-  margin-top:34px;min-height:48px;padding:0 22px;
-  border:1px solid rgba(220,235,226,.18);
-  background:transparent;color:#dfe8e2;cursor:pointer;
-  letter-spacing:.12em;text-transform:uppercase;font-size:10px;
-  transition:opacity .4s ease;
-}
-#questionContinue.show{opacity:1;visibility:visible}
-
-/* BINARY WIPE */
-#wipe{
-  position:fixed;inset:0;z-index:120;pointer-events:none;
-  opacity:0;visibility:hidden;background:#020403;
-}
-#wipe.show{opacity:1;visibility:visible}
-#wipeCanvas{position:absolute;inset:0;width:100%;height:100%}
-
-/* PROTECTED */
-#protectedScreen{
-  position:fixed;inset:0;z-index:20;
-  display:flex;align-items:center;justify-content:center;
-  padding:clamp(20px,4vw,50px);
-  opacity:0;visibility:hidden;pointer-events:none;
-  transition:opacity .5s ease,visibility .5s ease;
-}
-#protectedScreen.show{opacity:1;visibility:visible;pointer-events:auto}
-.protected-inner{width:min(1120px,100%)}
-.protected-kicker{
-  color:var(--red);font-size:10px;letter-spacing:.22em;text-transform:uppercase;margin-bottom:18px;
-}
-.protected-title{
-  margin:0;max-width:940px;
-  font-family:Inter,ui-sans-serif,system-ui,sans-serif;
-  font-size:clamp(36px,5.5vw,72px);
-  line-height:1.03;letter-spacing:-.05em;font-weight:760;
-}
-.protected-sub{margin-top:15px;color:#7a877f;font-size:12px;line-height:1.7}
-.character-grid{
-  display:grid;grid-template-columns:repeat(5,minmax(0,1fr));
-  gap:10px;margin-top:38px;
-}
-.character{
-  min-height:96px;display:flex;align-items:flex-end;justify-content:space-between;
-  gap:10px;padding:15px;
-  border:1px solid rgba(220,235,226,.12);
-  background:rgba(5,9,6,.58);color:#dfe8e2;cursor:pointer;
-  transition:border-color .2s,transform .2s,background .2s;
-}
-.character:hover{
-  border-color:rgba(124,240,167,.35);
-  transform:translateY(-2px);background:rgba(8,14,10,.76);
-}
-.character-name{
-  font-family:Inter,ui-sans-serif,system-ui,sans-serif;font-size:17px;font-weight:680;
-}
-.character-code{color:#5c6961;font-size:8px;letter-spacing:.13em}
-.character.selected{
-  border-color:rgba(124,240,167,.55);
-  background:rgba(124,240,167,.08);
-  box-shadow:0 0 24px rgba(124,240,167,.06);
-}
-#confirmProtected{
-  display:none;margin-top:22px;min-height:48px;padding:0 22px;
-  border:1px solid rgba(124,240,167,.32);
-  background:rgba(124,240,167,.08);color:#c9f8da;cursor:pointer;
-  letter-spacing:.12em;text-transform:uppercase;font-size:10px;
-}
-#confirmProtected.show{display:inline-flex;align-items:center}
-
-/* PREGAME */
-#pregame{
-  position:fixed;inset:0;z-index:25;
-  display:flex;align-items:center;justify-content:center;
-  padding:24px;opacity:0;visibility:hidden;pointer-events:none;
-  transition:opacity .45s ease,visibility .45s ease;
-}
-#pregame.show{opacity:1;visibility:visible;pointer-events:auto}
-.pregame-inner{width:min(850px,100%);text-align:center}
-.pregame-kicker{
-  color:#6f7c74;font-size:9px;letter-spacing:.20em;text-transform:uppercase;
-}
-#protectedFinal{
-  margin-top:12px;color:#dfe8e2;
-  font-family:Inter,ui-sans-serif,system-ui,sans-serif;
-  font-size:clamp(28px,4.3vw,52px);font-weight:740;
-}
-.time-label{
-  margin-top:36px;color:#6e7a72;font-size:9px;letter-spacing:.18em;text-transform:uppercase;
-}
-#timeGranted{
-  margin-top:8px;color:var(--green);
-  font-family:Inter,ui-sans-serif,system-ui,sans-serif;
-  font-size:clamp(64px,12vw,145px);
-  line-height:.9;font-weight:800;letter-spacing:-.07em;
-}
-#debtLine{
-  min-height:24px;margin-top:20px;color:#89958e;font-size:12px;line-height:1.8;
-}
-#startGame{
-  margin-top:28px;min-height:50px;padding:0 25px;
-  border:1px solid rgba(220,235,226,.18);
-  background:#dce5df;color:#101511;cursor:pointer;
-  font-size:10px;font-weight:850;letter-spacing:.12em;text-transform:uppercase;
-}
-#gamePlaceholder{
-  position:fixed;inset:0;z-index:30;display:none;place-items:center;
-  padding:24px;background:#020403;text-align:center;
-}
-#gamePlaceholder.show{display:grid}
-.placeholder-title{
-  font-family:Inter,ui-sans-serif,system-ui,sans-serif;
-  font-size:clamp(34px,5vw,70px);font-weight:760;letter-spacing:-.05em;
-}
-.placeholder-sub{
-  margin-top:16px;color:#6d7971;font-size:11px;letter-spacing:.12em;text-transform:uppercase;
-}
-
-@media(max-width:820px){
-  .character-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-}
-@media(max-width:640px){
-  .decode-window{min-height:500px;padding:20px 14px}
-  .decode-head{align-items:flex-start;flex-direction:column;gap:8px}
-  .decode-center{min-height:370px;gap:36px}
-  .slot-line{gap:4px}
-  .slot-gap{width:10px}
-  .character-grid{grid-template-columns:1fr 1fr}
-}
+:root{--bg:#030403;--panel:#080c09;--line:rgba(219,234,224,.105);--fg:#e7ede8;--muted:#727e75;--g:#8fd2a6;--r:#db7079;--a:#c9b77f}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:#020302;color:var(--fg);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+body{min-height:100dvh;overflow-x:hidden;background:radial-gradient(circle at 50% -10%,rgba(74,109,87,.11),transparent 34%),linear-gradient(#060906,#020302 74%)}
+.stage{min-height:100dvh;display:grid;place-items:center;padding:16px}.screen{display:none;width:min(980px,100%)}.screen.show{display:block;animation:screenIn .55s cubic-bezier(.2,.8,.2,1) both}
+@keyframes screenIn{from{opacity:0;transform:translateY(7px);filter:blur(4px)}to{opacity:1;transform:none;filter:none}}
+.shell{position:relative;border:1px solid var(--line);background:rgba(7,11,8,.91);box-shadow:0 30px 110px rgba(0,0,0,.60);overflow:hidden}
+.head{display:flex;justify-content:space-between;gap:18px;padding:11px 14px;border-bottom:1px solid rgba(219,234,224,.07);color:#68746c;font-size:9px;letter-spacing:.14em}.head strong{color:#84978a;font-weight:600}
+.body{padding:clamp(24px,5vw,50px)}
+.big{font-size:clamp(34px,7vw,72px);line-height:.98;font-weight:680;letter-spacing:-.055em;margin:0}.copy{max-width:720px;color:#a4afa7;line-height:1.72;font-size:clamp(14px,2.2vw,18px)}
+button{appearance:none;border:1px solid rgba(143,210,166,.30);background:#050806;color:#d2e2d7;padding:12px 18px;min-height:46px;font:600 11px/1 inherit;letter-spacing:.08em;cursor:pointer}
+button:hover,button:focus-visible{border-color:var(--g);background:rgba(143,210,166,.06)}
+/* boot */
+.boot-main{font-size:clamp(25px,4vw,39px);font-weight:680;letter-spacing:-.035em;margin:3px 0 20px}.boot-sub,.boot-status,.boot-foot,.log{font-size:9px;letter-spacing:.075em;color:#657168}
+.track{height:4px;background:rgba(143,210,166,.08);overflow:hidden;margin:18px 0 8px}.fill{height:100%;width:0;background:#8cbda0;transition:width .13s linear}.pct{font-size:10px;color:#6a766e}
+.log{min-height:56px;margin-top:18px;border-top:1px solid rgba(219,234,224,.06);padding-top:11px;line-height:1.75}.log .good{color:#83bd97}.log .warn{color:var(--a)}.log .bad{color:var(--r)}
+/* decode */
+.decode-title{display:flex;justify-content:center;align-items:center;gap:4px;min-height:82px;margin:18px 0 6px;overflow:hidden}.reel{width:clamp(18px,4.2vw,35px);height:clamp(38px,8vw,66px);display:grid;place-items:center;border-bottom:1px solid rgba(229,239,232,.12);font:650 clamp(27px,6vw,52px)/1 ui-monospace,SFMono-Regular,Menlo,monospace;color:#e4ebe6}.reel span{display:block}.reel.kick span{animation:reelKick .14s ease both}@keyframes reelKick{from{transform:translateY(-55%);opacity:.18;filter:blur(5px)}to{transform:none;opacity:1;filter:none}}
+.decode-date{display:flex;justify-content:center;align-items:center;gap:3px;color:#829087;font:500 clamp(19px,4vw,33px)/1 ui-monospace,monospace;min-height:42px}.decode-date .digit{min-width:.65em;text-align:center}.decode-date .dot{opacity:.45}
+.decode-status{text-align:center;margin-top:16px;color:#87958c;font-size:10px;letter-spacing:.13em}.decode-progress{width:min(520px,80%);height:3px;background:rgba(143,210,166,.07);margin:14px auto 0;overflow:hidden}.decode-progress i{display:block;height:100%;width:0;background:#8cbda0}.decode-pct{text-align:center;font-size:9px;color:#657168;margin-top:7px}
+.decode-shell.warning{border-color:rgba(201,183,127,.27)}.decode-shell.error{border-color:rgba(219,112,121,.40);animation:damage .5s cubic-bezier(.36,.07,.19,.97) both;background:rgba(11,4,5,.94)}
+@keyframes damage{10%{transform:translate(6px,-1px)}25%{transform:translate(-5px,1px)}40%{transform:translate(4px,0)}58%{transform:translate(-3px,1px)}75%{transform:translate(2px,-1px)}100%{transform:none}}
+#fault{position:fixed;inset:0;z-index:99;pointer-events:none;display:none}#fault.show{display:block}.fault-slice{position:absolute;left:0;width:100%;background:rgba(219,112,121,.14);mix-blend-mode:screen;animation:faultSlice .16s steps(2) infinite alternate}
+@keyframes faultSlice{from{transform:translateX(-4%);opacity:.20}to{transform:translateX(5%);opacity:.65}}
+.flash{position:fixed;inset:0;z-index:98;pointer-events:none;background:rgba(220,235,225,.70);opacity:0}.flash.go{animation:flash .45s steps(2) both}@keyframes flash{0%{opacity:0}18%{opacity:.75}35%{opacity:.05}54%{opacity:.45}100%{opacity:0}}
+/* moral */
+.moral-lines{margin:30px 0;color:#87938b;line-height:1.85;font-size:clamp(15px,2.4vw,20px)}.moral-lines span{display:block}.moral-lines .terms{margin:20px 0;color:#c9d2cc;letter-spacing:.03em}.moral-question{margin-top:26px;font-size:clamp(25px,4.6vw,45px);line-height:1.12;font-weight:650;letter-spacing:-.035em}
+/* choice */
+.choice-title{font-size:clamp(27px,5vw,48px);font-weight:660;letter-spacing:-.04em;margin:0 0 20px}.grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:9px}.person{position:relative;border:1px solid rgba(219,234,224,.09);background:#070a08;padding:7px;cursor:pointer;transition:filter .7s ease,opacity .7s ease,transform .55s ease,border-color .4s ease}.person:hover{border-color:rgba(143,210,166,.35);transform:translateY(-2px)}
+.photo{aspect-ratio:1/1;overflow:hidden;background:linear-gradient(135deg,#151b17,#090c0a);position:relative}.photo img{width:100%;height:100%;object-fit:cover;display:block}.fallback{position:absolute;inset:0;display:grid;place-items:center;color:#57625b;font-size:22px;letter-spacing:.08em}.person span.name{display:block;margin-top:7px;color:#aeb9b1;font-size:10px;text-align:center;letter-spacing:.04em}
+.grid.chosen .person:not(.selected){filter:grayscale(1) brightness(.38) contrast(1.08);opacity:.72;transform:scale(.985)}.grid.chosen .person.selected{filter:none;transform:scale(1.025);border-color:rgba(143,210,166,.48);z-index:2}.grid.chosen{pointer-events:none}
+.choice-taunt{display:none;margin-top:22px;border-top:1px solid rgba(219,234,224,.07);padding-top:19px}.choice-taunt.show{display:block;animation:screenIn .5s ease both}.choice-taunt strong{display:block;font-size:clamp(21px,4vw,36px);letter-spacing:-.035em;line-height:1.12;margin-bottom:8px}.choice-taunt p{color:#87938b;margin:0 0 16px}
+/* time / roulette */
+.time-number{font-size:clamp(78px,18vw,170px);font-weight:680;letter-spacing:-.08em;line-height:.8;margin:28px 0 20px}.time-number small{font-size:.22em;color:#728077;letter-spacing:.02em;margin-left:8px}.notice{color:#87938b;line-height:1.65;max-width:660px}.roulette-layout{display:grid;grid-template-columns:minmax(270px,430px) 1fr;gap:38px;align-items:center}.wheel-wrap{position:relative;width:min(78vw,420px);aspect-ratio:1;margin:auto}.pointer{position:absolute;z-index:5;left:50%;top:-5px;transform:translateX(-50%);width:0;height:0;border-left:13px solid transparent;border-right:13px solid transparent;border-top:25px solid #d8e0da;filter:drop-shadow(0 4px 6px #000)}
+.wheel{position:absolute;inset:9%;border-radius:50%;border:1px solid rgba(219,234,224,.15);background:conic-gradient(#111713 0 60deg,#0a0e0b 60deg 120deg,#151b17 120deg 180deg,#090c0a 180deg 240deg,#131915 240deg 300deg,#0a0e0b 300deg 360deg);box-shadow:0 20px 65px rgba(0,0,0,.60),inset 0 0 40px rgba(143,210,166,.025);transition:transform 4.3s cubic-bezier(.12,.68,.12,1)}
+.wheel::after{content:"";position:absolute;inset:42%;border-radius:50%;background:#050806;border:1px solid rgba(219,234,224,.14)}.wheel-label{position:absolute;left:50%;top:50%;width:72px;text-align:center;margin-left:-36px;margin-top:-8px;font:650 12px/1 ui-monospace,monospace;color:#c5d0c8;transform-origin:36px 8px;z-index:2}
+.roulette-copy h2{font-size:clamp(28px,5vw,50px);line-height:1;letter-spacing:-.045em}.roulette-copy p{color:#8b978f;line-height:1.68}.bonus{font-size:clamp(45px,8vw,84px);font-weight:680;letter-spacing:-.06em;color:#cfe0d4;margin:12px 0}
+/* ready */
+.ready-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:26px 0}.ready-item{border-top:1px solid rgba(219,234,224,.09);padding-top:12px}.ready-item small{display:block;color:#657168;font-size:9px;letter-spacing:.13em}.ready-item strong{display:block;margin-top:6px;font-size:clamp(24px,4vw,38px)}
+@media(max-width:760px){.stage{padding:9px}.body{padding:24px 16px}.grid{grid-template-columns:repeat(2,minmax(0,1fr));max-height:58dvh;overflow:auto}.roulette-layout{grid-template-columns:1fr;gap:20px}.roulette-copy{text-align:center}.ready-grid{grid-template-columns:1fr}.head{font-size:8px}.decode-title{gap:2px}.reel{width:clamp(16px,7vw,29px)}}
 </style>
 </head>
 <body>
-<div class="bg"></div>
-<div class="grid"></div>
-<div class="scanlines"></div>
-<div class="vignette"></div>
-<canvas id="noiseCanvas"></canvas>
+<div class="flash" id="flash"></div><div id="fault"></div>
+<main class="stage">
+<section class="screen show" id="bootScreen"><div class="shell"><div class="head"><span>SESSÃO // RECUPERAÇÃO DE ESTADO</span><strong id="bootHead">CONTROLE LOCAL</strong></div><div class="body">
+  <div class="boot-main" id="bootMain">VERIFICANDO INTEGRIDADE...</div><div class="boot-sub" id="bootSub">&gt; analisando fragmentos // bloco 01</div>
+  <div class="track"><div class="fill" id="bootFill"></div></div><div class="pct" id="bootPct">0%</div>
+  <div class="log" id="bootLog"></div><div class="boot-foot">abrindo próximo estado...</div>
+</div></div></section>
 
-<div id="boot">
-  <div class="boot-inner">
-    <div class="boot-shell">
-      <div class="boot-activity" aria-hidden="true"><span></span><span></span><span></span></div>
-      <div class="boot-head">SESSÃO // RECUPERAÇÃO DE ESTADO</div>
+<section class="screen" id="decodeScreen"><div class="shell decode-shell" id="decodeShell"><div class="head"><span>ARQUIVO RECUPERADO // ACESSO RESTRITO</span><strong id="decodeLed">CANAL SEGURO</strong></div><div class="body">
+  <div class="decode-title" id="decodeTitle"></div><div class="decode-date" id="decodeDate"></div>
+  <div class="decode-status" id="decodeStatus">DECODIFICANDO...</div>
+  <div class="decode-progress"><i id="decodeFill"></i></div><div class="decode-pct" id="decodePct">0%</div>
+  <div class="log" id="decodeLog"></div>
+</div></div></section>
 
-      <div class="boot-content">
-        <div class="boot-kicker">PROCESSO RESTRITO</div>
-        <div id="bootText">VERIFICANDO INTEGRIDADE...</div>
-        <div id="bootSub">&gt; analisando fragmentos...</div>
+<section class="screen" id="controlScreen"><div class="shell"><div class="head"><span>SESSÃO // ALTERAÇÃO DE ESTADO</span><strong>PHANTASMA</strong></div><div class="body">
+  <h1 class="big">CONTROLE ASSUMIDO.</h1><p class="copy">O arquivo não vai abrir.</p><button id="controlNext">CONTINUAR</button>
+</div></div></section>
 
-        <div class="boot-meta">
-          <span id="bootStatus">&gt; transferência em andamento...</span>
-          <strong id="bootPct">0%</strong>
-        </div>
+<section class="screen" id="moralScreen"><div class="shell"><div class="head"><span>PHANTASMA // TESTE DE CRITÉRIO</span><strong>DECISÃO EXIGIDA</strong></div><div class="body">
+  <h1 class="big">É curioso como uma morte muda de nome dependendo de quem a comete.</h1>
+  <div class="moral-lines"><span class="terms">Defesa.<br>Misericórdia.<br>Proteção.<br>Necessidade.<br>Omissão.<br>Prova de lealdade.</span>
+  <span>Vocês encontraram uma justificativa para todos eles.</span></div>
+  <div class="moral-question">Agora escolha qual delas você está disposto a proteger.</div>
+  <button id="chooseBtn" style="margin-top:26px">ESCOLHER PROTEGIDO</button>
+</div></div></section>
 
-        <div class="boot-line">
-          <div id="bootFill"></div>
-        </div>
+<section class="screen" id="choiceScreen"><div class="shell"><div class="head"><span>SESSÃO // PROTEÇÃO</span><strong>UMA ESCOLHA</strong></div><div class="body">
+  <h2 class="choice-title">Quem você protege?</h2><div class="grid" id="peopleGrid"></div>
+  <div class="choice-taunt" id="choiceTaunt"><strong id="tauntA"></strong><p id="tauntB"></p><button id="choiceContinue">CONTINUAR</button></div>
+</div></div></section>
 
-        <div class="boot-foot">abrindo próximo estado...</div>
-      </div>
-    </div>
-  </div>
-</div>
+<section class="screen" id="timeScreen"><div class="shell"><div class="head"><span>SESSÃO // CONFIGURAÇÃO DO TESTE</span><strong>PROTEGIDO REGISTRADO</strong></div><div class="body">
+  <div class="copy">TEMPO CONCEDIDO</div><div class="time-number"><span id="rawTime">60</span><small>SEGUNDOS</small></div>
+  <p class="notice" id="penaltyNote"></p><button id="timeNext">INICIAR TESTE</button>
+</div></div></section>
 
-<div id="decodeLayer" aria-hidden="true">
-  <section class="decode-window">
-    <header class="decode-head">
-      <div class="decode-title">ARQUIVO RECUPERADO // ACESSO RESTRITO</div>
-      <div id="decodeLed" class="decode-led">canal seguro</div>
-    </header>
+<section class="screen" id="rouletteScreen"><div class="shell"><div class="head"><span>SESSÃO // VARIÁVEL ADICIONAL</span><strong>SORTE</strong></div><div class="body">
+  <div class="roulette-layout"><div class="wheel-wrap"><div class="pointer"></div><div class="wheel" id="wheel"></div></div>
+  <div class="roulette-copy"><h2>Isso é constrangedor.</h2><p>Você conseguiu transformar sessenta segundos nisso.<br>Eu até gostaria de assistir você tentar. Mas não teria muita graça.</p><p><strong>Vamos acrescentar uma variável.</strong></p>
+  <button id="spinBtn">GIRAR</button><div id="spinResult" style="display:none"><div class="bonus" id="bonus"></div><p>Não confunda sorte com perdão.</p><button id="rouletteNext">CONTINUAR</button></div></div></div>
+</div></div></section>
 
-    <div class="decode-center">
-      <div id="nameSlots" class="slot-line" aria-label="identificação criptografada"></div>
-      <div id="dateSlots" class="slot-line date" aria-label="data criptografada"></div>
-      <div id="decodeStatus">DECODIFICANDO...</div>
-
-      <div class="progress">
-        <div class="progress-track"><div id="progressBar"></div></div>
-        <div id="progressText">0%</div>
-      </div>
-    </div>
-
-    <div id="provocation">
-      <div class="prov-inner">
-        <div id="provMain"></div>
-        <div id="provSub"></div>
-      </div>
-    </div>
-  </section>
-</div>
-
-<div id="questionScreen">
-  <div class="question-inner">
-    <div id="q1" class="question-line question-main">Todos eles já tiraram uma vida.</div>
-
-    <div id="q2" class="question-line question-mid">
-      Alguns por escolha.<br>
-      Outros porque não tiveram escolha.
-    </div>
-
-    <div id="q3" class="question-line question-final">
-      Quando todos têm sangue nas mãos,<br>
-      quem você ainda escolheria proteger?
-    </div>
-
-    <button id="questionContinue" type="button">ESCOLHER PROTEGIDO</button>
-  </div>
-</div>
-
-<div id="protectedScreen">
-  <div class="protected-inner">
-    <div class="protected-kicker">ÚLTIMO PROTOCOLO</div>
-    <h1 class="protected-title">Escolha quem você vai proteger.</h1>
-    <div class="protected-sub">Você só pode escolher um. Eu vou lembrar.</div>
-
-    <div id="characterGrid" class="character-grid"></div>
-
-    <button id="confirmProtected" type="button">CONFIRMAR PROTEGIDO</button>
-  </div>
-</div>
-
-<div id="pregame">
-  <div class="pregame-inner">
-    <div class="pregame-kicker">PROTEGIDO // REGISTRADO</div>
-    <div id="protectedFinal"></div>
-
-    <div class="time-label">TEMPO CONCEDIDO</div>
-    <div id="timeGranted">60s</div>
-    <div id="debtLine"></div>
-
-    <button id="startGame" type="button">INICIAR</button>
-  </div>
-</div>
-
-<div id="gamePlaceholder">
-  <div>
-    <div class="placeholder-title">JOGO DO TIRO</div>
-    <div class="placeholder-sub">mecânica dos alvos // próxima implementação</div>
-  </div>
-</div>
-
-<div id="wipe"><canvas id="wipeCanvas"></canvas></div>
-<div id="glitchFlash"></div>
-
+<section class="screen" id="readyScreen"><div class="shell"><div class="head"><span>PHANTASMA // PROTOCOLO FINAL</span><strong>PRONTO</strong></div><div class="body">
+  <h1 class="big">TESTE CONFIGURADO.</h1><div class="ready-grid"><div class="ready-item"><small>PROTEGIDO</small><strong id="readyProtected"></strong></div><div class="ready-item"><small>TEMPO INICIAL</small><strong id="readyTime"></strong></div></div>
+  <button id="gameBtn">INICIAR TESTE</button>
+</div></div></section>
+</main>
 <script>
-(() => {
 "use strict";
-
-const LETTER_POOL = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789#%?@&+";
-const NUMBER_POOL = "0123456789";
-
-const NAME_PATTERNS = [
-  [5],[4,3],[6,2],[3,4,2],[5,2,2],
-  [4,4,3],[5,2,2,2],[7,2],[8,3],[6,3,2],
-  [3,3,3,2],[4,2,4],[9],[5,4]
+const SITE_ROOT=location.hostname.endsWith("github.io")?"/arquivoconfidencial/":"./";
+const RAW_OLD="https://raw.githubusercontent.com/miaverso/arquivopessoalmiasalvani/3c7e08dd0760e855df3c02f3404eca2711b667a4";
+const CHARACTERS=[
+ {id:"olivia",name:"Olivia",file:"olivia.jpg"},{id:"dex",name:"Dexter",file:"dex.jpg"},
+ {id:"declan",name:"Declan",file:"declan.jpg"},{id:"charlotte",name:"Charlotte",file:"charlotte.jpg"},
+ {id:"killian",name:"Killian",file:"killian.jpg"},{id:"melissa",name:"Melissa",file:"melissa.jpg"},
+ {id:"reid",name:"Reid",file:"reid.jpg"},{id:"lara",name:"Lara",file:"lara.jpg"},
+ {id:"chuck",name:"Charles",file:"chuck.jpg"},{id:"zuri",name:"Zuri",file:"zuri.jpg"}
 ];
-
-const CHARACTERS = [
-  "Olivia","Dexter","Declan","Charlotte","Killian",
-  "Melissa","Reid","Lara","Charles","Zuri"
+const qs=new URLSearchParams(location.search);
+if(qs.has("reset")){
+ ["phantasma_protegido","phantasma_protegido_id","phantasma_tiro_tempo_inicial","phantasma_tempo_antes_roleta","phantasma_bonus_roleta","phantasma_roleta_usada"].forEach(k=>sessionStorage.removeItem(k));
+}
+const $=id=>document.getElementById(id);
+const screens=[...document.querySelectorAll(".screen")];
+function show(id){screens.forEach(s=>s.classList.toggle("show",s.id===id))}
+function wait(ms){return new Promise(r=>setTimeout(r,ms))}
+function log(container,text,kind=""){const d=document.createElement("div");d.className=kind;d.textContent=text;container.appendChild(d);while(container.children.length>3)container.firstElementChild.remove()}
+const flash=$("flash"),fault=$("fault");
+function faultBurst(power=1){
+  fault.innerHTML="";const n=power>1?22:12;
+  for(let i=0;i<n;i++){const s=document.createElement("div");s.className="fault-slice";s.style.top=(Math.random()*100)+"%";s.style.height=(1+Math.random()*(power>1?4:2))+"%";s.style.animationDuration=(.08+Math.random()*.12)+"s";fault.appendChild(s)}
+  fault.classList.add("show");flash.classList.remove("go");void flash.offsetWidth;flash.classList.add("go");setTimeout(()=>fault.classList.remove("show"),power>1?900:600)
+}
+/* BOOT */
+const bootMain=$("bootMain"),bootSub=$("bootSub"),bootFill=$("bootFill"),bootPct=$("bootPct"),bootLog=$("bootLog"),bootHead=$("bootHead");
+let bootProgress=0,bootTarget=8;
+const bootTimer=setInterval(()=>{if(bootProgress<bootTarget){bootProgress+=Math.random()>.6?2:1;bootProgress=Math.min(bootProgress,bootTarget);bootFill.style.width=bootProgress+"%";bootPct.textContent=bootProgress+"%"}},150);
+const bootSteps=[
+ [0,8,"VERIFICANDO INTEGRIDADE...","> analisando fragmentos // bloco 01","CONTROLE LOCAL","[SISTEMA] sessão validada.","good"],
+ [2700,38,"RASTREANDO REFERÊNCIA...","> cruzando assinatura // origem protegida","VALIDANDO","[SISTEMA] cruzando assinatura de arquivo.",""],
+ [5900,72,"ARQUIVO ENCONTRADO","> índice recuperado // validando conteúdo","ARQUIVO LOCALIZADO","[SISTEMA] referência confirmada.","good"],
+ [8500,100,"DECODIFICAÇÃO INICIADA","> transferindo estrutura para sessão","PROCESSO ATIVO","[SISTEMA] transferindo estrutura.","good"]
 ];
-
-const CHARACTER_IDS = {
-  Olivia:"olivia",
-  Dexter:"dex",
-  Declan:"declan",
-  Charlotte:"charlotte",
-  Killian:"killian",
-  Melissa:"melissa",
-  Reid:"reid",
-  Lara:"lara",
-  Charles:"chuck",
-  Zuri:"zuri"
+bootSteps.forEach(([at,p,m,s,h,l,k])=>setTimeout(()=>{bootTarget=p;bootMain.textContent=m;bootSub.textContent=s;bootHead.textContent=h;log(bootLog,l,k);if(p===72)faultBurst(1);if(p===100)setTimeout(()=>{bootProgress=100;bootFill.style.width="100%";bootPct.textContent="100%";clearInterval(bootTimer);beginDecode()},1100)},at));
+/* DECODE */
+const decodeShell=$("decodeShell"),decodeTitle=$("decodeTitle"),decodeDate=$("decodeDate"),decodeStatus=$("decodeStatus"),
+decodeFill=$("decodeFill"),decodePct=$("decodePct"),decodeLog=$("decodeLog"),decodeLed=$("decodeLed");
+const GLYPHS="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#@$%&?*";
+let titleTimer=null,dateTimers=[],titleFast=false,lastLen=0;
+const LENGTHS=[5,7,8,3,10,4,9,6];
+function rndChar(){return GLYPHS[(Math.random()*GLYPHS.length)|0]}
+function buildTitle(len){
+  decodeTitle.innerHTML="";
+  for(let i=0;i<len;i++){const d=document.createElement("div");d.className="reel";const s=document.createElement("span");s.textContent=rndChar();d.appendChild(s);decodeTitle.appendChild(d)}
+}
+function kickReel(el){el.classList.remove("kick");void el.offsetWidth;el.classList.add("kick");el.querySelector("span").textContent=rndChar()}
+function startTitle(fast=false){
+  titleFast=fast;clearInterval(titleTimer);lastLen=0;
+  const morph=()=>{let len;do{len=LENGTHS[(Math.random()*LENGTHS.length)|0]}while(len===lastLen);lastLen=len;buildTitle(len);
+    [...decodeTitle.children].forEach((el,i)=>setTimeout(()=>kickReel(el),Math.random()*(fast?170:300)))};
+  morph();titleTimer=setInterval(morph,fast?310:620);
+}
+function buildDate(fast=false){
+  dateTimers.forEach(clearInterval);dateTimers=[];decodeDate.innerHTML="";
+  const spec=["d","d",".","d","d",".","d","d","d","d"];
+  spec.forEach(x=>{if(x==="."){const s=document.createElement("span");s.className="dot";s.textContent=".";decodeDate.appendChild(s)}
+  else{const s=document.createElement("span");s.className="digit";s.textContent=(Math.random()*10)|0;decodeDate.appendChild(s);
+    dateTimers.push(setInterval(()=>s.textContent=(Math.random()*10)|0,(fast?55:95)+Math.random()*(fast?75:130)))}})
+}
+function stopReels(){clearInterval(titleTimer);dateTimers.forEach(clearInterval);dateTimers=[]}
+function progress(duration,done){
+  const start=performance.now();decodeFill.style.width="0%";decodePct.textContent="0%";
+  function frame(now){const p=Math.min(1,(now-start)/duration),ease=1-Math.pow(1-p,2.4),v=Math.min(99,Math.round(ease*99));decodeFill.style.width=v+"%";decodePct.textContent=v+"%";if(p<1)requestAnimationFrame(frame);else done()}
+  requestAnimationFrame(frame)
+}
+async function beginDecode(){
+  show("decodeScreen");decodeStatus.textContent="DECODIFICANDO...";decodeLed.textContent="CANAL SEGURO";decodeShell.className="shell decode-shell";
+  decodeLog.innerHTML="";log(decodeLog,"[SISTEMA] estrutura recebida.","good");startTitle(false);buildDate(false);
+  setTimeout(()=>log(decodeLog,"[SISTEMA] iniciando leitura de blocos."),900);
+  progress(12000,firstFreeze)
+}
+async function firstFreeze(){
+  decodePct.textContent="99%";decodeFill.style.width="99%";decodeStatus.textContent="DECODIFICAÇÃO // 99%";decodeLed.textContent="AGUARDANDO";
+  log(decodeLog,"[SISTEMA] aguardando confirmação do último bloco.");
+  await wait(700);decodeShell.classList.add("warning");log(decodeLog,"[AVISO] latência fora do intervalo.","warn");decodePct.textContent="98%";decodeFill.style.width="98.4%";
+  await wait(620);decodePct.textContent="99%";decodeFill.style.width="99%";log(decodeLog,"[AVISO] resposta do processo interrompida.","warn");
+  await wait(520);systemError()
+}
+async function systemError(){
+  stopReels();decodeShell.classList.remove("warning");decodeShell.classList.add("error");decodeLed.textContent="FALHA";decodeStatus.textContent="ERRO NO SISTEMA";log(decodeLog,"[FALHA] bloco final não confirmou.","bad");faultBurst(2);
+  await wait(1600);decodeStatus.textContent="RECUPERANDO PROCESSO...";log(decodeLog,"[SISTEMA] isolando bloco corrompido.");
+  await wait(1500);decodeStatus.textContent="REINICIANDO DECODIFICAÇÃO";faultBurst(1);
+  await wait(1300);secondDecode()
+}
+function secondDecode(){
+  decodeShell.className="shell decode-shell";decodeLed.textContent="CANAL RECUPERADO";decodeStatus.textContent="DECODIFICANDO...";decodeLog.innerHTML="";
+  log(decodeLog,"[SISTEMA] sessão reconfigurada.","good");startTitle(true);buildDate(true);progress(4100,secondFreeze)
+}
+async function secondFreeze(){
+  decodePct.textContent="99%";decodeFill.style.width="99%";decodeStatus.textContent="ARQUIVO LOCALIZADO";log(decodeLog,"[SISTEMA] referência final montada.","good");
+  await wait(800);decodeStatus.textContent="ABRINDO ARQUIVO...";decodeLed.textContent="ABRINDO";log(decodeLog,"[SISTEMA] entregando conteúdo para visualização.");
+  await wait(950);decodeShell.classList.add("warning");decodeLed.textContent="SEM RESPOSTA";log(decodeLog,"[AVISO] processo de abertura não respondeu.","warn");
+  await wait(780);stopReels();decodeShell.classList.remove("warning");decodeShell.classList.add("error");log(decodeLog,"[FALHA] controle da sessão alterado.","bad");faultBurst(2);
+  await wait(950);show("controlScreen")
+}
+$("controlNext").onclick=()=>show("moralScreen");
+$("chooseBtn").onclick=()=>show("choiceScreen");
+/* CHOICE */
+const peopleGrid=$("peopleGrid"),choiceTaunt=$("choiceTaunt"),tauntA=$("tauntA"),tauntB=$("tauntB");
+const TAUNTS=[
+ ["Você chamou isso de proteção.","O sistema registrou como descarte."],
+ ["Salvar um. Condenar o resto.","Você aprende rápido."],
+ ["Interessante.","Você escolhe quem vive com mais facilidade do que deveria."],
+ ["Proteger alguém sempre parece nobre.","Até exigir que você abandone os outros."],
+ ["Você não escolheu só quem salvar.","Escolheu quem deixar cair."]
+];
+function setImg(img,c,fallback){
+  const candidates=[SITE_ROOT+"jogo/"+c.file,"jogo/"+c.file,RAW_OLD+"/jogo/"+c.file];let i=0;
+  function next(){if(i>=candidates.length){img.style.display="none";fallback.style.display="grid";return}img.src=candidates[i++]}
+  img.onerror=next;img.onload=()=>{fallback.style.display="none";img.style.display="block"};next()
+}
+CHARACTERS.forEach(c=>{
+  const b=document.createElement("button");b.type="button";b.className="person";b.dataset.id=c.id;
+  const ph=document.createElement("div");ph.className="photo";const fb=document.createElement("div");fb.className="fallback";fb.textContent=c.name.slice(0,2).toUpperCase();
+  const img=document.createElement("img");img.alt=c.name;ph.append(fb,img);const n=document.createElement("span");n.className="name";n.textContent=c.name;b.append(ph,n);peopleGrid.appendChild(b);setImg(img,c,fb);
+  b.onclick=()=>choosePerson(c,b)
+});
+function choosePerson(c,b){
+  [...peopleGrid.children].forEach(x=>x.classList.toggle("selected",x===b));peopleGrid.classList.add("chosen");
+  sessionStorage.setItem("phantasma_protegido",c.name);sessionStorage.setItem("phantasma_protegido_id",c.id);
+  const t=TAUNTS[(Math.random()*TAUNTS.length)|0];tauntA.textContent=t[0];tauntB.textContent=t[1];
+  setTimeout(()=>choiceTaunt.classList.add("show"),900)
+}
+$("choiceContinue").onclick=()=>showTime();
+/* TIME */
+let baseTime=60;
+function showTime(){
+  const penalty=Math.max(0,Number(sessionStorage.getItem("phantasma_penalidade_tiro_segundos")||0));
+  baseTime=Math.max(1,60-penalty);
+  sessionStorage.setItem("phantasma_tempo_antes_roleta",String(baseTime));
+  $("rawTime").textContent=baseTime;
+  $("penaltyNote").textContent=penalty>0?"Você aceitou ajuda quando precisou. Eu disse que teria um custo.":"";
+  $("timeNext").textContent=baseTime<30?"CONTINUAR":"INICIAR TESTE";
+  show("timeScreen")
+}
+$("timeNext").onclick=()=>{
+  if(baseTime<30){
+    if(sessionStorage.getItem("phantasma_roleta_usada")==="1"){
+      const t=Number(sessionStorage.getItem("phantasma_tiro_tempo_inicial")||baseTime);showReady(t)
+    }else{prepareRoulette()}
+  }else{sessionStorage.setItem("phantasma_tiro_tempo_inicial",String(baseTime));showReady(baseTime)}
 };
-
-const BOOT_SEQUENCE = [
-  {
-    at:0,
-    main:"VERIFICANDO INTEGRIDADE...",
-    sub:"> analisando fragmentos // bloco 01",
-    pct:9
-  },
-  {
-    at:3600,
-    main:"RASTREANDO REFERÊNCIA...",
-    sub:"> cruzando assinatura // origem protegida",
-    pct:38
-  },
-  {
-    at:7600,
-    main:"ARQUIVO ENCONTRADO",
-    sub:"> índice recuperado // validando conteúdo",
-    pct:72
-  },
-  {
-    at:11200,
-    main:"DECODIFICAÇÃO INICIADA",
-    sub:"> montando estrutura do arquivo...",
-    pct:100
-  }
-];
-
-/* primeira tentativa: lenta */
-const PROGRESS_1 = [
-  [1000,8],[2300,19],[3800,33],[5600,49],[7300,61],
-  [9100,73],[10900,84],[12600,91],[14100,96],[15600,99]
-];
-
-/* segunda tentativa: rápida, propositalmente agressiva */
-const PROGRESS_2 = [
-  [350,14],[700,31],[1050,52],[1400,69],
-  [1750,82],[2100,91],[2450,96],[2800,99]
-];
-
-const $ = id => document.getElementById(id);
-const boot = $("boot");
-const bootText = $("bootText");
-const bootSub = $("bootSub");
-const bootPct = $("bootPct");
-const bootFill = $("bootFill");
-const bootStatus = $("bootStatus");
-const decodeLayer = $("decodeLayer");
-const nameSlots = $("nameSlots");
-const dateSlots = $("dateSlots");
-const decodeStatus = $("decodeStatus");
-const progressBar = $("progressBar");
-const progressText = $("progressText");
-const decodeLed = $("decodeLed");
-const glitchFlash = $("glitchFlash");
-const provocation = $("provocation");
-const provMain = $("provMain");
-const provSub = $("provSub");
-const questionScreen = $("questionScreen");
-const q1 = $("q1");
-const q2 = $("q2");
-const q3 = $("q3");
-const questionContinue = $("questionContinue");
-const wipe = $("wipe");
-const wipeCanvas = $("wipeCanvas");
-const protectedScreen = $("protectedScreen");
-const characterGrid = $("characterGrid");
-const confirmProtected = $("confirmProtected");
-const pregame = $("pregame");
-const protectedFinal = $("protectedFinal");
-const timeGranted = $("timeGranted");
-const debtLine = $("debtLine");
-const startGame = $("startGame");
-const gamePlaceholder = $("gamePlaceholder");
-
-let nameControllers = [];
-let dateControllers = [];
-let decodingStarted = false;
-let namePatternTimer = null;
-let selectedProtected = "";
-
-function glitch(){
-  glitchFlash.classList.remove("hit","heavy");
-  void glitchFlash.offsetWidth;
-  glitchFlash.classList.add("hit");
+/* ROULETTE */
+const wheel=$("wheel"),spinBtn=$("spinBtn"),spinResult=$("spinResult"),bonusEl=$("bonus");
+let wheelValues=[],chosenBonus=0,spun=false;
+function makeValues(time){
+  const min=Math.max(5,31-time),max=Math.max(min,60-time),vals=[];
+  for(let i=0;i<6;i++)vals.push(Math.round(min+(max-min)*(i/5)));
+  for(let i=1;i<vals.length;i++)if(vals[i]<=vals[i-1])vals[i]=Math.min(max,vals[i-1]+1);
+  vals[vals.length-1]=max;return vals
 }
-
-function heavyGlitch(){
-  glitchFlash.classList.remove("hit","heavy");
-  void glitchFlash.offsetWidth;
-  glitchFlash.classList.add("heavy");
+function prepareRoulette(){
+  show("rouletteScreen");spun=false;spinResult.style.display="none";spinBtn.style.display="inline-block";wheel.style.transition="none";wheel.style.transform="rotate(0deg)";
+  wheelValues=makeValues(baseTime);wheel.querySelectorAll(".wheel-label").forEach(x=>x.remove());
+  wheelValues.forEach((v,i)=>{const s=document.createElement("div");s.className="wheel-label";const angle=i*60+30;s.style.transform=`rotate(${angle}deg) translateY(-145px) rotate(${-angle}deg)`;s.textContent="+"+v+"s";wheel.appendChild(s)})
 }
-
-function randomChar(pool){
-  return pool[Math.floor(Math.random()*pool.length)];
-}
-
-function createReel(pool, speedMin=55, speedMax=115, bucket=null){
-  const reel = document.createElement("span");
-  reel.className="reel";
-
-  const track=document.createElement("span");
-  track.className="reel-track";
-
-  const a=document.createElement("span");
-  const b=document.createElement("span");
-  a.className=b.className="reel-char";
-
-  a.textContent=randomChar(pool);
-  b.textContent=randomChar(pool);
-
-  track.append(a,b);
-  reel.append(track);
-
-  const ctrl={
-    reel,track,a,b,pool,
-    timer:null,
-    running:true,
-    duration:speedMin+Math.random()*(speedMax-speedMin),
-    speedMin,speedMax
-  };
-
-  function cycle(){
-    if(!ctrl.running) return;
-
-    const h=reel.clientHeight||60;
-    ctrl.b.textContent=randomChar(ctrl.pool);
-
-    ctrl.track.style.transition =
-      `transform ${ctrl.duration}ms cubic-bezier(.2,.75,.25,1)`;
-    ctrl.track.style.transform=`translateY(-${h}px)`;
-
-    setTimeout(()=>{
-      if(!ctrl.running) return;
-
-      ctrl.a.textContent=ctrl.b.textContent;
-      ctrl.track.style.transition="none";
-      ctrl.track.style.transform="translateY(0)";
-      ctrl.b.textContent=randomChar(ctrl.pool);
-
-      ctrl.duration=ctrl.speedMin+Math.random()*(ctrl.speedMax-ctrl.speedMin);
-      ctrl.timer=setTimeout(cycle,24+Math.random()*90);
-    },ctrl.duration+8);
-  }
-
-  ctrl.start=()=>cycle();
-
-  ctrl.stop=()=>{
-    ctrl.running=false;
-    clearTimeout(ctrl.timer);
-    ctrl.track.style.transition="none";
-    ctrl.track.style.transform="translateY(0)";
-  };
-
-  if(bucket) bucket.push(ctrl);
-  return ctrl;
-}
-
-function separator(type){
-  const el=document.createElement("span");
-
-  if(type==="gap"){
-    el.className="slot-gap";
-  }else{
-    el.className="slot-dot";
-    el.textContent=".";
-  }
-
-  return el;
-}
-
-function pickPattern(){
-  return NAME_PATTERNS[Math.floor(Math.random()*NAME_PATTERNS.length)];
-}
-
-function clearName(){
-  clearTimeout(namePatternTimer);
-  nameControllers.forEach(ctrl=>ctrl.stop());
-  nameControllers=[];
-  nameSlots.innerHTML="";
-}
-
-function clearDate(){
-  dateControllers.forEach(ctrl=>ctrl.stop());
-  dateControllers=[];
-  dateSlots.innerHTML="";
-}
-
-function buildNameSlots(pattern=pickPattern(),fast=false){
-  nameSlots.classList.add("rebuild");
-
+spinBtn.onclick=()=>{
+  if(spun)return;spun=true;spinBtn.disabled=true;
+  const idx=(Math.random()*wheelValues.length)|0;chosenBonus=wheelValues[idx];
+  const angle=6*360-(idx*60+30);wheel.style.transition="transform 4.3s cubic-bezier(.12,.68,.12,1)";requestAnimationFrame(()=>wheel.style.transform=`rotate(${angle}deg)`);
   setTimeout(()=>{
-    clearName();
-
-    pattern.forEach((count,g)=>{
-      for(let i=0;i<count;i++){
-        const ctrl=createReel(
-          LETTER_POOL,
-          fast?26:50,
-          fast?62:108,
-          nameControllers
-        );
-        nameSlots.append(ctrl.reel);
-      }
-
-      if(g<pattern.length-1){
-        nameSlots.append(separator("gap"));
-      }
-    });
-
-    nameControllers.forEach((ctrl,i)=>{
-      setTimeout(()=>ctrl.start(),Math.random()*(fast?60:120)+i*5);
-    });
-
-    nameSlots.classList.remove("rebuild");
-  },fast?90:180);
+    const finalTime=Math.min(60,baseTime+chosenBonus);
+    sessionStorage.setItem("phantasma_bonus_roleta",String(chosenBonus));sessionStorage.setItem("phantasma_roleta_usada","1");sessionStorage.setItem("phantasma_tiro_tempo_inicial",String(finalTime));
+    bonusEl.textContent="+"+chosenBonus+"s";spinResult.style.display="block";spinBtn.style.display="none";spinBtn.disabled=false
+  },4450)
+};
+$("rouletteNext").onclick=()=>showReady(Number(sessionStorage.getItem("phantasma_tiro_tempo_inicial")||baseTime));
+function showReady(time){
+  $("readyProtected").textContent=(sessionStorage.getItem("phantasma_protegido")||"—").toUpperCase();$("readyTime").textContent=time+"s";show("readyScreen")
 }
-
-function buildDateSlots(fast=false){
-  clearDate();
-
-  const groups=[2,2,4];
-
-  groups.forEach((count,g)=>{
-    for(let i=0;i<count;i++){
-      const ctrl=createReel(
-        NUMBER_POOL,
-        fast?24:46,
-        fast?58:102,
-        dateControllers
-      );
-      dateSlots.append(ctrl.reel);
-    }
-
-    if(g<groups.length-1){
-      dateSlots.append(separator("dot"));
-    }
-  });
-
-  dateControllers.forEach((ctrl,i)=>{
-    setTimeout(()=>ctrl.start(),Math.random()*(fast?55:140)+i*5);
-  });
-}
-
-function startNamePatternLoop(fast=false){
-  buildNameSlots(pickPattern(),fast);
-
-  function scheduleNext(){
-    const wait=fast
-      ? 500+Math.random()*650
-      : 1500+Math.random()*1700;
-
-    namePatternTimer=setTimeout(()=>{
-      buildNameSlots(pickPattern(),fast);
-      scheduleNext();
-    },wait);
-  }
-
-  scheduleNext();
-}
-
-function stopAllReels(){
-  clearTimeout(namePatternTimer);
-  nameControllers.forEach(ctrl=>ctrl.stop());
-  dateControllers.forEach(ctrl=>ctrl.stop());
-}
-
-function updateProgress(value,fast=false){
-  progressBar.style.transition = fast
-    ? "width .22s cubic-bezier(.2,.8,.2,1)"
-    : "width .75s cubic-bezier(.2,.8,.2,1)";
-
-  progressBar.style.width=value+"%";
-  progressText.textContent=value+"%";
-}
-
-function resetProgress(){
-  progressBar.style.transition="none";
-  progressBar.style.width="0%";
-  progressText.textContent="0%";
-  void progressBar.offsetWidth;
-}
-
-function showSystemError(){
-  stopAllReels();
-  decodeLed.classList.add("error");
-  decodeLed.textContent="falha";
-  decodeStatus.classList.add("error");
-  decodeStatus.textContent="ERRO NO SISTEMA";
-  glitch();
-
-  setTimeout(()=>{
-    decodeStatus.textContent="RECUPERANDO PROCESSO...";
-  },1700);
-
-  setTimeout(()=>{
-    decodeStatus.textContent="REINICIANDO DECODIFICAÇÃO";
-    glitch();
-  },3200);
-
-  setTimeout(()=>{
-    restartDecodeFast();
-  },4700);
-}
-
-function restartDecodeFast(){
-  decodeLed.classList.remove("error");
-  decodeLed.textContent="canal recuperado";
-  decodeStatus.classList.remove("error");
-  decodeStatus.textContent="DECODIFICANDO...";
-  resetProgress();
-
-  startNamePatternLoop(true);
-  buildDateSlots(true);
-
-  PROGRESS_2.forEach(([ms,value])=>{
-    setTimeout(()=>updateProgress(value,true),ms);
-  });
-
-  setTimeout(()=>{
-    decodeStatus.textContent="DECODIFICAÇÃO // 99%";
-    glitch();
-  },3100);
-
-  setTimeout(()=>{
-    decodeStatus.textContent="ARQUIVO LOCALIZADO";
-  },3900);
-
-  setTimeout(()=>{
-    decodeStatus.textContent="ABRINDO ARQUIVO...";
-    progressText.textContent="99%";
-  },5100);
-
-  /* parece que vai abrir... e então quebra tudo */
-  setTimeout(()=>{
-    stopAllReels();
-    heavyGlitch();
-
-    decodeLed.classList.add("error");
-    decodeLed.textContent="interrompido";
-
-    setTimeout(()=>{
-      showPhantasma();
-    },900);
-  },7200);
-}
-
-function showPhantasma(){
-  provocation.classList.add("show");
-
-  provMain.textContent="HAHA.";
-  provSub.textContent="";
-
-  setTimeout(()=>{
-    provSub.textContent="Depois de tudo isso, você ainda acredita em barras de progresso.";
-  },900);
-
-  setTimeout(()=>{
-    provSub.textContent=
-      "Depois de tudo isso, você ainda acredita em barras de progresso.\n\nAdorável.";
-  },2700);
-
-  setTimeout(()=>{
-    decodeLayer.classList.remove("show");
-    questionScreen.classList.add("show");
-
-    setTimeout(()=>q1.classList.add("show"),500);
-    setTimeout(()=>q2.classList.add("show"),1900);
-    setTimeout(()=>q3.classList.add("show"),3700);
-    setTimeout(()=>questionContinue.classList.add("show"),5600);
-  },5100);
-}
-
-function beginDecode(){
-  if(decodingStarted) return;
-  decodingStarted=true;
-
-  boot.classList.add("fade");
-
-  setTimeout(()=>{
-    decodeLayer.classList.add("show");
-    decodeLayer.setAttribute("aria-hidden","false");
-    glitch();
-
-    startNamePatternLoop(false);
-    buildDateSlots(false);
-
-    PROGRESS_1.forEach(([ms,value])=>{
-      setTimeout(()=>updateProgress(value,false),ms);
-    });
-
-    setTimeout(()=>{
-      decodeStatus.textContent="DECODIFICAÇÃO // 99%";
-      progressText.textContent="99%";
-      glitch();
-
-      /*
-        Fecha em 99%.
-        Deixa congelar por tempo suficiente para parecer travamento real.
-      */
-      setTimeout(showSystemError,2200);
-    },16500);
-
-  },480);
-}
-
-/* binary wipe to protected selection */
-function runWipeToProtected(){
-  wipe.classList.add("show");
-
-  const ctx=wipeCanvas.getContext("2d");
-  const dpr=Math.min(devicePixelRatio||1,1.5);
-
-  wipeCanvas.width=Math.floor(innerWidth*dpr);
-  wipeCanvas.height=Math.floor(innerHeight*dpr);
-  wipeCanvas.style.width=innerWidth+"px";
-  wipeCanvas.style.height=innerHeight+"px";
-  ctx.setTransform(dpr,0,0,dpr,0,0);
-
-  const fs=Math.max(13,Math.min(20,innerWidth/75));
-  const streams=Array.from({length:Math.ceil(innerWidth/fs)},(_,i)=>({
-    x:i*fs,
-    y:-Math.random()*innerHeight*.8,
-    speed:16+Math.random()*22,
-    len:7+Math.floor(Math.random()*12),
-    alpha:.28+Math.random()*.42
-  }));
-
-  let coverY=-innerHeight*.35;
-  let last=performance.now();
-
-  function frame(now){
-    const dt=Math.min(34,now-last)/16.67;
-    last=now;
-
-    ctx.fillStyle="rgba(2,4,3,.19)";
-    ctx.fillRect(0,0,innerWidth,innerHeight);
-
-    ctx.font=fs+"px monospace";
-    ctx.textAlign="center";
-
-    streams.forEach(s=>{
-      for(let j=0;j<s.len;j++){
-        const yy=s.y-j*fs;
-        if(yy<-fs||yy>innerHeight+fs) continue;
-
-        const fade=1-(j/s.len);
-        ctx.fillStyle=`rgba(126,255,181,${s.alpha*fade})`;
-        ctx.fillText(Math.random()>.5?"1":"0",s.x,yy);
-      }
-
-      s.y+=s.speed*dt;
-    });
-
-    coverY+=30*dt;
-
-    const g=ctx.createLinearGradient(0,coverY-100,0,coverY+50);
-    g.addColorStop(0,"rgba(2,4,3,0)");
-    g.addColorStop(.55,"rgba(2,4,3,.86)");
-    g.addColorStop(1,"rgba(2,4,3,1)");
-
-    ctx.fillStyle=g;
-    ctx.fillRect(0,0,innerWidth,Math.max(0,coverY+50));
-
-    if(coverY<innerHeight+120){
-      requestAnimationFrame(frame);
-    }else{
-      ctx.fillStyle="#020403";
-      ctx.fillRect(0,0,innerWidth,innerHeight);
-
-      questionScreen.classList.remove("show");
-      protectedScreen.classList.add("show");
-
-      setTimeout(()=>{
-        wipe.classList.remove("show");
-      },350);
-    }
-  }
-
-  requestAnimationFrame(frame);
-}
-
-questionContinue.addEventListener("click",()=>{
-  runWipeToProtected();
-});
-
-/* protected selection */
-function buildCharacters(){
-  CHARACTERS.forEach((name,i)=>{
-    const btn=document.createElement("button");
-    btn.className="character";
-    btn.type="button";
-
-    btn.innerHTML=
-      `<span class="character-name">${name}</span>`+
-      `<span class="character-code">C${String(i+1).padStart(2,"0")}</span>`;
-
-    btn.addEventListener("click",()=>{
-      characterGrid.querySelectorAll(".character").forEach(el=>{
-        el.classList.remove("selected");
-      });
-
-      btn.classList.add("selected");
-      selectedProtected=name;
-      confirmProtected.classList.add("show");
-    });
-
-    characterGrid.append(btn);
-  });
-}
-
-confirmProtected.addEventListener("click",()=>{
-  if(!selectedProtected) return;
-
-  sessionStorage.setItem("phantasma_protegido",selectedProtected);
-  sessionStorage.setItem(
-    "phantasma_protegido_id",
-    CHARACTER_IDS[selectedProtected] || ""
-  );
-
-  protectedScreen.classList.remove("show");
-  protectedFinal.textContent=selectedProtected.toUpperCase();
-
-  const penalty=Number(
-    sessionStorage.getItem("phantasma_penalidade_tiro_segundos")||0
-  );
-
-  const baseTime=60;
-  const granted=Math.max(30,baseTime-penalty);
-
-  sessionStorage.setItem("phantasma_tiro_tempo_inicial",String(granted));
-
-  timeGranted.textContent=granted+"s";
-
-  if(penalty>0){
-    debtLine.textContent=
-      "Você aceitou ajuda quando precisou. Eu disse que teria um custo.";
-  }else{
-    debtLine.textContent="Sessenta segundos. Não desperdice.";
-  }
-
-  setTimeout(()=>{
-    pregame.classList.add("show");
-    glitch();
-  },320);
-});
-
-startGame.addEventListener("click",()=>{
-  pregame.classList.remove("show");
-  glitch();
-
-  setTimeout(()=>{
-    location.href = "jogo/index.html";
-  },260);
-});
-
-/* boot */
-function setBootStatus(main,sub,pct){
-  bootText.classList.add("swap");
-  bootSub.classList.add("swap");
-
-  setTimeout(()=>{
-    bootText.textContent=main;
-    bootSub.textContent=sub;
-
-    if(pct<35){
-      bootStatus.textContent="> transferência em andamento...";
-    }else if(pct<75){
-      bootStatus.textContent="> reorganizando pacotes...";
-    }else if(pct<100){
-      bootStatus.textContent="> validando referência...";
-    }else{
-      bootStatus.textContent="> transferência concluída.";
-    }
-
-    bootText.classList.remove("swap");
-    bootSub.classList.remove("swap");
-  },190);
-}
-
-
-let bootProgress = 0;
-let bootProgressTarget = 9;
-let bootProgressTimer = null;
-
-function setBootProgressTarget(value){
-  bootProgressTarget = Math.max(bootProgressTarget, value);
-}
-
-function startNaturalBootProgress(){
-  clearInterval(bootProgressTimer);
-
-  bootProgressTimer = setInterval(()=>{
-    if(bootProgress >= 100){
-      clearInterval(bootProgressTimer);
-      return;
-    }
-
-    const gap = bootProgressTarget - bootProgress;
-
-    if(gap <= 0){
-      return;
-    }
-
-    let step = 1;
-
-    if(gap > 18 && Math.random() > .58){
-      step = 2;
-    }
-
-    if(gap < 5){
-      step = 1;
-    }
-
-    bootProgress = Math.min(bootProgressTarget, bootProgress + step);
-    bootPct.textContent = bootProgress + "%";
-    bootFill.style.width = bootProgress + "%";
-  }, 145 + Math.random()*55);
-}
-
-startNaturalBootProgress();
-
-BOOT_SEQUENCE.forEach(step=>{
-  setTimeout(()=>{
-    setBootProgressTarget(step.pct);
-    setBootStatus(step.main,step.sub,step.pct);
-
-    if(step.main==="ARQUIVO ENCONTRADO"){
-      setTimeout(glitch,210);
-    }
-
-    if(step.main==="DECODIFICAÇÃO INICIADA"){
-      /*
-        FIX V68:
-        a transição agora dispara exatamente aqui.
-        Sem ponto final divergente entre texto e condição.
-      */
-      setTimeout(()=>{
-        bootProgress = 100;
-        bootPct.textContent = "100%";
-        bootFill.style.width = "100%";
-
-        setTimeout(beginDecode,1250);
-      },950);
-    }
-  },step.at);
-});
-
-/* noise */
-const canvas=$("noiseCanvas");
-const ctx=canvas.getContext("2d");
-let noiseTimer=0;
-
-function resizeNoise(){
-  const dpr=Math.min(devicePixelRatio||1,1.25);
-
-  canvas.width=Math.floor(innerWidth*dpr);
-  canvas.height=Math.floor(innerHeight*dpr);
-  canvas.style.width=innerWidth+"px";
-  canvas.style.height=innerHeight+"px";
-
-  ctx.setTransform(dpr,0,0,dpr,0,0);
-}
-
-function drawNoise(now){
-  if(now-noiseTimer>90){
-    noiseTimer=now;
-    ctx.clearRect(0,0,innerWidth,innerHeight);
-
-    for(let i=0;i<45;i++){
-      const x=Math.random()*innerWidth;
-      const y=Math.random()*innerHeight;
-      const w=8+Math.random()*55;
-
-      ctx.fillStyle=`rgba(150,255,193,${Math.random()*.025})`;
-      ctx.fillRect(x,y,w,1);
-    }
-  }
-
-  requestAnimationFrame(drawNoise);
-}
-
-buildCharacters();
-resizeNoise();
-requestAnimationFrame(drawNoise);
-addEventListener("resize",resizeNoise);
-
-})();
+$("gameBtn").onclick=()=>location.href=SITE_ROOT+"jogo/";
 </script>
 </body>
 </html>
